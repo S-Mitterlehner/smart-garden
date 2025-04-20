@@ -1,0 +1,6 @@
+@SmartGarden.API_HostAddress = http://localhost:5206
+
+GET {{SmartGarden.API_HostAddress}}/plants/
+Accept: application/json
+
+###

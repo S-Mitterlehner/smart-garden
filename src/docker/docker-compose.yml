@@ -13,10 +13,13 @@ services:
     container_name: smartgarden.api
     depends_on:
       - smartgarden.db
-    image: ${DOCKER_REGISTRY-}smartgardenapi
+    # image: ${DOCKER_REGISTRY-}smartgardenapi
     build:
-      context: ..
-      dockerfile: backend/SmartGarden.API/Dockerfile
+      context: ../backend
+      dockerfile: SmartGarden.API/Dockerfile
+    ports:
+      - "5001:8080"
+      - "5002:8081"
     networks:
       - smartgarden-net
 

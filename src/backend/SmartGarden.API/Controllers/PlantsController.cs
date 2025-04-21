@@ -6,17 +6,12 @@ using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class PlantsController(ApplicationContext db) : ControllerBase
+public class PlantsController(ApplicationContext db) : BaseController
 {
     [HttpGet]
-    public async Task<IActionResult> GetPlants()
-    {
-        var plants = await db
-                           .Get<Plant>()
-                           .Select(PlantDto.FromEntity)
-                           .ToListAsync();
-        return Ok(plants);
-    }
+    public async Task<IActionResult> GetPlants() =>
+       Ok(await db
+                 .Get<Plant>()
+                 .Select(PlantDto.FromEntity)
+                 .ToListAsync());
 }

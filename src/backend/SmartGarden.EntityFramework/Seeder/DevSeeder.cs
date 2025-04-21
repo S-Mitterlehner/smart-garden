@@ -1,4 +1,5 @@
-﻿using SmartGarden.EntityFramework.Models;
+﻿using SmartGarden.EntityFramework.Enums;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.EntityFramework.Seeder;
 
@@ -6,13 +7,14 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 {
     protected override async Task Initialize()
     {
-        await CreateAsync(new Plant
+        var p = new Plant
         {
             Id = new Guid("05c7919a-1225-4ee3-b5ea-ac720f1af14b")
             , Name = "Tomato"
             , Description = "Tomato is a fruit that is often used as a vegetable in cooking. It is rich in vitamins and antioxidants."
             , ImageUrl = "/plants/tomato.svg"
-        });
+        };
+        await CreateAsync(p);
 
         await CreateAsync(new Plant
         {
@@ -29,5 +31,53 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Description = "Potato is a starchy tuber that is often used as a vegetable in cooking. It is rich in carbohydrates and vitamins."
             , ImageUrl = "/plants/potato.svg"
         });
+
+        var c = new Controller
+        {
+            Id = new Guid("f3948dbb-4c99-4173-86d6-3e24834639df"),
+            Name = "Water Pump",
+            Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
+        };
+        await CreateAsync(c);
+
+        var s1 = new Sensor
+        {
+            Id = new Guid("52ff96f1-71f4-433f-829c-db07394e1aba")
+            , Name = "Temperature"
+            , Description = "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations."
+            , Min = 0
+            , Max = 100
+            , Unit = "C"
+            , Type = SensorType.Temperature
+        };
+        await CreateAsync(s1);
+
+        var s2 = new Sensor
+        {
+            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
+            , Name = "Humidity"
+            , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
+            , Min = 0
+            , Max = 100
+            , Unit = "%"
+            , Type = SensorType.Humidity
+        };
+        await CreateAsync(s2);
+
+        await context.SaveChangesAsync();
+
+        var beet = new Beet
+        {
+            Id = new Guid("a3c51a2a-0b07-442f-af31-3b7d88dda10d")
+            , Name = "Test Beet"
+            , Description = "Test Beet"
+            , PlantId = p.Id
+        };
+
+        beet.Controllers.AddRange(c);
+        beet.Sensors.AddRange(s1, s2);
+        await CreateOrUpdateAsync(beet);
+
+        await context.SaveChangesAsync();
     }
 }

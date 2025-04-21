@@ -3,7 +3,16 @@ using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Dtos;
 
-public class PlantDto : BaseDto
+public class PlantRefDto : BaseDto
+{
+    public static Expression<Func<Plant, PlantRefDto>> FromEntity =>
+        p => new PlantRefDto
+        {
+            Id = p.Id,
+        };
+}
+
+public class PlantDto : PlantRefDto
 {
     public string Name { get; set; }
     public string Description { get; set; }

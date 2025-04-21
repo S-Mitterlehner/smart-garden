@@ -5,20 +5,25 @@ using SmartGarden.EntityFramework.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// DB
 builder.Services.AddDbContext<ApplicationContext>(o =>
 {
     o.UseNpgsql("Server=smartgarden.db;Port=5432;Database=smartgarden;User Id=postgres;Password=postgres;");
 });
 
+// Services
+builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
+// Options
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("Database"));
+
+// -----
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<DbInitializer>();
 
 var app = builder.Build();
 

@@ -4,7 +4,17 @@
       "id": "1",
       "name": "Tomato",
       "description": "A red fruit often mistaken for a vegetable.",
-      "imageUrl": "/plants/tomato.svg"
+      "imageUrl": "/plants/tomato.svg",
+      "sensorConfig": [
+        {
+          "sensorType": "TEMPERATURE",
+          "rangeFrom": 15,
+          "rangeTo": 30
+        },
+        {
+          "sensorType": "MOISTURE"
+        }
+      ]
     },
     {
       "id": "2",
@@ -27,7 +37,58 @@
       "imageUrl": "/vite.svg",
       "plant": {
         "id": "1"
-      }
+      },
+      "sensors": [
+        {
+          "id": "1"
+        },
+        {
+          "id": "2"
+        }
+      ],
+      "controllers": [
+        {
+          "id": "1"
+        }
+      ]
+    }
+  ],
+  "sensors": [
+    {
+      "id": "1",
+      "name": "Temperature",
+      "description": "Measures the ambient temperature.",
+      "imageUrl": "/sensors/temperature.svg",
+      "minValue": 0,
+      "maxValue": 100,
+      "unit": "°C",
+      "currentValue": 25,
+      "sensorType": "TEMPERATURE"
+    },
+    {
+      "id": "2",
+      "name": "Moisture",
+      "description": "Measures the soil moisture level.",
+      "imageUrl": "/sensors/moisture.svg",
+      "currentValue": 50,
+      "unit": "%",
+      "minValue": 0,
+      "maxValue": 100,
+      "sensorType": "MOISTURE"
+    }
+  ],
+  "controllers": [
+    {
+      "id": "1",
+      "name": "Water Pump",
+      "description": "Controls the water supply to the plants.",
+      "imageUrl": "/controllers/water-pump.svg"
+    },
+    {
+      "id": "2",
+      "name": "Light Controller",
+      "description": "Controls the light exposure for the plants.",
+      "imageUrl": "/controllers/light-controller.svg"
     }
   ]
 }

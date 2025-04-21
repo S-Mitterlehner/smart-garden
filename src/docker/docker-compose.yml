@@ -1,0 +1,37 @@
+services:
+  # smartgarden.frontend:
+  #   build:
+  #     context: "../frontend"
+  #     dockerfile: Dockerfile
+  #   container_name: smartgarden.frontend
+  #   depends_on:
+  #     - smartgarden.api
+  #   networks:
+  #     - smartgarden-net
+
+  smartgarden.api:
+    container_name: smartgarden.api
+    depends_on:
+      - smartgarden.db
+    image: ${DOCKER_REGISTRY-}smartgardenapi
+    build:
+      context: ..
+      dockerfile: backend/SmartGarden.API/Dockerfile
+    networks:
+      - smartgarden-net
+
+  smartgarden.db:
+    container_name: smartgarden.db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smartgarden
+    ports:
+      - "5432:5432"
+    networks:
+      - smartgarden-net
+
+networks:
+  smartgarden-net:
+    driver: bridge

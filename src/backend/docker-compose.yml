@@ -1,8 +1,0 @@
-services:
-  smartgarden.api:
-    image: ${DOCKER_REGISTRY-}smartgardenapi
-    build:
-      context: ..
-      dockerfile: backend/SmartGarden.API/Dockerfile
-
-  # TODO: add postgres db

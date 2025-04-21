@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@theme {
+  --spacing-screen-desktop: 1600px;
+  --breakpoint-desktop: 1280px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-phone: 480px;
+}
+
 #root {
   @apply bg-gray-100 min-h-screen;
 }

@@ -22,12 +22,12 @@ export default function Beet() {
   const getSensorConfig = (sensorType: SensorType) => {
     const defaultConfig: PlantSensorConfig = {
       sensorType: sensorType,
-      rangeFrom: 15,
-      rangeTo: 60, //TODO: get from sensor
+      rangeFrom: -1,
+      rangeTo: -1,
     };
 
     // if (!plant) return defaultConfig;
-    const sensorConfig = plant!.sensorConfig.find(
+    const sensorConfig = plant?.sensorConfig?.find(
       (config) => config.sensorType === sensorType
     );
     if (!sensorConfig) return defaultConfig;

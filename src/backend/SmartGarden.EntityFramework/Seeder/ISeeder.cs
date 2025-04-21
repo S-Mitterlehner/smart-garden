@@ -1,4 +1,4 @@
-﻿namespace SmartGarden.DataAccess.Seeder;
+﻿namespace SmartGarden.EntityFramework.Seeder;
 
 public interface ISeeder
 {

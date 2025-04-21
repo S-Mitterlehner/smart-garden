@@ -1,9 +1,9 @@
 ﻿using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using SmartGarden.DataAccess.Models;
+using SmartGarden.EntityFramework.Models;
 
-namespace SmartGarden.DataAccess;
+namespace SmartGarden.EntityFramework;
 
 public class ApplicationContext : DbContext
 {

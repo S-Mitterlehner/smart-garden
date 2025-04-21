@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.API", "SmartGarden.API\SmartGarden.API.csproj", "{367A87BF-0E6F-4660-B034-DF8DAF53981F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.DataAccess", "SmartGarden.DataAccess\SmartGarden.DataAccess.csproj", "{24CCB730-2ADB-4AD0-A149-82178D5F4843}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.EntityFramework", "SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj", "{24CCB730-2ADB-4AD0-A149-82178D5F4843}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "../docker/docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject

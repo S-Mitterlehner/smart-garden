@@ -1,6 +1,6 @@
-﻿using SmartGarden.DataAccess.Models;
+﻿using SmartGarden.EntityFramework.Models;
 
-namespace SmartGarden.DataAccess.Seeder;
+namespace SmartGarden.EntityFramework.Seeder;
 
 public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 {

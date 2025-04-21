@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using SmartGarden.DataAccess.Models;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Dtos;
 
@@ -16,6 +16,5 @@ public class PlantDto : BaseDto
             , Name = p.Name
             , ImageUrl = p.ImageUrl
             , Id = p.Id
-            ,
         };
 }

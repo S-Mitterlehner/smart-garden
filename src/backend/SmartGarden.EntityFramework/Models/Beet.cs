@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SmartGarden.DataAccess.Models;
+namespace SmartGarden.EntityFramework.Models;
 
 public class Beet : BaseEntity
 {

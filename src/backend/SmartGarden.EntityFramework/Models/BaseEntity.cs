@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartGarden.DataAccess.Models;
+namespace SmartGarden.EntityFramework.Models;
 
 public abstract class BaseEntity
 {

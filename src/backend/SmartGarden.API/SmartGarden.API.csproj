@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartGarden.DataAccess\SmartGarden.DataAccess.csproj" />
+    <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

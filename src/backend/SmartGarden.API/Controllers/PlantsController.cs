@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos;
-using SmartGarden.DataAccess;
-using SmartGarden.DataAccess.Models;
+using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Controllers;
 

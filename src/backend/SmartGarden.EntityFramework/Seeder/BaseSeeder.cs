@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartGarden.DataAccess.Models;
+using SmartGarden.EntityFramework.Models;
 
-namespace SmartGarden.DataAccess.Seeder;
+namespace SmartGarden.EntityFramework.Seeder;
 
 public abstract class BaseSeeder(ApplicationContext context) : ISeeder
 {

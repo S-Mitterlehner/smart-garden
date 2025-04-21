@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Services;
-using SmartGarden.DataAccess;
-using SmartGarden.DataAccess.Seeder;
+using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 

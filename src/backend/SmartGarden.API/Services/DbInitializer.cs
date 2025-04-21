@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartGarden.DataAccess;
-using SmartGarden.DataAccess.Seeder;
+using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Seeder;
 
 namespace SmartGarden.API.Services;
 

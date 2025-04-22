@@ -8,14 +8,14 @@ using SmartGarden.EntityFramework.Models;
 namespace SmartGarden.API.Controllers;
 
 
-public class BeetController(ApplicationContext db) : BaseController
+public class BedsController(ApplicationContext db) : BaseController
 {
     [HttpGet("id")]
-    public async Task<IActionResult> GetBeet(Guid id)
+    public async Task<IActionResult> GetBed(Guid id)
     {
-        var beet = await db.Get<Beet>().FirstOrDefaultAsync(x => x.Id == id);
-        if (beet == null)
+        var Bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == id);
+        if (Bed == null)
             return NotFound();
-        return Ok(BeetDto.FromEntity.Compile().Invoke(beet));
+        return Ok(BedDto.FromEntity.Compile().Invoke(Bed));
     }
 }

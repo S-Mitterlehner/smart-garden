@@ -3,7 +3,7 @@ using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Dtos;
 
-public class BeetDto : BaseDto
+public class BedDto : BaseDto
 {
     public string Name { get; set; }
     public string Description { get; set; }
@@ -11,8 +11,8 @@ public class BeetDto : BaseDto
     public List<SensorRefDto> Sensors { get; set; }
     public List<ControllerRefDto> Controllers { get; set; }
 
-    public static Expression<Func<Beet, BeetDto>> FromEntity =>
-        b => new BeetDto
+    public static Expression<Func<Bed, BedDto>> FromEntity =>
+        b => new BedDto
         {
             Id = b.Id
             , Name = b.Name

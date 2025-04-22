@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Beet } from "../models/beet";
+import { Bed } from "../models/bed";
 import usePlants from "./usePlants";
 import { Plant } from "../models/plant";
 import { useMemo } from "react";
@@ -7,8 +7,8 @@ import { SensorRef } from "../models/sensor";
 import { ControllerRef } from "../models/controller";
 import { API_URL } from "../environment";
 
-export type CurrentBeet = {
-  beet: Beet;
+export type CurrentBed = {
+  bed: Bed;
   isFetched: boolean;
   currentPlant: {
     value: Plant | null;
@@ -18,15 +18,15 @@ export type CurrentBeet = {
   controllers: ControllerRef[];
 };
 
-export function useCurrentBeet(id: string) {
+export function useCurrentBed(id: string) {
   const queryClient = useQueryClient();
 
-  const { data: beet, isFetched: beetFetched } = useQuery<Beet | null>({
-    queryKey: ["beet", id],
+  const { data: bed, isFetched: bedFetched } = useQuery<Bed | null>({
+    queryKey: ["bed", id],
     enabled: !!id,
     refetchOnMount: "always",
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/beets/${id}`);
+      const response = await fetch(`${API_URL}/beds/${id}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -37,27 +37,27 @@ export function useCurrentBeet(id: string) {
   const { data: plants = [], isFetched: plantFetched } = usePlants();
 
   const currentPlant: Plant | null = useMemo(() => {
-    if (!beet) return null;
-    return plants.find((p) => p.id === beet.plant.id) ?? null;
-  }, [beet, plants]);
+    if (!bed) return null;
+    return plants.find((p) => p.id === bed.plant.id) ?? null;
+  }, [bed, plants]);
 
   const setCurrentPlant = (plant: Plant) => {
-    if (!beet) return;
-    const updatedBeet: Beet = {
-      ...beet,
-      plant: { ...beet.plant, id: plant.id },
+    if (!bed) return;
+    const updatedbed: Bed = {
+      ...bed,
+      plant: { ...bed.plant, id: plant.id },
     };
-    queryClient.setQueryData(["beet", id], updatedBeet);
+    queryClient.setQueryData(["bed", id], updatedbed);
   };
 
   return {
-    beet,
-    isFetched: beetFetched && plantFetched,
+    bed,
+    isFetched: bedFetched && plantFetched,
     currentPlant: {
       value: currentPlant,
       set: setCurrentPlant,
     },
-    sensors: beet?.sensors ?? [],
-    controllers: beet?.controllers ?? [],
-  } as CurrentBeet;
+    sensors: bed?.sensors ?? [],
+    controllers: bed?.controllers ?? [],
+  } as CurrentBed;
 }

@@ -12,7 +12,7 @@ using SmartGarden.EntityFramework;
 namespace SmartGarden.EntityFramework.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250421205831_Init")]
+    [Migration("20250422093837_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -21,41 +21,44 @@ namespace SmartGarden.EntityFramework.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BeetController", b =>
+            modelBuilder.Entity("BedController", b =>
                 {
-                    b.Property<Guid>("BeetId")
+                    b.Property<Guid>("BedId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ControllerId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("BeetId", "ControllerId");
+                    b.HasKey("BedId", "ControllerId");
 
                     b.HasIndex("ControllerId");
 
-                    b.ToTable("BeetController");
+                    b.ToTable("BedController");
                 });
 
-            modelBuilder.Entity("BeetSensor", b =>
+            modelBuilder.Entity("BedSensor", b =>
                 {
-                    b.Property<Guid>("BeetId")
+                    b.Property<Guid>("BedId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("SensorId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("BeetId", "SensorId");
+                    b.HasKey("BedId", "SensorId");
 
                     b.HasIndex("SensorId");
 
-                    b.ToTable("BeetSensor");
+                    b.ToTable("BedSensor");
                 });
 
-            modelBuilder.Entity("SmartGarden.EntityFramework.Models.Beet", b =>
+            modelBuilder.Entity("SmartGarden.EntityFramework.Models.Bed", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,7 +82,7 @@ namespace SmartGarden.EntityFramework.Migrations
 
                     b.HasIndex("PlantId");
 
-                    b.ToTable("Beet");
+                    b.ToTable("Bed");
                 });
 
             modelBuilder.Entity("SmartGarden.EntityFramework.Models.Controller", b =>
@@ -165,11 +168,11 @@ namespace SmartGarden.EntityFramework.Migrations
                     b.ToTable("Sensor");
                 });
 
-            modelBuilder.Entity("BeetController", b =>
+            modelBuilder.Entity("BedController", b =>
                 {
-                    b.HasOne("SmartGarden.EntityFramework.Models.Beet", null)
+                    b.HasOne("SmartGarden.EntityFramework.Models.Bed", null)
                         .WithMany()
-                        .HasForeignKey("BeetId")
+                        .HasForeignKey("BedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -180,11 +183,11 @@ namespace SmartGarden.EntityFramework.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BeetSensor", b =>
+            modelBuilder.Entity("BedSensor", b =>
                 {
-                    b.HasOne("SmartGarden.EntityFramework.Models.Beet", null)
+                    b.HasOne("SmartGarden.EntityFramework.Models.Bed", null)
                         .WithMany()
-                        .HasForeignKey("BeetId")
+                        .HasForeignKey("BedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -195,7 +198,7 @@ namespace SmartGarden.EntityFramework.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SmartGarden.EntityFramework.Models.Beet", b =>
+            modelBuilder.Entity("SmartGarden.EntityFramework.Models.Bed", b =>
                 {
                     b.HasOne("SmartGarden.EntityFramework.Models.Plant", "Plant")
                         .WithMany()

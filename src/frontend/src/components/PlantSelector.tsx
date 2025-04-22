@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plant } from "../models/plant";
 import { Menu, UnstyledButton } from "@mantine/core";
 import usePlants from "../hooks/usePlants";

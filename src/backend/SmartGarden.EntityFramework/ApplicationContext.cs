@@ -31,27 +31,27 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Plant>();
         modelBuilder.Entity<Sensor>();
         modelBuilder.Entity<Controller>();
-        modelBuilder.Entity<Beet>()
+        modelBuilder.Entity<Bed>()
                     .HasMany(x => x.Sensors)
                     .WithMany()
                     .UsingEntity<Dictionary<string, object>>(
-                        "BeetSensor",
+                        "BedSensor",
                         x => x.HasOne<Sensor>().WithMany().HasForeignKey("SensorId"),
-                        x => x.HasOne<Beet>().WithMany().HasForeignKey("BeetId"),
+                        x => x.HasOne<Bed>().WithMany().HasForeignKey("BedId"),
                         x =>
                         {
-                            x.HasKey("BeetId", "SensorId");
+                            x.HasKey("BedId", "SensorId");
                         });
-        modelBuilder.Entity<Beet>()
+        modelBuilder.Entity<Bed>()
                     .HasMany(x => x.Controllers)
                     .WithMany()
                     .UsingEntity<Dictionary<string, object>>(
-                        "BeetController",
+                        "BedController",
                         x => x.HasOne<Controller>().WithMany().HasForeignKey("ControllerId"),
-                        x => x.HasOne<Beet>().WithMany().HasForeignKey("BeetId"),
+                        x => x.HasOne<Bed>().WithMany().HasForeignKey("BedId"),
                         x =>
                         {
-                            x.HasKey("BeetId", "ControllerId");
+                            x.HasKey("BedId", "ControllerId");
                         });
     }
     

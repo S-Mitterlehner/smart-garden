@@ -2,11 +2,11 @@ import { ControllerRef } from "./controller";
 import { PlantRef } from "./plant";
 import { SensorRef } from "./sensor";
 
-export type BeetRef = {
+export type BedRef = {
   id: string;
 };
 
-export type Beet = BeetRef & {
+export type Bed = BedRef & {
   name: string;
   description: string;
   plant: PlantRef;

@@ -66,17 +66,17 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 
         await context.SaveChangesAsync();
 
-        var beet = new Beet
+        var Bed = new Bed
         {
             Id = new Guid("a3c51a2a-0b07-442f-af31-3b7d88dda10d")
-            , Name = "Test Beet"
-            , Description = "Test Beet"
+            , Name = "Test Bed"
+            , Description = "Test Bed"
             , PlantId = p.Id
         };
 
-        beet.Controllers.AddRange(c);
-        beet.Sensors.AddRange(s1, s2);
-        await CreateOrUpdateAsync(beet);
+        Bed.Controllers.AddRange(c);
+        Bed.Sensors.AddRange(s1, s2);
+        await CreateOrUpdateAsync(Bed);
 
         await context.SaveChangesAsync();
     }

@@ -59,7 +59,7 @@ namespace SmartGarden.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Beet",
+                name: "Bed",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -70,9 +70,9 @@ namespace SmartGarden.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Beet", x => x.Id);
+                    table.PrimaryKey("PK_Bed", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Beet_Plant_PlantId",
+                        name: "FK_Bed_Plant_PlantId",
                         column: x => x.PlantId,
                         principalTable: "Plant",
                         principalColumn: "Id",
@@ -80,23 +80,23 @@ namespace SmartGarden.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BeetController",
+                name: "BedController",
                 columns: table => new
                 {
-                    BeetId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BedId = table.Column<Guid>(type: "uuid", nullable: false),
                     ControllerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BeetController", x => new { x.BeetId, x.ControllerId });
+                    table.PrimaryKey("PK_BedController", x => new { x.BedId, x.ControllerId });
                     table.ForeignKey(
-                        name: "FK_BeetController_Beet_BeetId",
-                        column: x => x.BeetId,
-                        principalTable: "Beet",
+                        name: "FK_BedController_Bed_BedId",
+                        column: x => x.BedId,
+                        principalTable: "Bed",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BeetController_Controller_ControllerId",
+                        name: "FK_BedController_Controller_ControllerId",
                         column: x => x.ControllerId,
                         principalTable: "Controller",
                         principalColumn: "Id",
@@ -104,23 +104,23 @@ namespace SmartGarden.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BeetSensor",
+                name: "BedSensor",
                 columns: table => new
                 {
-                    BeetId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BedId = table.Column<Guid>(type: "uuid", nullable: false),
                     SensorId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BeetSensor", x => new { x.BeetId, x.SensorId });
+                    table.PrimaryKey("PK_BedSensor", x => new { x.BedId, x.SensorId });
                     table.ForeignKey(
-                        name: "FK_BeetSensor_Beet_BeetId",
-                        column: x => x.BeetId,
-                        principalTable: "Beet",
+                        name: "FK_BedSensor_Bed_BedId",
+                        column: x => x.BedId,
+                        principalTable: "Bed",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BeetSensor_Sensor_SensorId",
+                        name: "FK_BedSensor_Sensor_SensorId",
                         column: x => x.SensorId,
                         principalTable: "Sensor",
                         principalColumn: "Id",
@@ -128,18 +128,18 @@ namespace SmartGarden.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Beet_PlantId",
-                table: "Beet",
+                name: "IX_Bed_PlantId",
+                table: "Bed",
                 column: "PlantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BeetController_ControllerId",
-                table: "BeetController",
+                name: "IX_BedController_ControllerId",
+                table: "BedController",
                 column: "ControllerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BeetSensor_SensorId",
-                table: "BeetSensor",
+                name: "IX_BedSensor_SensorId",
+                table: "BedSensor",
                 column: "SensorId");
         }
 
@@ -147,16 +147,16 @@ namespace SmartGarden.EntityFramework.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BeetController");
+                name: "BedController");
 
             migrationBuilder.DropTable(
-                name: "BeetSensor");
+                name: "BedSensor");
 
             migrationBuilder.DropTable(
                 name: "Controller");
 
             migrationBuilder.DropTable(
-                name: "Beet");
+                name: "Bed");
 
             migrationBuilder.DropTable(
                 name: "Sensor");

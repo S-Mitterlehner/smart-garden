@@ -3,7 +3,7 @@ import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-import BeetPage from "./pages/BeetPage.tsx";
+import BedPage from "./pages/BedPage.tsx";
 import { MantineProvider } from "@mantine/core";
 import Header from "./components/Header.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -23,8 +23,8 @@ createRoot(document.getElementById("root")!).render(
           <div className="max-w-screen-desktop m-auto py-4 px-4 desktop:py-12">
             <Routes>
               <Route path="/garden" element={<GardenPage />} />
-              <Route path="/beet">
-                <Route path=":beetId" element={<BeetPage />}></Route>
+              <Route path="/bed">
+                <Route path=":bedId" element={<BedPage />}></Route>
               </Route>
               <Route path="/" element={<Navigate to="/garden" />} />
             </Routes>

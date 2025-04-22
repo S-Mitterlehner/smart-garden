@@ -2,7 +2,7 @@
 
 namespace SmartGarden.EntityFramework.Models;
 
-public class Beet : BaseEntity
+public class Bed : BaseEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }

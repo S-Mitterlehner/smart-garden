@@ -1,24 +1,21 @@
 import PlantSelector from "../components/PlantSelector";
 // import Card from "../components/Card";
-import { useCurrentBeet } from "../hooks/useCurrentBeet";
+import { useCurrentBed } from "../hooks/useCurrentBed";
 import SensorCard from "../components/sensors/SensorCard";
 import { PlantSensorConfig } from "../models/plant";
 import { SensorType } from "../models/sensor";
 import ControllerCard from "../components/controllers/ControllerCard";
 import { IconBinoculars, IconEngine } from "@tabler/icons-react";
+import { useParams } from "react-router";
 
-export default function Beet() {
+export default function BedPage() {
+  const bedId = useParams().bedId as string;
   const {
     isFetched,
     currentPlant: { value: plant, set: setPlant },
     sensors,
     controllers,
-  } = useCurrentBeet("123");
-
-  if (!isFetched) {
-    return <div>Loading...</div>;
-    //TODO: make a loading spinner or skeleton
-  }
+  } = useCurrentBed(bedId);
 
   const getSensorConfig = (sensorType: SensorType) => {
     const defaultConfig: PlantSensorConfig = {
@@ -34,6 +31,11 @@ export default function Beet() {
     if (!sensorConfig) return defaultConfig;
     return sensorConfig;
   };
+
+  if (!isFetched) {
+    return <div>Loading...</div>;
+    //TODO: make a loading spinner or skeleton
+  }
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,5 +1,6 @@
 ﻿using SmartGarden.Actuators.Enums;
 using SmartGarden.Actuators.Models;
+using SmartGarden.Core.Enums;
 
 namespace SmartGarden.Actuators.Connectors.Dummies;
 

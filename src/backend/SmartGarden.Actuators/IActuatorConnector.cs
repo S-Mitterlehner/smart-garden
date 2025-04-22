@@ -8,7 +8,7 @@ public interface IActuatorConnector
     string Key { get; }
     string Name { get; }
     string Description { get; }
-    Task<IEnumerable<ActionDefinition>> GetActionsAsync();
     Task<ActuatorState> GetStateAsync();
+    Task<IEnumerable<ActionDefinition>> GetActionsAsync();
     Task ExecuteAsync(ActionExecution execution);
 }

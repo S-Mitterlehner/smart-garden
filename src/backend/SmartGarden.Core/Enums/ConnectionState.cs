@@ -1,4 +1,4 @@
-﻿namespace SmartGarden.Actuators.Enums;
+﻿namespace SmartGarden.Core.Enums;
 
 public enum ConnectionState
 {

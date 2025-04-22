@@ -6,9 +6,6 @@ public class SensorRef : BaseEntityWithOrder
 {
     public string Name { get; set; }
     public string Description { get; set; }
-    public double Min { get; set; }
-    public double Max { get; set; }
-    public string Unit { get; set; }
     public SensorType Type { get; set; }
     public string? ConnectorKey { get; set; }
 

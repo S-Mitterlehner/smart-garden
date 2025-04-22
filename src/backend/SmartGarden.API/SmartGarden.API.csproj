@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SmartGarden.Actuators\SmartGarden.Actuators.csproj" />
     <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
+    <ProjectReference Include="..\SmartGarden.Sensors\SmartGarden.Sensors.csproj" />
   </ItemGroup>
 
 </Project>

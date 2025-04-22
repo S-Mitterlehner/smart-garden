@@ -23,11 +23,9 @@ export default function useSensor(sensorId: string): SensorValue {
     },
   });
 
-  const currentValue = Math.round(Math.random() * (sensor?.maxValue ?? 100)); // TODO: get currentValue from socket
-
   return {
     isFetched,
     sensor: sensor ?? ({} as Sensor),
-    currentValue,
+    currentValue: sensor?.currentValue ?? sensor?.minValue ?? 0,
   };
 }

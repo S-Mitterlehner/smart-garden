@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Actuators", "Sm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Core", "SmartGarden.Core\SmartGarden.Core.csproj", "{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Sensors", "SmartGarden.Sensors\SmartGarden.Sensors.csproj", "{FD082041-FF5C-4288-9411-60A5E3C6BF86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD082041-FF5C-4288-9411-60A5E3C6BF86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD082041-FF5C-4288-9411-60A5E3C6BF86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD082041-FF5C-4288-9411-60A5E3C6BF86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD082041-FF5C-4288-9411-60A5E3C6BF86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

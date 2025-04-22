@@ -3,6 +3,7 @@ using SmartGarden.Actuators;
 using SmartGarden.API.Services;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Seeder;
+using SmartGarden.Sensors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<ApplicationContext>(o =>
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
+builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 

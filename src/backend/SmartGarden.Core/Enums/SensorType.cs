@@ -3,6 +3,5 @@
 public enum SensorType
 {
     Temperature,
-    Humidity,
-    Light
+    Humidity
 }

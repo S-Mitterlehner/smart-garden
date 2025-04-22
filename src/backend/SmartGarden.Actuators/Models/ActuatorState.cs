@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using SmartGarden.Actuators.Enums;
-using ConnectionState = SmartGarden.Actuators.Enums.ConnectionState;
+using ConnectionState = SmartGarden.Core.Enums.ConnectionState;
 
 namespace SmartGarden.Actuators.Models;
 

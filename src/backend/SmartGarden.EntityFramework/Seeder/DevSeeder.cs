@@ -94,10 +94,11 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Id = new Guid("52ff96f1-71f4-433f-829c-db07394e1aba")
             , Name = "Temperature"
             , Description = "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations."
-            , Min = 0
-            , Max = 100
-            , Unit = "°C"
+            //, Min = 0
+            //, Max = 100
+            //, Unit = "°C"
             , Type = SensorType.Temperature
+            , ConnectorKey = "temp"
             , Order = 1
         });
 
@@ -106,10 +107,11 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
             , Name = "Humidity"
             , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
-            , Min = 0
-            , Max = 100
-            , Unit = "%"
+            //, Min = 0
+            //, Max = 100
+            //, Unit = "%"
             , Type = SensorType.Humidity
+            , ConnectorKey = "hum"
             , Order = 2
         });
 

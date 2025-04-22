@@ -1,4 +1,4 @@
-import { ControllerRef } from "./controller";
+import { ActuatorRef } from "./actuator";
 import { PlantRef } from "./plant";
 import { SensorRef } from "./sensor";
 
@@ -11,6 +11,5 @@ export type Bed = BedRef & {
   description: string;
   plant: PlantRef;
   sensors: SensorRef[];
-  controllers: ControllerRef[];
-  imageUrl: string;
+  actuators: ActuatorRef[];
 };

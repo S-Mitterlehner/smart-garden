@@ -4,7 +4,7 @@ import { useCurrentBed } from "../hooks/useCurrentBed";
 import SensorCard from "../components/sensors/SensorCard";
 import { PlantSensorConfig } from "../models/plant";
 import { SensorType } from "../models/sensor";
-import ControllerCard from "../components/controllers/ControllerCard";
+import ActuatorCard from "../components/actuators/ActuatorCard";
 import { IconBinoculars, IconEngine } from "@tabler/icons-react";
 import { useParams } from "react-router";
 
@@ -14,20 +14,21 @@ export default function BedPage() {
     isFetched,
     currentPlant: { value: plant, set: setPlant },
     sensors,
-    controllers,
+    actuators,
   } = useCurrentBed(bedId);
 
   const getSensorConfig = (sensorType: SensorType) => {
     const defaultConfig: PlantSensorConfig = {
-      type: sensorType,
+      sensorType: sensorType,
       rangeFrom: -1,
       rangeTo: -1,
     };
 
     // if (!plant) return defaultConfig;
     const sensorConfig = plant?.sensorConfigs?.find(
-      (config) => config.type === sensorType
+      (config) => config.sensorType === sensorType
     );
+
     if (!sensorConfig) return defaultConfig;
     return sensorConfig;
   };
@@ -64,11 +65,11 @@ export default function BedPage() {
 
       <div>
         <h2 className="flex flex-row gap-3 items-center">
-          <IconEngine className="w-8 h-8 text-emerald-400" /> Controllers
+          <IconEngine className="w-8 h-8 text-emerald-400" /> Actuators
         </h2>
         <div className="flex flex-row gap-4">
-          {controllers.map((controller) => (
-            <ControllerCard key={controller.id} controller={controller} />
+          {actuators.map((actuator) => (
+            <ActuatorCard key={actuator.id} actuator={actuator} />
           ))}
         </div>
       </div>

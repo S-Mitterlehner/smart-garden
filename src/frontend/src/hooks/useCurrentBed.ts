@@ -4,7 +4,7 @@ import usePlants from "./usePlants";
 import { Plant } from "../models/plant";
 import { useMemo } from "react";
 import { SensorRef } from "../models/sensor";
-import { ControllerRef } from "../models/controller";
+import { ActuatorRef } from "../models/actuator";
 import { API_URL } from "../environment";
 
 export type CurrentBed = {
@@ -15,7 +15,7 @@ export type CurrentBed = {
     set: (plant: Plant) => void;
   };
   sensors: SensorRef[];
-  controllers: ControllerRef[];
+  actuators: ActuatorRef[];
 };
 
 export function useCurrentBed(id: string) {
@@ -58,6 +58,6 @@ export function useCurrentBed(id: string) {
       set: setCurrentPlant,
     },
     sensors: bed?.sensors ?? [],
-    controllers: bed?.controllers ?? [],
+    actuators: bed?.actuators ?? [],
   } as CurrentBed;
 }

@@ -9,7 +9,7 @@ public class BedDto : BaseDto
     public string Description { get; set; }
     public PlantRefDto Plant { get; set; }
     public List<SensorRefDto> Sensors { get; set; }
-    public List<ControllerRefDto> Controllers { get; set; }
+    public List<ActuatorRefDto> Actuators { get; set; }
 
     public static Expression<Func<Bed, BedDto>> FromEntity =>
         b => new BedDto
@@ -18,7 +18,7 @@ public class BedDto : BaseDto
             , Name = b.Name
             , Description = b.Description
             , Sensors = b.Sensors.OrderBy(x => x.Order).Select(SensorRefDto.FromEntity.Compile()).ToList()
-            , Controllers = b.Controllers.OrderBy(x => x.Order).Select(ControllerRefDto.FromEntity.Compile()).ToList()
+            , Actuators = b.Actuators.OrderBy(x => x.Order).Select(ActuatorRefDto.FromEntity.Compile()).ToList()
             , Plant = b.Plant == null ? null : PlantRefDto.FromEntity.Compile().Invoke(b.Plant)
         };
 }

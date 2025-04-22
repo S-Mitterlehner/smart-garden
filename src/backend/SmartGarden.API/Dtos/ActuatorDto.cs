@@ -2,24 +2,33 @@
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Dtos;
-
-public class ControllerDto : BaseDto
+public class ActuatorRefDto : BaseDto
 {
     public string Name { get; set; }
-    public string Description { get; set; }
-    public IEnumerable<ControllerActionDto> Actions { get; set; } = new List<ControllerActionDto>();
 
-    public static Expression<Func<Controller, ControllerDto>> FromEntity =>
-        c => new ControllerDto
+    public static Expression<Func<Actuator, ActuatorRefDto>> FromEntity => s => new ActuatorRefDto
+    {
+        Id = s.Id,
+        Name = s.Name
+    };
+}
+
+public class ActuatorDto : ActuatorRefDto
+{
+    public string Description { get; set; }
+    public IEnumerable<ActuatorActionDto> Actions { get; set; } = new List<ActuatorActionDto>();
+
+    public static Expression<Func<Actuator, ActuatorDto>> FromEntity =>
+        c => new ActuatorDto
         {
             Id = c.Id,
             Name = c.Name,
             Description = c.Description,
-            Actions = c.Actions.AsQueryable().Select(ControllerActionDto.FromEntity).ToList()
+            Actions = c.Actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
         };
 }
 
-public class ControllerActionDto 
+public class ActuatorActionDto 
 {
     public string Key { get; set; }
     public string Name { get; set; }
@@ -27,7 +36,7 @@ public class ControllerActionDto
     public string Icon { get; set; }
     public bool IsAllowed { get; set; }
 
-    public static Expression<Func<ControllerAction, ControllerActionDto>> FromEntity => ca => new ControllerActionDto
+    public static Expression<Func<ActuatorAction, ActuatorActionDto>> FromEntity => ca => new ActuatorActionDto
     {
         Key = ca.Key,
         Name = ca.Name,

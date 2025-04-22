@@ -1,4 +1,4 @@
-import { ControllerState } from "../../models/controller";
+import { ActuatorState } from "../../models/actuator";
 import {
   IconPlugConnectedX,
   IconSettings,
@@ -7,40 +7,38 @@ import {
   IconWindOff,
 } from "@tabler/icons-react";
 
-export type ControllerStateProps = {
-  state: ControllerState;
+export type ActuatorStateProps = {
+  state: ActuatorState;
 };
 
-export default function ControllerStateIndicator({
-  state,
-}: ControllerStateProps) {
+export default function ActuatorStateIndicator({ state }: ActuatorStateProps) {
   const getStateTemplate = () => {
     switch (state) {
-      case ControllerState.NOT_CONNECTED:
+      case ActuatorState.NotConnected:
         return (
           <span className="text-gray-500">
             <IconPlugConnectedX className="w-24 h-24" />
           </span>
         );
-      case ControllerState.OPEN:
+      case ActuatorState.Open:
         return (
           <span className="text-green-500">
             <IconWind className="w-24 h-24" />
           </span>
         );
-      case ControllerState.CLOSED:
+      case ActuatorState.Closed:
         return (
           <span className="text-red-500">
             <IconWindOff className="w-24 h-24" />
           </span>
         );
-      case ControllerState.RUNNING:
+      case ActuatorState.Running:
         return (
           <span className="text-green-500">
             <IconSettings className="w-24 h-24 animate-spin-slow" />
           </span>
         );
-      case ControllerState.STOPPED:
+      case ActuatorState.Stopped:
         return (
           <span className="text-red-500">
             <IconSettingsPause className="w-24 h-24" />

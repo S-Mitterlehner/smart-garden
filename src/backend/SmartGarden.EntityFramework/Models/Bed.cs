@@ -13,5 +13,5 @@ public class Bed : BaseEntity
     public virtual Plant Plant { get; set; }
 
     public virtual List<Sensor> Sensors { get; set; } = new();
-    public virtual List<Controller> Controllers { get; set; } = new();
+    public virtual List<Actuator> Actuators { get; set; } = new();
 }

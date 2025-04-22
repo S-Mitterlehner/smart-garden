@@ -2,16 +2,16 @@
 
 namespace SmartGarden.EntityFramework.Models;
 
-public class Controller : BaseEntityWithOrder
+public class Actuator : BaseEntityWithOrder
 {
     public string Name { get; set; }
     public string Description { get; set; }
-    public virtual List<ControllerAction> Actions { get; set; } = new();
+    public virtual List<ActuatorAction> Actions { get; set; } = new();
 
     // TODO: Add Properties to connect actual Controller to app
 }
 
-public class ControllerAction : BaseEntityWithOrder
+public class ActuatorAction : BaseEntityWithOrder
 {
     public string Key { get; set; }
     public string Name { get; set; }

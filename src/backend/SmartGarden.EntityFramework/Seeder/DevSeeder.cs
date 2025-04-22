@@ -48,7 +48,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , ImageUrl = "/plants/potato.svg"
         });
 
-        var c1A1 = await CreateOrUpdateAsync(new ControllerAction
+        var c1A1 = await CreateOrUpdateAsync(new ActuatorAction
         {
             Id = new Guid("7645d82c-a1e0-4ee5-bccb-147567f3bcc5")
             , Key = "pump.start"
@@ -57,7 +57,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Icon = ActionIcons.Play
             , Order = 1
         });
-        var c1A2 = await CreateOrUpdateAsync(new ControllerAction
+        var c1A2 = await CreateOrUpdateAsync(new ActuatorAction
         {
             Id = new Guid("1f6ab070-be54-41ac-b6e8-1ee29df456a4")
             , Key = "pump.stop"
@@ -67,7 +67,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Order = 2
         });
 
-        var c = await CreateOrUpdateAsync(new Controller
+        var c = await CreateOrUpdateAsync(new Actuator
         {
             Id = new Guid("f3948dbb-4c99-4173-86d6-3e24834639df"),
             Name = "Water Pump",
@@ -109,7 +109,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , PlantId = p.Id
         };
 
-        bed.Controllers.AddRange(c);
+        bed.Actuators.AddRange(c);
         bed.Sensors.AddRange(s1, s2);
         await CreateOrUpdateAsync(bed);
 

@@ -1,18 +1,18 @@
 import { Tooltip } from "@mantine/core";
-import { ActionIcon, ControllerAction } from "../../models/controller";
+import { ActionIcon, ActuatorAction } from "../../models/actuator";
 import { IconPlayerPlay, IconPlayerStop } from "@tabler/icons-react";
 
-export type ControllerActionsProps = {
+export type ActuatorActionsProps = {
   isConnected: boolean;
-  actions: ControllerAction[];
-  onActionClick: (action: ControllerAction) => void;
+  actions: ActuatorAction[];
+  onActionClick: (action: ActuatorAction) => void;
 };
 
-export default function ControllerActions({
+export default function ActuatorActions({
   isConnected,
   actions,
   onActionClick,
-}: ControllerActionsProps) {
+}: ActuatorActionsProps) {
   const getIcon = (icon: ActionIcon) => {
     switch (icon) {
       case ActionIcon.play:

@@ -3,20 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos;
 using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Controllers;
 
-public class ControllersController(ApplicationContext db) : BaseController
+public class ActuatorsController(ApplicationContext db) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() =>
-        Ok(await db.Get<EntityFramework.Models.Controller>().Select(ControllerDto.FromEntity).ToListAsync());
+        Ok(await db.Get<Actuator>().Select(ActuatorDto.FromEntity).ToListAsync());
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var controller = await db.Get<EntityFramework.Models.Controller>().FirstOrDefaultAsync(x => x.Id == id);
+        var controller = await db.Get<Actuator>().FirstOrDefaultAsync(x => x.Id == id);
         if (controller == null) return NotFound();
-        return Ok(ControllerDto.FromEntity.Invoke(controller));
+        return Ok(ActuatorDto.FromEntity.Invoke(controller));
     }
 }

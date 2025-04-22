@@ -15,7 +15,7 @@ export default function Gauge({
 }: GaugeProps) {
   if (rangeFrom > -1 && rangeTo > -1) {
     return (
-      <svg width="200" height="120" viewBox="0 0 200 120">
+      <svg width="200" height="170" viewBox="0 0 200 170">
         <path
           d={describeArc({
             min,
@@ -24,7 +24,7 @@ export default function Gauge({
             rangeTo: rangeFrom,
           })}
           stroke="red"
-          stroke-width="20"
+          strokeWidth="20"
           fill="none"
         />
 
@@ -36,7 +36,7 @@ export default function Gauge({
             rangeTo: rangeTo,
           })}
           stroke="green"
-          stroke-width="20"
+          strokeWidth="20"
           fill="none"
         />
 
@@ -48,13 +48,13 @@ export default function Gauge({
             rangeTo: max,
           })}
           stroke="red"
-          stroke-width="20"
+          strokeWidth="20"
           fill="none"
         />
         <path
           d={describeNeedle({ min, max, value })}
           stroke="black"
-          stroke-width="5"
+          strokeWidth="5"
           fill="none"
         />
       </svg>
@@ -63,7 +63,7 @@ export default function Gauge({
 
   return (
     <div className="">
-      <svg width="200" height="120" viewBox="0 0 200 120">
+      <svg width="200" height="170" viewBox="0 0 200 170">
         <path
           d={describeArc({
             min,
@@ -72,14 +72,14 @@ export default function Gauge({
             rangeTo: max,
           })}
           stroke="#ddd"
-          stroke-width="20"
+          strokeWidth="20"
           fill="none"
         />
 
         <path
           d={describeNeedle({ min, max, value })}
           stroke="black"
-          stroke-width="5"
+          strokeWidth="5"
           fill="none"
         />
       </svg>
@@ -119,7 +119,7 @@ export function describeArc({
   radius = 80,
   centerX = 100,
   centerY = 100,
-  totalAngle = 180,
+  totalAngle = 270,
 }: ArcInput): string {
   const range = max - min;
 
@@ -145,7 +145,7 @@ export function describeNeedle({
   radius = 80, // slightly shorter than arc radius
   centerX = 100,
   centerY = 100,
-  totalAngle = 180,
+  totalAngle = 270,
 }: {
   min: number;
   max: number;

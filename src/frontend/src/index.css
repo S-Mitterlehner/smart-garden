@@ -5,6 +5,8 @@
   --breakpoint-desktop: 1280px;
   --breakpoint-tablet: 768px;
   --breakpoint-phone: 480px;
+
+  --animate-spin-slow: spin 3s linear infinite;
 }
 
 #root {
@@ -12,5 +14,5 @@
 }
 
 h2 {
-  @apply text-2xl font-bold text-gray-800 pb-4 pt-6;
+  @apply text-2xl font-bold text-gray-800 pb-4 pt-6 phone:pb-6 phone:border-t phone:border-gray-300 phone:mt-8;
 }

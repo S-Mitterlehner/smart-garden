@@ -5,6 +5,7 @@ import SensorCard from "../components/sensors/SensorCard";
 import { PlantSensorConfig } from "../models/plant";
 import { SensorType } from "../models/sensor";
 import ControllerCard from "../components/controllers/ControllerCard";
+import { IconBinoculars, IconEngine } from "@tabler/icons-react";
 
 export default function Beet() {
   const {
@@ -21,14 +22,14 @@ export default function Beet() {
 
   const getSensorConfig = (sensorType: SensorType) => {
     const defaultConfig: PlantSensorConfig = {
-      sensorType: sensorType,
+      type: sensorType,
       rangeFrom: -1,
       rangeTo: -1,
     };
 
     // if (!plant) return defaultConfig;
     const sensorConfig = plant?.sensorConfig?.find(
-      (config) => config.sensorType === sensorType
+      (config) => config.type === sensorType
     );
     if (!sensorConfig) return defaultConfig;
     return sensorConfig;
@@ -45,20 +46,24 @@ export default function Beet() {
       </div>
 
       <div>
-        <h2>Sensors</h2>
-        <div className="flex flex-row gap-4">
+        <h2 className="flex flex-row gap-3 items-center">
+          <IconBinoculars className="w-8 h-8 text-emerald-400" /> Sensors
+        </h2>
+        <div className="flex flex-row gap-4 flex-wrap">
           {sensors.map((sensor) => (
             <SensorCard
               key={sensor.id}
               sensor={sensor}
-              plantConfig={getSensorConfig(sensor.sensorType)}
+              plantConfig={getSensorConfig(sensor.type)}
             />
           ))}
         </div>
       </div>
 
       <div>
-        <h2>Controllers</h2>
+        <h2 className="flex flex-row gap-3 items-center">
+          <IconEngine className="w-8 h-8 text-emerald-400" /> Controllers
+        </h2>
         <div className="flex flex-row gap-4">
           {controllers.map((controller) => (
             <ControllerCard key={controller.id} controller={controller} />

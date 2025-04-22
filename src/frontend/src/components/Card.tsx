@@ -8,7 +8,7 @@ export default function Card({
   title: string;
 }) {
   return (
-    <Paper withBorder radius="md" p="xs" className="w-56">
+    <Paper withBorder radius="md" p="xs" className="w-full phone:w-56">
       <h3 className="text-lg text-gray-700 font-semibold pb-2">{title}</h3>
       <div>{children}</div>
     </Paper>

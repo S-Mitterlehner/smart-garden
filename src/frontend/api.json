@@ -7,12 +7,12 @@
       "imageUrl": "/plants/tomato.svg",
       "sensorConfig": [
         {
-          "sensorType": "TEMPERATURE",
+          "type": "TEMPERATURE",
           "rangeFrom": 15,
           "rangeTo": 30
         },
         {
-          "sensorType": "MOISTURE"
+          "type": "MOISTURE"
         }
       ]
     },
@@ -40,10 +40,12 @@
       },
       "sensors": [
         {
-          "id": "1"
+          "id": "1",
+          "type": "TEMPERATURE"
         },
         {
-          "id": "2"
+          "id": "2",
+          "type": "MOISTURE"
         }
       ],
       "controllers": [
@@ -63,7 +65,7 @@
       "maxValue": 100,
       "unit": "°C",
       "currentValue": 25,
-      "sensorType": "TEMPERATURE"
+      "type": "TEMPERATURE"
     },
     {
       "id": "2",
@@ -74,7 +76,7 @@
       "unit": "%",
       "minValue": 0,
       "maxValue": 100,
-      "sensorType": "MOISTURE"
+      "type": "MOISTURE"
     }
   ],
   "controllers": [
@@ -82,7 +84,23 @@
       "id": "1",
       "name": "Water Pump",
       "description": "Controls the water supply to the plants.",
-      "imageUrl": "/controllers/water-pump.svg"
+      "imageUrl": "/controllers/water-pump.svg",
+      "actions": [
+        {
+          "id": "pump.start",
+          "name": "Start",
+          "description": "Start the water pump.",
+          "icon": "play",
+          "isAllowed": true
+        },
+        {
+          "id": "pump.stop",
+          "name": "Stop",
+          "description": "Stop the water pump.",
+          "icon": "stop",
+          "isAllowed": true
+        }
+      ]
     },
     {
       "id": "2",

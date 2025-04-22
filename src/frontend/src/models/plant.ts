@@ -12,7 +12,7 @@ export type Plant = PlantRef & {
 };
 
 export type PlantSensorConfig = {
-  sensorType: SensorType;
+  type: SensorType;
   rangeFrom?: number;
   rangeTo?: number;
 };

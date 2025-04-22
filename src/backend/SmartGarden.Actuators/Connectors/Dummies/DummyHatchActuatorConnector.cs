@@ -11,19 +11,24 @@ public class DummyHatchActuatorConnector(string key) : IActuatorConnector
     public string Name => "Hatch";
     public string Description => "Hatch actuator for opening and closing hatches.";
 
-    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync() =>
-    [
-        new ActionDefinition
-        {
-            Name = "Open"
-            , ActionType = ActionType.Value
-            , Description = "Open the hatch to a certain value"
-            , Key = HatchActuatorConnectorActions.Open
-            , IsAllowed = true
-            , Min = 0
-            , Max = 30
-        }
-    ];
+    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
+    {
+        var state = await GetStateAsync();
+        return
+        [
+            new ActionDefinition
+            {
+                Name = "Open"
+                , ActionType = ActionType.Value
+                , Description = "Open the hatch to a certain value"
+                , Key = HatchActuatorConnectorActions.Open
+                , IsAllowed = true
+                , CurrentValue = ((ContinuousActuatorState)state).CurrentValue
+                , Min = ((ContinuousActuatorState)state).MinValue
+                , Max = ((ContinuousActuatorState)state).MaxValue
+            }
+        ];
+    }
 
     public async Task<ActuatorState> GetStateAsync() =>
         new ContinuousActuatorState

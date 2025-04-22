@@ -71,6 +71,20 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         {
             Id = new Guid("f3948dbb-4c99-4173-86d6-3e24834639df"),
             Name = "Water Pump",
+            Type = ActuatorType.Pump,
+            Order = 1,
+            ConnectorKey = "waterpump"
+            //Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
+            //Actions = [c1A1, c1A2]
+        });
+        
+        var c2 = await CreateOrUpdateAsync(new ActuatorRef
+        {
+            Id = new Guid("6060f089-42a3-4e7d-9ef6-2557866023a4"),
+            Name = "Hatch",
+            Type = ActuatorType.Hatch,
+            Order = 2,
+            ConnectorKey = "hatch"
             //Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
             //Actions = [c1A1, c1A2]
         });
@@ -109,7 +123,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , PlantId = p.Id
         };
 
-        bed.Actuators.AddRange(c);
+        bed.Actuators.AddRange(c, c2);
         bed.Sensors.AddRange(s1, s2);
         await CreateOrUpdateAsync(bed);
 

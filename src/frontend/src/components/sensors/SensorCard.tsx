@@ -1,7 +1,7 @@
 import { SensorRef } from "../../models/sensor";
 import { PlantSensorConfig } from "../../models/plant";
 import { IconPlugConnectedX } from "@tabler/icons-react";
-import Gauge from "./Gauge";
+import Gauge from "../Gauge";
 import Card from "../Card";
 import useSensor from "../../hooks/useSensor";
 
@@ -26,6 +26,8 @@ export default function SensorCard({
           value={currentValue}
           rangeFrom={rangeFrom}
           rangeTo={rangeTo}
+          unit={sensor.unit}
+          showValue={true}
         ></Gauge>
       );
     } else {
@@ -42,11 +44,8 @@ export default function SensorCard({
   return (
     <Card title={sensor.name}>
       <div className="flex flex-col items-center gap-2">
-        <div className="flex flex-col items-center">
+        <div className="min-h-44 flex justify-center items-center">
           {getGauge()}
-          <span className="text-2xl font-bold">
-            {currentValue} {sensor.unit}
-          </span>
         </div>
 
         <div className="grid grid-cols-2 text-xs w-full gap-4">

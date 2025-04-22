@@ -12,6 +12,7 @@ public class ActuatorActionDto
     public bool IsAllowed { get; set; }
     public string Icon { get; set; }
 
+    public double? CurrentValue { get; set; }
     public double? Min { get; set; }
     public double? Max { get; set; }
 
@@ -22,6 +23,7 @@ public class ActuatorActionDto
         Name = ca.Name,
         Description = ca.Description,
         Type = ca.ActionType.ToString(),
+        CurrentValue = ca.CurrentValue,
         Min = ca.Min,
         Max = ca.Max,
         IsAllowed = ca.IsAllowed

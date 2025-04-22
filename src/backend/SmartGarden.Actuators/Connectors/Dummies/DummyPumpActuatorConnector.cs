@@ -4,17 +4,6 @@ using SmartGarden.Core.Enums;
 
 namespace SmartGarden.Actuators.Connectors.Dummies;
 
-public static class PumpActuatorConnectorActions
-{
-    public const string Start = "pump.start";
-    public const string Stop = "pump.stop";
-}
-
-public static class PumpActuatorConnectorStates
-{
-    public const string Running = "RUNNING";
-    public const string Stopped = "STOPPED";
-}
 
 public class DummyPumpActuatorConnector(string key) : IActuatorConnector
 {

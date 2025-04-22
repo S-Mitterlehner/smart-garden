@@ -4,6 +4,7 @@ namespace SmartGarden.API.Dtos.Actuator;
 
 public class ActuatorStateDto
 {
+    public string ConnectionState { get; set; }
     public string Type { get; set; }
     public string? State { get; set; }
     public double? Value { get; set; }
@@ -13,18 +14,24 @@ public class ActuatorStateDto
 
     public static ActuatorStateDto FromState(ActuatorState state)
     {
-        if (state is DiscreteActuatorState ds)
-            return new ActuatorStateDto {State = ds.State, Type = ds.Type.ToString()};
-        if (state is ContinuousActuatorState cs)
-            return new ActuatorStateDto
+        return state switch
+        {
+            DiscreteActuatorState ds => new ActuatorStateDto
             {
-                Type = cs.Type.ToString(),
-                Value = cs.CurrentValue,
-                Min = cs.MinValue,
-                Max = cs.MaxValue,
-                Unit = cs.Unit
-            };
-
-        throw new ArgumentException("Invalid actuator state type", nameof(state));
+                ConnectionState = ds.ConnectionState.ToString().ToUpper()
+                , State = ds.State
+                , Type = ds.Type.ToString()
+            }
+            , ContinuousActuatorState cs => new ActuatorStateDto
+            {
+                ConnectionState = cs.ConnectionState.ToString().ToUpper()
+                , Type = cs.Type.ToString()
+                , Value = cs.CurrentValue
+                , Min = cs.MinValue
+                , Max = cs.MaxValue
+                , Unit = cs.Unit
+            }
+            , _ => throw new ArgumentException("Invalid actuator state type", nameof(state))
+        };
     }
 }

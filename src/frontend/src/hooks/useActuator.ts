@@ -1,18 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { Actuator, ActuatorAction, ActuatorState } from "../models/actuator";
-import { useState } from "react";
 import { API_URL } from "../environment";
+import { ConnectionState } from "../models/general";
+import { useState } from "react";
 
 export type ActuatorValue = {
   actuator: Actuator;
   state: ActuatorState;
-  startAction: (action: ActuatorAction) => void;
+  canDoAction: boolean;
+  startAction: (action: ActuatorAction, value?: number) => void;
 };
 
 export default function useActuator(actuatorId: string): ActuatorValue {
-  const [state, setState] = useState<ActuatorState>(ActuatorState.Stopped);
-
-  const { data: actuator } = useQuery<Actuator>({
+  const [loading, setLoading] = useState(false);
+  const {
+    data: actuator,
+    refetch,
+    isFetched,
+  } = useQuery<Actuator>({
     queryKey: ["actuator", actuatorId],
     enabled: !!actuatorId,
     refetchOnMount: "always",
@@ -27,13 +32,24 @@ export default function useActuator(actuatorId: string): ActuatorValue {
 
   return {
     actuator: actuator ?? ({} as Actuator),
-    state,
-    startAction: (action: ActuatorAction) => {
-      // Just a mock implementation
-      if (action.key === "pump.start") {
-        setState(ActuatorState.Running);
-      } else if (action.key === "pump.stop") {
-        setState(ActuatorState.Stopped);
+    state: actuator?.state ?? ({} as ActuatorState),
+    canDoAction:
+      isFetched &&
+      actuator?.state.connectionState === ConnectionState.Connected &&
+      !loading,
+    startAction: async (action: ActuatorAction, value?: number) => {
+      setLoading(true);
+      const r = await fetch(
+        `${API_URL}/actuators/${actuatorId}/action/${action.key}${
+          !!value ? `?value=${value}` : ""
+        }`,
+        {
+          method: "HEAD",
+        }
+      );
+      if (r.ok) {
+        refetch();
+        setLoading(false);
       }
     },
   };

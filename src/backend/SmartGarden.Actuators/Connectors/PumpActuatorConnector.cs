@@ -4,11 +4,20 @@ using SmartGarden.Core.Enums;
 
 namespace SmartGarden.Actuators.Connectors;
 
+public static class PumpActuatorConnectorActions
+{
+    public const string Start = "pump.start";
+    public const string Stop = "pump.stop";
+}
+
+public static class PumpActuatorConnectorStates
+{
+    public const string Running = "RUNNING";
+    public const string Stopped = "STOPPED";
+}
+
 public class PumpActuatorConnector(string key) : IActuatorConnector
 {
-    public const string STATE_RUNNING = "RUNNING";
-    public const string STATE_STOPPED = "STOPPED";
-
     public string Key => key;
     public string Name => "Water Pump";
     public string Description => "Water Pump for irrigation";
@@ -27,7 +36,7 @@ public class PumpActuatorConnector(string key) : IActuatorConnector
                 Description = "Start the water pump",
                 ActionType = ActionType.Command,
                 Key = "pump.start",
-                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == STATE_STOPPED,
+                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == PumpActuatorConnectorStates.Stopped,
                 Icon = ActionIcons.Play
             },
             new ActionDefinition
@@ -36,7 +45,7 @@ public class PumpActuatorConnector(string key) : IActuatorConnector
                 Description = "Stop the water pump",
                 ActionType = ActionType.Command,
                 Key = "pump.stop",
-                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == STATE_RUNNING,
+                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == PumpActuatorConnectorStates.Running,
                 Icon = ActionIcons.Stop
             }
         ];
@@ -50,7 +59,7 @@ public class PumpActuatorConnector(string key) : IActuatorConnector
         {
             ConnectionState = ConnectionState.Connected,
             ActuatorKey = Key,
-            State = STATE_STOPPED
+            State = PumpActuatorConnectorStates.Stopped
         };
     }
 

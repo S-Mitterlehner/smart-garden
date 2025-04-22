@@ -12,7 +12,7 @@ export enum ActionIcon {
 }
 
 export type ControllerAction = {
-  id: string;
+  key: string;
   name: string;
   description: string;
   icon: ActionIcon;
@@ -25,5 +25,6 @@ export type ControllerRef = {
 
 export type Controller = ControllerRef & {
   name: string;
+  description: string;
   actions: ControllerAction[];
 };

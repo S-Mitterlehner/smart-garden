@@ -25,7 +25,7 @@ export default function BedPage() {
     };
 
     // if (!plant) return defaultConfig;
-    const sensorConfig = plant?.sensorConfig?.find(
+    const sensorConfig = plant?.sensorConfigs?.find(
       (config) => config.type === sensorType
     );
     if (!sensorConfig) return defaultConfig;

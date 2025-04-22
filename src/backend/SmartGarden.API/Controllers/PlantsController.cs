@@ -1,3 +1,4 @@
+using LinqKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos;
@@ -14,4 +15,13 @@ public class PlantsController(ApplicationContext db) : BaseController
                  .Get<Plant>()
                  .Select(PlantDto.FromEntity)
                  .ToListAsync());
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetPlant(Guid id)
+    {
+        var plant = await db.Get<Plant>().FirstOrDefaultAsync(x => x.Id == id);        
+        if (plant is null)
+            return NotFound();
+        return Ok(PlantDto.FromEntity.Invoke(plant));
+    }
 }

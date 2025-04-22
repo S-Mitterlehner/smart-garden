@@ -8,7 +8,7 @@ export type Plant = PlantRef & {
   name: string;
   description: string;
   imageUrl: string;
-  sensorConfig: PlantSensorConfig[];
+  sensorConfigs: PlantSensorConfig[];
 };
 
 export type PlantSensorConfig = {

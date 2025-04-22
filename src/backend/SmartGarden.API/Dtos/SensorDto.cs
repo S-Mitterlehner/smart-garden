@@ -19,7 +19,7 @@ public class SensorDto : SensorRefDto
     public double MinValue { get; set; }
     public double MaxValue { get; set; }
     public string Unit { get; set; }
-    public SensorType Type { get; set; } // TODO: Export in OpenApi for Frontend
+    public string Type { get; set; } // TODO: Export in OpenApi for Frontend
 
     public static Expression<Func<Sensor, SensorDto>> FromEntity => s => new SensorDto
     {
@@ -29,6 +29,6 @@ public class SensorDto : SensorRefDto
         MinValue = s.Min,
         MaxValue = s.Max,
         Unit = s.Unit,
-        Type = s.Type,
+        Type = s.Type.ToString().ToUpper()
     };
 }

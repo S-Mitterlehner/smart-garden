@@ -24,6 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -36,6 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.UseAuthorization();
 

@@ -34,9 +34,9 @@ export default function useController(controllerId: string): ControllerValue {
     state,
     startAction: (action: ControllerAction) => {
       // Just a mock implementation
-      if (action.id === "pump.start") {
+      if (action.key === "pump.start") {
         setState(ControllerState.RUNNING);
-      } else if (action.id === "pump.stop") {
+      } else if (action.key === "pump.stop") {
         setState(ControllerState.STOPPED);
       }
     },

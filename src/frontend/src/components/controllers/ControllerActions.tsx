@@ -20,12 +20,12 @@ export default function ControllerActions({
       case ActionIcon.stop:
         return <IconPlayerStop className="w-4 h-4 text-red-700" />;
       default:
-        return null;
+        return <IconPlayerPlay className="w-4 h-4" />;
     }
   };
 
   const items = actions?.map((a) => (
-    <Tooltip label={a.description} key={a.id}>
+    <Tooltip label={a.description} key={a.key}>
       <button
         className="bg-gray-200 hover:bg-gray-300 disabled:hover:bg-gray-200 rounded-full p-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         onClick={() => onActionClick(a)}

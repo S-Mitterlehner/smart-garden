@@ -18,6 +18,8 @@ public class PlantDto : PlantRefDto
     public string Description { get; set; }
     public string ImageUrl { get; set; }
 
+    public IEnumerable<PlantSensorConfigDto> SensorConfigs { get; set; } = new List<PlantSensorConfigDto>();
+
     public static Expression<Func<Plant, PlantDto>> FromEntity =>
         p => new PlantDto
         {
@@ -25,5 +27,6 @@ public class PlantDto : PlantRefDto
             , Name = p.Name
             , ImageUrl = p.ImageUrl
             , Id = p.Id
+            , SensorConfigs = p.SensorConfigs.AsQueryable().Select(PlantSensorConfigDto.FromEntity).ToList()
         };
 }

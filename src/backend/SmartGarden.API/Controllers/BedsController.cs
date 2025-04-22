@@ -10,12 +10,12 @@ namespace SmartGarden.API.Controllers;
 
 public class BedsController(ApplicationContext db) : BaseController
 {
-    [HttpGet("id")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetBed(Guid id)
     {
-        var Bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == id);
-        if (Bed == null)
+        var bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == id);
+        if (bed == null)
             return NotFound();
-        return Ok(BedDto.FromEntity.Compile().Invoke(Bed));
+        return Ok(BedDto.FromEntity.Compile().Invoke(bed));
     }
 }

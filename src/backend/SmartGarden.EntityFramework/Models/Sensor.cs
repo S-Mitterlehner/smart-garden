@@ -2,7 +2,7 @@
 
 namespace SmartGarden.EntityFramework.Models;
 
-public class Sensor : BaseEntity
+public class Sensor : BaseEntityWithOrder
 {
     public string Name { get; set; }
     public string Description { get; set; }

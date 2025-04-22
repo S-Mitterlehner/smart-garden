@@ -1,6 +1,7 @@
 ﻿using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SmartGarden.EntityFramework.Interfaces;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.EntityFramework;
@@ -29,8 +30,11 @@ public class ApplicationContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Plant>();
+        modelBuilder.Entity<PlantSensorConfig>();
         modelBuilder.Entity<Sensor>();
         modelBuilder.Entity<Controller>();
+        modelBuilder.Entity<ControllerAction>();
+
         modelBuilder.Entity<Bed>()
                     .HasMany(x => x.Sensors)
                     .WithMany()
@@ -63,7 +67,13 @@ public class ApplicationContext : DbContext
         return entity;
     }
 
-    public IQueryable<TEntity> Get<TEntity>(bool includeDeleted = false) where TEntity : BaseEntity 
-        => Set<TEntity>().Where(x => includeDeleted || !x.IsDeleted)
-                         .AsExpandableEFCore();
+    public IQueryable<TEntity> Get<TEntity>(bool includeDeleted = false) where TEntity : BaseEntity
+    {
+        var query = Set<TEntity>().AsQueryable().Where(x => includeDeleted || !x.IsDeleted);
+
+        if (typeof(TEntity).IsAssignableFrom(typeof(IEntityWithOrder))) 
+            query = query.OrderBy(x => ((IEntityWithOrder)x).Order);
+
+        return query.AsExpandableEFCore();
+    }
 }

@@ -1,4 +1,4 @@
-﻿using SmartGarden.EntityFramework.Enums;
+﻿using SmartGarden.Core.Enums;
 
 namespace SmartGarden.EntityFramework.Models;
 

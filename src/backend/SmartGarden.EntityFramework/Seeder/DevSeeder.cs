@@ -1,4 +1,4 @@
-﻿using SmartGarden.EntityFramework.Enums;
+﻿using SmartGarden.Core.Enums;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.EntityFramework.Seeder;
@@ -48,34 +48,34 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , ImageUrl = "/plants/potato.svg"
         });
 
-        var c1A1 = await CreateOrUpdateAsync(new ActuatorAction
-        {
-            Id = new Guid("7645d82c-a1e0-4ee5-bccb-147567f3bcc5")
-            , Key = "pump.start"
-            , Name = "Start"
-            , Description = "Starts the water pump"
-            , Icon = ActionIcons.Play
-            , Order = 1
-        });
-        var c1A2 = await CreateOrUpdateAsync(new ActuatorAction
-        {
-            Id = new Guid("1f6ab070-be54-41ac-b6e8-1ee29df456a4")
-            , Key = "pump.stop"
-            , Name = "Stop"
-            , Description = "Stops the water pump"
-            , Icon = ActionIcons.Stop
-            , Order = 2
-        });
+        //var c1A1 = await CreateOrUpdateAsync(new ActuatorAction
+        //{
+        //    Id = new Guid("7645d82c-a1e0-4ee5-bccb-147567f3bcc5")
+        //    , Key = "pump.start"
+        //    , Name = "Start"
+        //    , Description = "Starts the water pump"
+        //    , Icon = ActionIcons.Play
+        //    , Order = 1
+        //});
+        //var c1A2 = await CreateOrUpdateAsync(new ActuatorAction
+        //{
+        //    Id = new Guid("1f6ab070-be54-41ac-b6e8-1ee29df456a4")
+        //    , Key = "pump.stop"
+        //    , Name = "Stop"
+        //    , Description = "Stops the water pump"
+        //    , Icon = ActionIcons.Stop
+        //    , Order = 2
+        //});
 
-        var c = await CreateOrUpdateAsync(new Actuator
+        var c = await CreateOrUpdateAsync(new ActuatorRef
         {
             Id = new Guid("f3948dbb-4c99-4173-86d6-3e24834639df"),
             Name = "Water Pump",
-            Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
-            Actions = [c1A1, c1A2]
+            //Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
+            //Actions = [c1A1, c1A2]
         });
 
-        var s1 = await CreateOrUpdateAsync(new Sensor
+        var s1 = await CreateOrUpdateAsync(new SensorRef
         {
             Id = new Guid("52ff96f1-71f4-433f-829c-db07394e1aba")
             , Name = "Temperature"
@@ -87,7 +87,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Order = 1
         });
 
-        var s2 = await CreateOrUpdateAsync(new Sensor
+        var s2 = await CreateOrUpdateAsync(new SensorRef
         {
             Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
             , Name = "Humidity"

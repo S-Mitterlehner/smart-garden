@@ -1,12 +1,15 @@
-﻿using SmartGarden.EntityFramework.Enums;
+﻿using SmartGarden.Core.Enums;
 
 namespace SmartGarden.EntityFramework.Models;
 
-public class Actuator : BaseEntityWithOrder
+public class ActuatorRef : BaseEntityWithOrder
 {
     public string Name { get; set; }
-    public string Description { get; set; }
-    public virtual List<ActuatorAction> Actions { get; set; } = new();
+    public ActuatorType Type { get; set; }
+    public string? ConnectorKey { get; set; }
+
+    //public string Description { get; set; }
+    //public virtual List<ActuatorAction> Actions { get; set; } = new();
 
     // TODO: Add Properties to connect actual Controller to app
 }

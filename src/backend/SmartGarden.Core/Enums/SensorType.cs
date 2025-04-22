@@ -1,4 +1,4 @@
-﻿namespace SmartGarden.EntityFramework.Enums;
+﻿namespace SmartGarden.Core.Enums;
 
 public enum SensorType
 {

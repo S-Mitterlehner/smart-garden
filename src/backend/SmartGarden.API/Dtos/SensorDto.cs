@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using SmartGarden.EntityFramework.Enums;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Dtos;
@@ -8,7 +7,7 @@ public class SensorRefDto : BaseDto
 {
     public string Type { get; set; } 
     public string Name { get; set; }
-    public static Expression<Func<Sensor, SensorRefDto>> FromEntity => s => new SensorRefDto
+    public static Expression<Func<SensorRef, SensorRefDto>> FromEntity => s => new SensorRefDto
     {
         Id = s.Id,
         Name = s.Name,
@@ -23,7 +22,7 @@ public class SensorDto : SensorRefDto
     public double MaxValue { get; set; }
     public string Unit { get; set; }
 
-    public static Expression<Func<Sensor, SensorDto>> FromEntity => s => new SensorDto
+    public static Expression<Func<SensorRef, SensorDto>> FromEntity => s => new SensorDto
     {
         Id = s.Id,
         Name = s.Name,

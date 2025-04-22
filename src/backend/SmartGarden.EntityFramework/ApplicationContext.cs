@@ -31,16 +31,16 @@ public class ApplicationContext : DbContext
     {
         modelBuilder.Entity<Plant>();
         modelBuilder.Entity<PlantSensorConfig>();
-        modelBuilder.Entity<Sensor>();
-        modelBuilder.Entity<Actuator>();
-        modelBuilder.Entity<ActuatorAction>();
+        modelBuilder.Entity<SensorRef>();
+        modelBuilder.Entity<ActuatorRef>();
+        //modelBuilder.Entity<ActuatorAction>();
 
         modelBuilder.Entity<Bed>()
                     .HasMany(x => x.Sensors)
                     .WithMany()
                     .UsingEntity<Dictionary<string, object>>(
                         "BedSensor",
-                        x => x.HasOne<Sensor>().WithMany().HasForeignKey("SensorId"),
+                        x => x.HasOne<SensorRef>().WithMany().HasForeignKey("SensorId"),
                         x => x.HasOne<Bed>().WithMany().HasForeignKey("BedId"),
                         x =>
                         {
@@ -51,7 +51,7 @@ public class ApplicationContext : DbContext
                     .WithMany()
                     .UsingEntity<Dictionary<string, object>>(
                         "BedActuator",
-                        x => x.HasOne<Actuator>().WithMany().HasForeignKey("ActuatorId"),
+                        x => x.HasOne<ActuatorRef>().WithMany().HasForeignKey("ActuatorId"),
                         x => x.HasOne<Bed>().WithMany().HasForeignKey("BedId"),
                         x =>
                         {

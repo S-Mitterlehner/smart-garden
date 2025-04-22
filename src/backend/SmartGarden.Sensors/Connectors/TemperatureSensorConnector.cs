@@ -18,4 +18,6 @@ public class TemperatureSensorConnector(string key) : ISensorConnector
             , SensorKey = key
             , Unit = "°C"
         };
+    
+    public static TemperatureSensorConnector Create(string key, IServiceProvider sp) => new(key);
 }

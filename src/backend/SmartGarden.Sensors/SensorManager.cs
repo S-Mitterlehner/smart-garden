@@ -4,7 +4,7 @@ using SmartGarden.Sensors.Connectors;
 
 namespace SmartGarden.Sensors
 {
-    public class SensorManager : ISensorManager
+    public class SensorManager(IServiceProvider sp) : ISensorManager
     {
         private readonly BlockingCollection<ISensorConnector> _connectors = new();
 
@@ -24,8 +24,8 @@ namespace SmartGarden.Sensors
         protected ISensorConnector CreateConnector(string key, SensorType type)
             => type switch
             {
-                SensorType.Temperature => new TemperatureSensorConnector(key),         
-                SensorType.Humidity=> new HumiditySensorConnector(key),
+                SensorType.Temperature => TemperatureSensorConnector.Create(key, sp),         
+                SensorType.Humidity=> HumiditySensorConnector.Create(key, sp),
                 // TODO add more
                 _ => throw new SensorTypeNotFoundException(type)
             };

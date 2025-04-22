@@ -54,4 +54,6 @@ public class DummyHatchActuatorConnector(string key) : IActuatorConnector
 
         return Task.CompletedTask;
     }
+    
+    public static DummyHatchActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

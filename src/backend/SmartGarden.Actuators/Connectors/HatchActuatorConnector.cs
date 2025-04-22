@@ -45,4 +45,6 @@ public class HatchActuatorConnector(string key) : IActuatorConnector
         // TODO: Call actual actuator
         return Task.CompletedTask;
     }
+
+    public static HatchActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

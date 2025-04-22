@@ -68,4 +68,6 @@ public class PumpActuatorConnector(string key) : IActuatorConnector
         // TODO: Call actual actuator
         return Task.CompletedTask;
     }
+    
+    public static PumpActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

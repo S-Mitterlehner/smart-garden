@@ -5,7 +5,7 @@ using SmartGarden.Core.Enums;
 
 namespace SmartGarden.Actuators;
 
-public class ActuatorManager : IActuatorManager
+public class ActuatorManager(IServiceProvider sp) : IActuatorManager
 {
     private readonly BlockingCollection<IActuatorConnector> _connectors = new();
 
@@ -25,8 +25,8 @@ public class ActuatorManager : IActuatorManager
         => type switch
         {
             // TODO: activate real connectors
-            ActuatorType.Pump => new DummyPumpActuatorConnector(key), // new PumpActuatorConnector(key),
-            ActuatorType.Hatch => new DummyHatchActuatorConnector(key), // new HatchActuatorConnector(key),
+            ActuatorType.Pump => DummyPumpActuatorConnector.Create(key, sp), // PumpActuatorConnector.Create(key, sp)
+            ActuatorType.Hatch => DummyHatchActuatorConnector.Create(key, sp), // HatchActuatorConnector.Create(key, sp)
             // TODO add more
             _ => throw new ActuatorTypeNotFoundException(type)
         };

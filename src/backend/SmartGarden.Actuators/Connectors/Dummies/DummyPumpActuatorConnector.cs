@@ -63,4 +63,6 @@ public class DummyPumpActuatorConnector(string key) : IActuatorConnector
             _ => throw new ArgumentException($"Unknown action key: {c.Key}")
         };
     }
+    
+    public static DummyPumpActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

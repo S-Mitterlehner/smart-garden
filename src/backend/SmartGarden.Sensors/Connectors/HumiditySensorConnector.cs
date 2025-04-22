@@ -18,4 +18,6 @@ public class HumiditySensorConnector(string key) : ISensorConnector
             , SensorKey = key
             , Unit = "%"
         };
+
+    public static HumiditySensorConnector Create(string key, IServiceProvider sp) => new(key);
 }

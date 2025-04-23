@@ -21,10 +21,13 @@ builder.Services.AddDbContext<ApplicationContext>(o =>
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
-builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
 builder.Services.AddMqttClient();
+
+// BackgroundServices 
+builder.Services.AddHostedService<DbInitializer>();
+builder.Services.AddHostedService<SensorInitializer>();
 
 if (builder.Environment.IsDevelopment()) 
     builder.Services.AddHostedService<DummyRegistrationService>();

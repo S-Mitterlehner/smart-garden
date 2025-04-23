@@ -4,7 +4,9 @@ using System.Text.Json;
 using MQTTnet;
 using MQTTnet.Protocol;
 using SmartGarden.Core.Enums;
+using SmartGarden.Mqtt;
 using SmartGarden.Sensors.Models;
+
 
 namespace SmartGarden.Sensors.Connectors;
 
@@ -12,9 +14,6 @@ public abstract class BaseSensorConnector(string key, ISensorListener listener, 
     : ISensorConnector
 {
     private SensorData _lastData = null!;
-    
-    protected abstract SensorData InitialData { get; }
-
 
     public string Key { get; } = key;
     public abstract SensorType Type { get; }
@@ -22,18 +21,17 @@ public abstract class BaseSensorConnector(string key, ISensorListener listener, 
     public abstract string Name { get; }
     public abstract string Description { get; }
 
+    protected abstract SensorData InitialData { get; }
+
     protected async Task OnMqttClientOnApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
     {
         try
         {
-            var data = ReadOnlySequenceToString(e.ApplicationMessage.Payload);
-            var parsed = JsonSerializer.Deserialize<MqttSensorData>(data);
+            var data = e.Parse<MqttSensorData>();
 
             if (e.ApplicationMessage.Topic != Topic) return; // Ignore messages not for this topic
 
-            Console.WriteLine($"Topic received {Topic}: {Type} - {data} {parsed.CurrentValue}");
-
-            _lastData = SensorData.FromMqtt(parsed, Type);
+            _lastData = SensorData.FromMqtt(data, Type);
             await listener.PublishMeasurementAsync(_lastData);
         }
         catch (Exception ex)
@@ -51,16 +49,4 @@ public abstract class BaseSensorConnector(string key, ISensorListener listener, 
     }
 
     public Task<SensorData> GetDataAsync() => Task.FromResult(_lastData);
-
-    public static string ReadOnlySequenceToString(ReadOnlySequence<byte> sequence)
-    {
-        if (sequence.IsSingleSegment)
-        {
-            return Encoding.UTF8.GetString(sequence.First.Span);
-        }
-
-        // If the sequence has multiple segments
-        byte[] buffer = sequence.ToArray();
-        return Encoding.UTF8.GetString(buffer);
-    }
 }

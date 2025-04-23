@@ -31,9 +31,6 @@ export default function useSensor(sensorId: string): SensorValue {
     },
   });
 
-  // const connectorKey = useMemo(() => sensor?.key, [sensor]);
-  // const sensorType = useMemo(() => sensor?.type, [sensor]);
-
   useEffect(() => {
     if (sensor?.key === null || sensor?.type === null) return;
 

@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartGarden.Core\SmartGarden.Core.csproj" />
+    <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
+    <ProjectReference Include="..\SmartGarden.Mqtt\SmartGarden.Mqtt.csproj" />
   </ItemGroup>
 
   <ItemGroup>

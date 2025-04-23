@@ -14,7 +14,7 @@ namespace SmartGarden.Sensors
     {
         public const string RegisterTopic = "smart-garden/register/sensor";
 
-        private readonly BlockingCollection<ISensorConnector> _connectors = new();
+        private readonly ConcurrentDictionary<string, ISensorConnector> _connectors = new();
 
         public async Task<ISensorConnector> GetConnectorAsync(string key, SensorType type) 
             => GetConnectorFromList(key, type) ?? await CreateConnectorAsync(key, type);
@@ -50,14 +50,14 @@ namespace SmartGarden.Sensors
         }
 
         private ISensorConnector? GetConnectorFromList(string key, SensorType type) 
-            => _connectors.FirstOrDefault(x => x.Key == key && x.Type == type) ;
+            => _connectors.GetValueOrDefault(GetDictKey(key, type));
 
         private async Task<ISensorConnector> CreateConnectorAsync(string key, SensorType type)
         {
             var connector = CreateConnectorInstance(key, type);
 
             await connector.InitializeAsync();
-            _connectors.Add(connector);
+            _connectors.TryAdd(GetDictKey(key, type), connector);
 
             return connector;
         }
@@ -70,5 +70,7 @@ namespace SmartGarden.Sensors
                 // TODO add more
                 _ => throw new SensorTypeNotFoundException(type)
             };
+
+        private string GetDictKey(string key, SensorType type) => $"{key}-{type}";
     }
 }

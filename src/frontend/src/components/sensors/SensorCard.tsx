@@ -13,7 +13,7 @@ export default function SensorCard({
   sensor: SensorRef;
   plantConfig: PlantSensorConfig;
 }) {
-  const { sensor, currentValue, isFetched, connectionState } = useSensor(
+  const { sensor, currentState, isFetched, connectionState } = useSensor(
     sensorRef.id
   );
 
@@ -24,12 +24,12 @@ export default function SensorCard({
     if (connectionState === ConnectionState.Connected && isFetched) {
       return (
         <Gauge
-          min={sensor.minValue}
-          max={sensor.maxValue}
-          value={currentValue!}
+          min={currentState.min}
+          max={currentState.max}
+          value={currentState.currentValue!}
           rangeFrom={rangeFrom}
           rangeTo={rangeTo}
-          unit={sensor.unit}
+          unit={currentState.unit}
           showValue={true}
         ></Gauge>
       );

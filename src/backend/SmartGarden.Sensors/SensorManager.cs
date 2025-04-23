@@ -11,7 +11,7 @@ namespace SmartGarden.Sensors
 
         public ISensorConnector GetConnector(string key, SensorType type)
         { 
-            var connector = _connectors.FirstOrDefault(x => x.Key == key);
+            var connector = _connectors.FirstOrDefault(x => x.Key == key && x.Type == type);
             if(connector == null)
             {
                 connector = CreateConnector(key, type);

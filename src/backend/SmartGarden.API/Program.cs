@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using MQTTnet;
 using SmartGarden.Actuators;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Seeder;
+using SmartGarden.Mqtt;
 using SmartGarden.Sensors;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,11 +24,14 @@ builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
 builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
+builder.Services.AddMqttClient();
+
 if (builder.Environment.IsDevelopment()) 
     builder.Services.AddHostedService<DummyRegistrationService>();
 
 // Options
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("Database"));
+builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 
 // -----
 builder.Services.AddControllers();

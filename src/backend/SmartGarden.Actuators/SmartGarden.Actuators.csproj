@@ -10,4 +10,8 @@
     <ProjectReference Include="..\SmartGarden.Core\SmartGarden.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
+  </ItemGroup>
+
 </Project>

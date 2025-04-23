@@ -11,8 +11,8 @@ public class DummyRegistrationService(ISensorManager sensorManager) : Background
 {
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        sensorManager.GetConnector("temp", SensorType.Temperature);
-        sensorManager.GetConnector("hum", SensorType.Humidity);
+        sensorManager.GetConnector("temp-1234", SensorType.Temperature);
+        sensorManager.GetConnector("temp-1234", SensorType.Humidity);
         return Task.CompletedTask;
     }
 }

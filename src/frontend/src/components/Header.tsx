@@ -12,7 +12,7 @@ export default function Header() {
           <span className="phone:inline hidden">arden</span>
         </Link>
         <div className="flex flex-row items-center gap-8">
-          <Link to="/bed/123">Test Bed</Link>
+          <Link to="/bed/a3c51a2a-0b07-442f-af31-3b7d88dda10d">Test Bed</Link>
           <span>Menu</span>
         </div>
       </div>

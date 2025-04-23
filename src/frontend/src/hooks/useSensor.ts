@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Sensor, SensorData } from "../models/sensor";
+import { Sensor, SensorData, SensorType } from "../models/sensor";
 import { API_URL } from "../environment";
 import { useEffect, useMemo, useState } from "react";
 import * as signalR from "@microsoft/signalr";
@@ -8,7 +8,7 @@ import { ConnectionState } from "../models/general";
 export type SensorValue = {
   isFetched: boolean;
   sensor: Sensor;
-  currentValue: number | null;
+  currentState: SensorData;
   connectionState: ConnectionState;
 };
 
@@ -31,10 +31,11 @@ export default function useSensor(sensorId: string): SensorValue {
     },
   });
 
-  const connectorKey = useMemo(() => sensor?.key, [sensor]);
+  // const connectorKey = useMemo(() => sensor?.key, [sensor]);
+  // const sensorType = useMemo(() => sensor?.type, [sensor]);
 
   useEffect(() => {
-    if (connectorKey === null) return;
+    if (sensor?.key === null || sensor?.type === null) return;
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${API_URL}/sockets/sensor`)
@@ -49,11 +50,16 @@ export default function useSensor(sensorId: string): SensorValue {
       setConnectionState(ConnectionState.Connected)
     );
 
-    connection.on("Sensor_Measurement", (key: string, data: SensorData) => {
-      if (key === connectorKey) {
-        setCurrentState(data);
+    connection.on(
+      "Sensor_Measurement",
+      (key: string, type: SensorType, data: SensorData) => {
+        console.log("Sensor_Measurement", key, sensor?.key, type, sensor?.type);
+
+        if (key === sensor?.key && type === sensor.type) {
+          setCurrentState(data);
+        }
       }
-    });
+    );
 
     connection
       .start()
@@ -70,7 +76,7 @@ export default function useSensor(sensorId: string): SensorValue {
       connection.stop();
       setConnectionState(ConnectionState.NotConnected);
     };
-  }, [connectorKey]);
+  }, [sensor?.key, sensor?.type]);
 
   // Sync initial data
   useEffect(() => {
@@ -89,7 +95,7 @@ export default function useSensor(sensorId: string): SensorValue {
   return {
     isFetched,
     sensor: sensor ?? ({} as Sensor),
-    currentValue: currentState?.currentValue ?? 0,
+    currentState: currentState ?? ({} as SensorData),
     connectionState,
   };
 }

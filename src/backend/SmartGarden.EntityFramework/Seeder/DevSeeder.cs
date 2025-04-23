@@ -98,7 +98,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             //, Max = 100
             //, Unit = "°C"
             , Type = SensorType.Temperature
-            , ConnectorKey = "temp"
+            , ConnectorKey = "smart-garden/temp-1234"
             , Order = 1
         });
 
@@ -111,7 +111,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             //, Max = 100
             //, Unit = "%"
             , Type = SensorType.Humidity
-            , ConnectorKey = "hum"
+            , ConnectorKey = "smart-garden/temp-1234"
             , Order = 2
         });
 

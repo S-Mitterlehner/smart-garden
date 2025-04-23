@@ -13,7 +13,7 @@ public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<Signa
 
     public async Task PublishMeasurementAsync(SensorData data)
     {
-        logger.LogDebug("MeasurementMade: {data}", data);
+        logger.LogDebug("MeasurementPublished: {data}", data);
         var dto = new SensorDataDto
         {
             Unit = data.Unit
@@ -21,9 +21,10 @@ public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<Signa
             , Min = data.Min
             , Max = data.Max
             , SensorKey = data.SensorKey
+            , SensorType = data.SensorType.ToUpper()
             , ConnectionState = data.ConnectionState.ToString().ToUpper()
         };
-
-        await context.Clients.All.SendAsync(MEASUREMENT_MADE, data.SensorKey, dto);
+        
+        await context.Clients.All.SendAsync(MEASUREMENT_MADE, data.SensorKey, data.SensorType.ToUpper(), dto);
     }
 }

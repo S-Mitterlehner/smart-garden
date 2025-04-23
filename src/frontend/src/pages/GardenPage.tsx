@@ -6,7 +6,7 @@ export default function GardenPage() {
       <p>Here comes the garden overview</p>
       <Link
         className="bg-emerald-400 hover:bg-emerald-500 rounded-md px-4 py-2 inline-block"
-        to="/bed/123"
+        to="/bed/a3c51a2a-0b07-442f-af31-3b7d88dda10d"
       >
         to Test Bed
       </Link>

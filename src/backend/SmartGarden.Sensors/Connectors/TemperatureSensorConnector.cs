@@ -20,7 +20,7 @@ public class TemperatureSensorConnector(string key, ISensorListener listener, IM
     };
 
     public override SensorType Type => SensorType.Temperature;
-    public override string Topic => $"smart-garden/{Key}/temperature";
+    public override string Topic => $"{Key}/temperature";
     public override string Name => "Temperature";
     public override string Description => "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations.";
 }

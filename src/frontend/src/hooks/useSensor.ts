@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Sensor, SensorData, SensorType } from "../models/sensor";
 import { API_URL } from "../environment";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { ConnectionState } from "../models/general";
 
@@ -13,7 +13,7 @@ export type SensorValue = {
 };
 
 export default function useSensor(sensorId: string): SensorValue {
-  const [currentState, setCurrentState] = useState<SensorData | null>();
+  const [currentState, setCurrentState] = useState<SensorData | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(
     ConnectionState.NotConnected
   );
@@ -53,9 +53,8 @@ export default function useSensor(sensorId: string): SensorValue {
     connection.on(
       "Sensor_Measurement",
       (key: string, type: SensorType, data: SensorData) => {
-        console.log("Sensor_Measurement", key, sensor?.key, type, sensor?.type);
-
         if (key === sensor?.key && type === sensor.type) {
+          data.lastUpdate = new Date(data.lastUpdate);
           setCurrentState(data);
         }
       }
@@ -64,7 +63,7 @@ export default function useSensor(sensorId: string): SensorValue {
     connection
       .start()
       .then(() => {
-        console.log("started");
+        console.log("ws started");
         setConnectionState(ConnectionState.Connected);
       })
       .catch(() => {
@@ -72,8 +71,8 @@ export default function useSensor(sensorId: string): SensorValue {
       });
 
     return () => {
-      console.log("stop");
       connection.stop();
+      console.log("ws stopped");
       setConnectionState(ConnectionState.NotConnected);
     };
   }, [sensor?.key, sensor?.type]);
@@ -88,6 +87,7 @@ export default function useSensor(sensorId: string): SensorValue {
         min: sensor.minValue,
         max: sensor.maxValue,
         unit: sensor.unit,
+        lastUpdate: new Date(),
       });
     }
   }, [sensor]);

@@ -12,4 +12,6 @@ public interface ISensorConnector
     string Description { get; }
 
     Task<SensorData> GetDataAsync();
+
+    Task InitializeAsync();
 }

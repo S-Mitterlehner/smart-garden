@@ -28,4 +28,5 @@ export type SensorData = {
   min: number;
   max: number;
   unit: string;
+  lastUpdate: Date;
 };

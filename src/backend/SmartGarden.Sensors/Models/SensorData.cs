@@ -11,6 +11,7 @@ public class SensorData
     public double Min { get; set; }
     public double Max { get; set; }
     public string Unit { get; set; }
+    public DateTime LastUpdate { get; set; }
 
     internal static SensorData FromMqtt(MqttSensorData? data, SensorType type) => new SensorData
     {
@@ -20,6 +21,7 @@ public class SensorData
         Min = data?.Min ?? 0,
         Max = data?.Max ?? 0,
         ConnectionState = ConnectionState.Connected,
-        Unit = data?.Unit ?? ""
+        Unit = data?.Unit ?? "",
+        LastUpdate = DateTime.UtcNow
     };
 }

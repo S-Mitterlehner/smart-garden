@@ -9,12 +9,14 @@ namespace SmartGarden.Sensors
     {
         private readonly BlockingCollection<ISensorConnector> _connectors = new();
 
-        public ISensorConnector GetConnector(string key, SensorType type)
+        public async Task<ISensorConnector> GetConnectorAsync(string key, SensorType type)
         { 
             var connector = _connectors.FirstOrDefault(x => x.Key == key && x.Type == type);
+
             if(connector == null)
             {
                 connector = CreateConnector(key, type);
+                await connector.InitializeAsync();
                 _connectors.Add(connector);
             }
 

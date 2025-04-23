@@ -1,7 +1,7 @@
-#include <dht11.h> // https://github.com/adidax/dht11#
+#include <dht11.h> // TODO: Import dht11.zip (source: https://github.com/adidax/dht11#)
 #include <WiFiS3.h>
-#include <PubSubClient.h>
-#include <ArduinoJson.h>
+#include <PubSubClient.h> // TODO: install PubSubClient
+#include <ArduinoJson.h> // TODO: install ArduinoJson
 
 #include "utils.h"
 
@@ -53,6 +53,10 @@ void loop()
   serializeJson(message, messageBuffer);
 
   sendToMQTT(temperatureTopic, messageBuffer);
+
+  delay(5000);
+
+  chk = DHT11.read(DHT_PIN);
 
   StaticJsonDocument<200> humidityMessage;
   humidityMessage["sensorKey"] = deviceId;

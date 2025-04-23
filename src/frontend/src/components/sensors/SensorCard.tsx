@@ -44,8 +44,26 @@ export default function SensorCard({
     else return "not defined";
   };
 
+  const getTimeString = () => {
+    if (currentState.lastUpdate) {
+      const date = new Date(currentState.lastUpdate);
+      const format = (t: number) => `00${t}`.slice(-2);
+
+      return `${format(date.getHours())}:${format(date.getMinutes())}:${format(
+        date.getSeconds()
+      )}`;
+    } else {
+      return "not available";
+    }
+  };
+
   return (
     <Card title={sensor.name}>
+      <div className="flex flex-col text-xs absolute top-3 right-2 text-right">
+        <span className="text-gray-400">Last Update: </span>
+        <span>{getTimeString()}</span>
+      </div>
+
       <div className="flex flex-col items-center gap-2">
         <div className="min-h-44 flex justify-center items-center">
           {getGauge()}
@@ -59,7 +77,7 @@ export default function SensorCard({
           <div className="flex flex-col text-right">
             <span className="text-gray-400">Sensor:</span>
             <span>
-              {sensor.minValue} - {sensor.maxValue} {sensor.unit}
+              {currentState.min} - {currentState.max} {sensor.unit}
             </span>
           </div>
         </div>

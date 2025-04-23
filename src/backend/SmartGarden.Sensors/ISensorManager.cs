@@ -4,5 +4,5 @@ namespace SmartGarden.Sensors;
 
 public interface ISensorManager
 {
-    ISensorConnector GetConnector(string key, SensorType type);
+    Task<ISensorConnector> GetConnectorAsync(string key, SensorType type);
 }

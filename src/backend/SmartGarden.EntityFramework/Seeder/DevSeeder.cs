@@ -18,8 +18,8 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         var psc2 = await CreateOrUpdateAsync(new PlantSensorConfig
         {
             Id = new Guid("13be42e3-d80c-4566-9b1c-8fce80fe8c38"),
-            RangeFrom = 15,
-            RangeTo = 25,
+            RangeFrom = 40,
+            RangeTo = 50,
             SensorType = SensorType.Humidity
         });
 

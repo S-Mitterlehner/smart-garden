@@ -36,4 +36,5 @@ public class SensorDataDto
     public double Min { get; set; }
     public double Max { get; set; }
     public string Unit { get; set; }
+    public DateTime LastUpdate { get; set; }
 }

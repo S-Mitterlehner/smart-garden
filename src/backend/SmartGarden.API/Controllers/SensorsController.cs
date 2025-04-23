@@ -21,7 +21,7 @@ public class SensorsController(ApplicationContext db, ISensorManager sensorManag
         var reference = await db.Get<SensorRef>().FirstOrDefaultAsync(x => x.Id == id);
         if (reference == null) return NotFound();
 
-        var connector = sensorManager.GetConnector(reference.ConnectorKey, reference.Type);
+        var connector = await sensorManager.GetConnectorAsync(reference.ConnectorKey, reference.Type);
 
         if (connector == null) return NotFound();
 

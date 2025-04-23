@@ -31,6 +31,7 @@ public class SensorsController(ApplicationContext db, ISensorManager sensorManag
         {
             Id = reference.Id,
             Name = reference.Name,
+            Key = reference.ConnectorKey,
             Description = reference.Description,
             Unit = data.Unit,
             MaxValue = data.Max,

@@ -4,6 +4,7 @@ import { IconPlugConnectedX } from "@tabler/icons-react";
 import Gauge from "../Gauge";
 import Card from "../Card";
 import useSensor from "../../hooks/useSensor";
+import { ConnectionState } from "../../models/general";
 
 export default function SensorCard({
   sensor: sensorRef,
@@ -12,18 +13,20 @@ export default function SensorCard({
   sensor: SensorRef;
   plantConfig: PlantSensorConfig;
 }) {
-  const { sensor, currentValue, isFetched } = useSensor(sensorRef.id);
+  const { sensor, currentValue, isFetched, connectionState } = useSensor(
+    sensorRef.id
+  );
 
   const rangeFrom = plantConfig?.rangeFrom ?? -1;
   const rangeTo = plantConfig?.rangeTo ?? -1;
 
   const getGauge = () => {
-    if (currentValue !== null && isFetched) {
+    if (connectionState === ConnectionState.Connected && isFetched) {
       return (
         <Gauge
           min={sensor.minValue}
           max={sensor.maxValue}
-          value={currentValue}
+          value={currentValue!}
           rangeFrom={rangeFrom}
           rangeTo={rangeTo}
           unit={sensor.unit}

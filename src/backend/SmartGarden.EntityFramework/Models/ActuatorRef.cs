@@ -14,10 +14,10 @@ public class ActuatorRef : BaseEntityWithOrder
     // TODO: Add Properties to connect actual Controller to app
 }
 
-public class ActuatorAction : BaseEntityWithOrder
-{
-    public string Key { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public ActionIcons Icon { get; set; }
-}
+//public class ActuatorAction : BaseEntityWithOrder
+//{
+//    public string Key { get; set; }
+//    public string Name { get; set; }
+//    public string Description { get; set; }
+//    public ActionIcons Icon { get; set; }
+//}

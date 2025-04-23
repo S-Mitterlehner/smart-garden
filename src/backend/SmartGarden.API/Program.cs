@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.Actuators;
+using SmartGarden.API.Hubs;
+using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Seeder;
@@ -16,8 +18,12 @@ builder.Services.AddDbContext<ApplicationContext>(o =>
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
+builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
 builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
+
+if (builder.Environment.IsDevelopment()) 
+    builder.Services.AddHostedService<DummyRegistrationService>();
 
 // Options
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("Database"));
@@ -29,6 +35,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
+builder.Services.AddSignalR();
+
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -41,10 +50,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors(o => o.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<SensorHub>("/sockets/sensor");
 
 app.Run();

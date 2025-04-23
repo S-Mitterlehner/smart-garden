@@ -20,6 +20,7 @@
     "@mantine/hooks": "^7.17.4",
     "@mantine/modals": "^7.17.4",
     "@mantine/notifications": "^7.17.4",
+    "@microsoft/signalr": "^8.0.7",
     "@tabler/icons-react": "^3.31.0",
     "@tailwindcss/vite": "^4.1.4",
     "@tanstack/react-query": "^5.74.4",

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 using SmartGarden.Core.Enums;
 using SmartGarden.Sensors.Connectors;
 
@@ -20,12 +21,11 @@ namespace SmartGarden.Sensors
             return connector;
         }
 
-        
         protected ISensorConnector CreateConnector(string key, SensorType type)
             => type switch
             {
-                SensorType.Temperature => TemperatureSensorConnector.Create(key, sp),         
-                SensorType.Humidity=> HumiditySensorConnector.Create(key, sp),
+                SensorType.Temperature => ActivatorUtilities.CreateInstance<TemperatureSensorConnector>(sp, key),       
+                SensorType.Humidity=> ActivatorUtilities.CreateInstance<HumiditySensorConnector>(sp, key),
                 // TODO add more
                 _ => throw new SensorTypeNotFoundException(type)
             };

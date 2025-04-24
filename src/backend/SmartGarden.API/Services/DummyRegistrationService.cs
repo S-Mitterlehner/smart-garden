@@ -20,7 +20,7 @@ public class DummyRegistrationService(IServiceProvider sp, ISensorManager sensor
 
         foreach (var sensorRef in sensors)
         {
-            await sensorManager.GetConnectorAsync(sensorRef.ConnectorKey, sensorRef.Type);
+            await sensorManager.GetConnectorAsync(sensorRef);
         }
     }
 }

@@ -9,5 +9,5 @@ public class SensorRef : BaseEntityWithOrder
     public SensorType Type { get; set; }
     public string? ConnectorKey { get; set; }
 
-    // TODO: Add Properties to connect actual Sensor to app
+    public string Topic { get; set; }
 }

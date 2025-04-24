@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MQTTnet;
 using SmartGarden.Core.Enums;
 using SmartGarden.EntityFramework;
@@ -8,69 +10,86 @@ using SmartGarden.Mqtt;
 using SmartGarden.Sensors.Connectors;
 using SmartGarden.Sensors.Models;
 
-namespace SmartGarden.Sensors
+namespace SmartGarden.Sensors;
+
+public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) : ISensorManager
 {
-    public class SensorManager(IServiceProvider sp) : ISensorManager
+    public const string RegisterTopic = "smart-garden/register/sensor";
+
+    private readonly ConcurrentDictionary<string, ISensorConnector> _connectors = new();
+
+    public async Task<ISensorConnector> GetConnectorAsync(SensorRef reference) 
+        => GetConnectorFromList(reference.ConnectorKey, reference.Type) ?? await CreateConnectorAsync(reference);
+
+    public async Task SetupRegisterListenerAsync()
     {
-        public const string RegisterTopic = "smart-garden/register/sensor";
+        var mqttClient = sp.GetRequiredService<IMqttClient>();
 
-        private readonly ConcurrentDictionary<string, ISensorConnector> _connectors = new();
+        mqttClient.ApplicationMessageReceivedAsync += TryRegisterDevice;
+        await mqttClient.SubscribeAsync(RegisterTopic);
+    }
 
-        public async Task<ISensorConnector> GetConnectorAsync(string key, SensorType type) 
-            => GetConnectorFromList(key, type) ?? await CreateConnectorAsync(key, type);
+    private async Task TryRegisterDevice(MqttApplicationMessageReceivedEventArgs e)
+    {
+        var data = e.Parse<MqttRegisterData>();
+        var key = data.SensorKey;
 
-        public async Task SetupRegisterListenerAsync()
+        foreach (var topic in data.Topics)
         {
-            var mqttClient = sp.GetRequiredService<IMqttClient>();
-
-            mqttClient.ApplicationMessageReceivedAsync += TryRegisterDevice;
-            await mqttClient.SubscribeAsync(RegisterTopic);
-        }
-
-        private async Task TryRegisterDevice(MqttApplicationMessageReceivedEventArgs e)
-        {
-            var data = e.Parse<MqttRegisterData>();
-            var key = data.SensorKey;
-            var type = Enum.Parse<SensorType>(data.SensorType);
-            var connector = GetConnectorFromList(key, type);
+            if (!Enum.TryParse<SensorType>(topic.Key, true, out var sensorType))
+            {
+                logger.LogWarning("Sensor type {SensorType} not found -> skipped", topic.Key);
+                continue;
+            }
+                
+            var connector = GetConnectorFromList(key, sensorType);
 
             if (connector is not null) return;
-            connector = CreateConnectorInstance(key, type);
-
+                
             await using var scope = sp.CreateAsyncScope();
             await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
-            var reference = db.New<SensorRef>();
-            reference.Name = connector.Name;
-            reference.Description = connector.Description;
-            reference.ConnectorKey = connector.Key;
-            reference.Type = connector.Type;
+            connector = CreateConnectorInstance(key, sensorType, topic.Value);
+                
+            var reference = await db.Get<SensorRef>()
+                .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == sensorType);
+
+            if (reference is null)
+            {
+                reference = db.New<SensorRef>();
+                reference.Name = connector.Name;
+                reference.Description = connector.Description;
+                reference.ConnectorKey = connector.Key;
+                reference.Type = connector.Type;
+            }
+
+            reference.Topic = topic.Value;
 
             await db.SaveChangesAsync();
         }
-
-        private ISensorConnector? GetConnectorFromList(string key, SensorType type) 
-            => _connectors.GetValueOrDefault(GetDictKey(key, type));
-
-        private async Task<ISensorConnector> CreateConnectorAsync(string key, SensorType type)
-        {
-            var connector = CreateConnectorInstance(key, type);
-
-            await connector.InitializeAsync();
-            _connectors.TryAdd(GetDictKey(key, type), connector);
-
-            return connector;
-        }
-
-        private ISensorConnector CreateConnectorInstance(string key, SensorType type)
-            => type switch
-            {
-                SensorType.Temperature => ActivatorUtilities.CreateInstance<TemperatureSensorConnector>(sp, key),       
-                SensorType.Humidity=> ActivatorUtilities.CreateInstance<HumiditySensorConnector>(sp, key),
-                // TODO add more
-                _ => throw new SensorTypeNotFoundException(type)
-            };
-
-        private string GetDictKey(string key, SensorType type) => $"{key}-{type}";
     }
+
+    private ISensorConnector? GetConnectorFromList(string key, SensorType type) 
+        => _connectors.GetValueOrDefault(GetDictKey(key, type));
+
+    private async Task<ISensorConnector> CreateConnectorAsync(SensorRef reference)
+    {
+        var connector = CreateConnectorInstance(reference.ConnectorKey, reference.Type, reference.Topic);
+
+        await connector.InitializeAsync();
+        _connectors.TryAdd(GetDictKey(reference.ConnectorKey, reference.Type), connector);
+
+        return connector;
+    }
+
+    private ISensorConnector CreateConnectorInstance(string key, SensorType type, string topic)
+        => type switch
+        {
+            SensorType.Temperature => ActivatorUtilities.CreateInstance<TemperatureSensorConnector>(sp, key, topic),       
+            SensorType.Humidity=> ActivatorUtilities.CreateInstance<HumiditySensorConnector>(sp, key, topic),
+            // TODO add more
+            _ => throw new SensorTypeNotFoundException(type)
+        };
+
+    private string GetDictKey(string key, SensorType type) => $"{key}-{type}";
 }

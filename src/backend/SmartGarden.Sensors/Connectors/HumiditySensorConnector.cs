@@ -4,12 +4,11 @@ using SmartGarden.Sensors.Models;
 
 namespace SmartGarden.Sensors.Connectors;
 
-public class HumiditySensorConnector(string key, ISensorListener listener, IMqttClient mqttClient)
-    : BaseSensorConnector(key, listener, mqttClient)
+public class HumiditySensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient)
+    : BaseSensorConnector(key, topic, listener, mqttClient)
 {
 
     public override SensorType Type => SensorType.Humidity;
-    public override string Topic => $"{Key}/humidity";
     public override string Name => "Humidity";
     public override string Description => "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations.";
 

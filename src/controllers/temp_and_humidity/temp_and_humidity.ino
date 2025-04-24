@@ -12,7 +12,7 @@ dht11 DHT11;
 char temperatureTopic[] = "smart-garden/temp-1234/temperature";
 char humidityTopic[] = "smart-garden/temp-1234/humidity";
 
-char deviceId[] = "smart-garden/temp-1234";
+char deviceId[] = "temp-1234";
 
 extern WiFiClient network;
 extern PubSubClient mqttClient;
@@ -27,6 +27,11 @@ void  setup()
   }
 
   connectWifi();
+  
+  deviceId = WiFi.macAddress().c_str().replace(":", "-").c_str();
+  temperatureTopic = "smart-garden/" + deviceId + "/temperature";
+  humidityTopic = "smart-garden/" + deviceId + "/humidity";
+
   connectMQTT(deviceId);
 }
 

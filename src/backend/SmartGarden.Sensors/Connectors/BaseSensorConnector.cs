@@ -10,14 +10,14 @@ using SmartGarden.Sensors.Models;
 
 namespace SmartGarden.Sensors.Connectors;
 
-public abstract class BaseSensorConnector(string key, ISensorListener listener, IMqttClient mqttClient)
+public abstract class BaseSensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient)
     : ISensorConnector
 {
     private SensorData _lastData = null!;
 
     public string Key { get; } = key;
+    public string Topic { get; } = topic;
     public abstract SensorType Type { get; }
-    public abstract string Topic { get; }
     public abstract string Name { get; }
     public abstract string Description { get; }
 

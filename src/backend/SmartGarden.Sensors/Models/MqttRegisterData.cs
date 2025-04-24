@@ -7,7 +7,7 @@ public class MqttRegisterData
     
     [JsonPropertyName("sensorKey")]
     public string SensorKey { get; set; }
-    
-    [JsonPropertyName("sensorType")]
-    public string SensorType { get; set; }
+
+    [JsonPropertyName("topics")]
+    public Dictionary<string, string> Topics { get; set; } = new();
 }

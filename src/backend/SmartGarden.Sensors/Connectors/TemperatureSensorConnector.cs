@@ -5,11 +5,10 @@ using ConnectionState = SmartGarden.Core.Enums.ConnectionState;
 
 namespace SmartGarden.Sensors.Connectors;
 
-public class TemperatureSensorConnector(string key, ISensorListener listener, IMqttClient mqttClient)
-    : BaseSensorConnector(key, listener, mqttClient)
+public class TemperatureSensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient)
+    : BaseSensorConnector(key, topic, listener, mqttClient)
 {
     public override SensorType Type => SensorType.Temperature;
-    public override string Topic => $"{Key}/temperature";
     public override string Name => "Temperature";
     public override string Description => "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations.";
     protected override SensorData InitialData => new()

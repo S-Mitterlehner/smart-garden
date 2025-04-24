@@ -1,30 +1,17 @@
 ﻿using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using SmartGarden.EntityFramework.Interfaces;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.EntityFramework;
 
-public class ApplicationContext : DbContext
+public class ApplicationContext(DbContextOptions options) : DbContext(options)
 {
-    private const string DockerConnectionString = "Server=smartgarden.db;Port=5432;Database=smartgarden;User Id=postgres;Password=postgres;";
-    private readonly DatabaseSettings _settings;
-
-    public ApplicationContext() { }
-
-    public ApplicationContext(DbContextOptions<ApplicationContext> options, IOptions<DatabaseSettings> settings) : base(options)
-    {
-        _settings = settings.Value ?? throw new ArgumentNullException(nameof(settings));
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder
-            .UseLazyLoadingProxies()
-            .UseNpgsql(_settings?.ConnectionString ?? DockerConnectionString);
+        optionsBuilder.UseLazyLoadingProxies();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

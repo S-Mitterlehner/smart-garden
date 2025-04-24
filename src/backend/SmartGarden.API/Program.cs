@@ -12,10 +12,7 @@ using SmartGarden.Sensors;
 var builder = WebApplication.CreateBuilder(args);
 
 // DB
-builder.Services.AddDbContext<ApplicationContext>(o =>
-{
-    o.UseNpgsql("Server=smartgarden.db;Port=5432;Database=smartgarden;User Id=postgres;Password=postgres;");
-});
+builder.Services.RegisterDbContext(builder.Configuration);
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
@@ -33,7 +30,6 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddHostedService<DummyRegistrationService>();
 
 // Options
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("Database"));
 builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 
 // -----

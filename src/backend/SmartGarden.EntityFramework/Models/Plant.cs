@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SmartGarden.EntityFramework.Models;
+﻿namespace SmartGarden.EntityFramework.Models;
 
 public class Plant : BaseEntityWithOrder
 {

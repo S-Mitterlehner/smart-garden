@@ -8,6 +8,8 @@ char ssid[] = SECRET_SSID;        // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 int status = WL_IDLE_STATUS;     // the WiFi radio's status
 
+String macAddress;
+
 // char mqttServerAddress[] = "broker.mqttdashboard.com";
 char mqttServerAddress[] = "test.mosquitto.org";
 int mqttServerPort = 1883;
@@ -16,17 +18,18 @@ WiFiClient network;
 PubSubClient mqttClient(network);
 
 
-void printMacAddress(byte mac[]) {
+String getMacAddressAsString(byte mac[]) {
+  String macAddress = "";
   for (int i = 0; i < 6; i++) {
     if (i > 0) {
-      Serial.print(":");
+      macAddress += ":";
     }
     if (mac[i] < 16) {
-      Serial.print("0");
+      macAddress += "0";
     }
-    Serial.print(mac[i], HEX);
+    macAddress += String(mac[i], HEX);
   }
-  Serial.println();
+  return macAddress;
 }
 
 void printCurrentNet() {
@@ -38,7 +41,6 @@ void printCurrentNet() {
   byte bssid[6];
   WiFi.BSSID(bssid);
   Serial.print("BSSID: ");
-  printMacAddress(bssid);
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
@@ -58,12 +60,6 @@ void printWifiData() {
   Serial.print("IP Address: ");
   
   Serial.println(ip);
-
-  // print your MAC address:
-  byte mac[6];
-  WiFi.macAddress(mac);
-  Serial.print("MAC address: ");
-  printMacAddress(mac);
 }
 
 void connectWifi() {
@@ -92,18 +88,26 @@ void connectWifi() {
 
   // you're connected now, so print out the data:
   Serial.print("You're connected to the network");
+  
+  byte mac[6];
+  WiFi.macAddress(mac);
+  macAddress = getMacAddressAsString(mac);
+  Serial.print("MAC address: ");
+  Serial.println(macAddress);
+  
+
   printCurrentNet();
   printWifiData();
 }
 
-void connectMQTT(char* deviceId) {
+void connectMQTT(String deviceId) {
   if(mqttClient.connected()) {
     mqttClient.disconnect();
   }
 
   mqttClient.setServer(mqttServerAddress, mqttServerPort);
   while (!mqttClient.connected()) {
-    if (mqttClient.connect(deviceId)) {
+    if (mqttClient.connect(deviceId.c_str())) {
       Serial.println("connected");
     } else {
       Serial.print("failed, rc=");
@@ -114,8 +118,8 @@ void connectMQTT(char* deviceId) {
   }
 }
 
-void sendToMQTT(const char* topic, const char* json) {
+void sendToMQTT(const String topic, const String json) {
   if(mqttClient.connected()) {
-    mqttClient.publish(topic, json, true);
+    mqttClient.publish(topic.c_str(), json.c_str(), false);
   }
 }

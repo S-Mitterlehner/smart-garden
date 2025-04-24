@@ -11,6 +11,7 @@ public class TemperatureSensorConnector(string key, string topic, ISensorListene
     public override SensorType Type => SensorType.Temperature;
     public override string Name => "Temperature";
     public override string Description => "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations.";
+
     protected override SensorData InitialData => new()
     {
         SensorKey = Key,

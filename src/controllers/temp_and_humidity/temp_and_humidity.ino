@@ -9,13 +9,15 @@ const int DHT_PIN = 11;
 
 dht11 DHT11;
 
-char temperatureTopic[] = "smart-garden/temp-1234/temperature";
-char humidityTopic[] = "smart-garden/temp-1234/humidity";
+String registerTopic = "smart-garden/register/sensor";
+String temperatureTopic = "smart-garden/temp-1234/temperature";
+String humidityTopic = "smart-garden/temp-1234/humidity";
 
-char deviceId[] = "temp-1234";
+String deviceId = "temp-1234";
 
 extern WiFiClient network;
 extern PubSubClient mqttClient;
+extern String macAddress;
 
 unsigned long lastPublishTime = 0;
 
@@ -27,12 +29,23 @@ void  setup()
   }
 
   connectWifi();
-  
-  deviceId = WiFi.macAddress().c_str().replace(":", "-").c_str();
+  String d = String(macAddress.c_str());
+  d.replace(":", "");
+  deviceId = "sm-" + d;
   temperatureTopic = "smart-garden/" + deviceId + "/temperature";
   humidityTopic = "smart-garden/" + deviceId + "/humidity";
 
+  Serial.print("Device Id: ");
+  Serial.println(deviceId);
+
+  Serial.print("Temperature Topic: ");
+  Serial.println(temperatureTopic);
+
+  Serial.print("Humidity Topic: ");
+  Serial.println(humidityTopic);
+
   connectMQTT(deviceId);
+  registerSensor();
 }
 
 void loop()
@@ -76,4 +89,18 @@ void loop()
   sendToMQTT(humidityTopic, humidityMessageBuffer);
 
   delay(5000);
+}
+
+void registerSensor() {
+  JsonDocument doc;
+  doc["sensorKey"] = deviceId;
+  doc["topics"]["temperature"] = temperatureTopic;
+  doc["topics"]["humidity"] = humidityTopic;
+  char buffer[512];
+  serializeJson(doc, buffer);
+
+  Serial.println(buffer);
+
+  sendToMQTT(registerTopic, buffer);
+  Serial.println("Sensor Registered");
 }

@@ -21,9 +21,11 @@ public static class ServiceCollectionExtensions
                 .WithTcpServer(config.Host, config.Port)
                 .WithCredentials(config.Username, config.Password) // Optional
                 .WithCleanSession()
+                .WithCleanStart()
+                .WithWillRetain(false)
                 .Build();
 
-            client.ConnectAsync(options, CancellationToken.None).GetAwaiter().GetResult();
+            client.ConnectAsync(options, CancellationToken.None).Wait();
 
             return client;
         });

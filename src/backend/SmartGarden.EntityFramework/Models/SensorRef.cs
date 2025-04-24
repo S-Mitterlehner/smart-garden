@@ -9,5 +9,5 @@ public class SensorRef : BaseEntityWithOrder
     public SensorType Type { get; set; }
     public string? ConnectorKey { get; set; }
 
-    public string Topic { get; set; }
+    public string? Topic { get; set; }
 }

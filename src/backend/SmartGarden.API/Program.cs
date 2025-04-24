@@ -26,8 +26,11 @@ builder.Services.AddMqttClient();
 builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddHostedService<SensorInitializer>();
 
-if (builder.Environment.IsDevelopment()) 
+if (builder.Environment.IsDevelopment())
+{
     builder.Services.AddHostedService<DummyRegistrationService>();
+    //builder.Services.AddHostedService<MQTTNeutralizer>();
+}
 
 // Options
 builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));

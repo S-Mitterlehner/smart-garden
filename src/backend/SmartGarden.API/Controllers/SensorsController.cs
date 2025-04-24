@@ -1,5 +1,4 @@
-﻿using LinqKit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos;
 using SmartGarden.EntityFramework;

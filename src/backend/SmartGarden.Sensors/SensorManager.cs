@@ -31,6 +31,8 @@ public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) :
 
     private async Task TryRegisterDevice(MqttApplicationMessageReceivedEventArgs e)
     {
+        if(e.ApplicationMessage.Topic != RegisterTopic || e.ApplicationMessage.Payload.Length <= 0) return;
+
         var data = e.Parse<MqttRegisterData>();
         var key = data.SensorKey;
 
@@ -50,7 +52,8 @@ public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) :
             await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
             connector = CreateConnectorInstance(key, sensorType, topic.Value);
-                
+            _connectors.TryAdd(GetDictKey(key, sensorType), connector);
+
             var reference = await db.Get<SensorRef>()
                 .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == sensorType);
 
@@ -76,8 +79,8 @@ public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) :
     {
         var connector = CreateConnectorInstance(reference.ConnectorKey, reference.Type, reference.Topic);
 
-        await connector.InitializeAsync();
         _connectors.TryAdd(GetDictKey(reference.ConnectorKey, reference.Type), connector);
+        await connector.InitializeAsync();
 
         return connector;
     }

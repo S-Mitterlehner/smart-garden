@@ -40,6 +40,7 @@ public abstract class BaseSeeder(ApplicationContext context) : ISeeder
         if (existingEntity != null)
         {
             context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            context.Entry(existingEntity).State = EntityState.Modified;
             return existingEntity;
         }
 

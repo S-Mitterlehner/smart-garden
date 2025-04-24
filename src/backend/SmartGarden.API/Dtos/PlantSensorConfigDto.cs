@@ -13,6 +13,6 @@ public class PlantSensorConfigDto
     {
         RangeFrom = c.RangeFrom,
         RangeTo = c.RangeTo,
-        SensorType = c.SensorType.ToString().ToUpper()
+        SensorType = c.SensorType.ToString()
     };
 }

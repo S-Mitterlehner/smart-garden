@@ -58,7 +58,7 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
     {
         var query = Set<TEntity>().AsQueryable().Where(x => includeDeleted || !x.IsDeleted);
 
-        if (typeof(TEntity).IsAssignableFrom(typeof(IEntityWithOrder))) 
+        if (typeof(TEntity).IsAssignableTo(typeof(IEntityWithOrder))) 
             query = query.OrderBy(x => ((IEntityWithOrder)x).Order);
 
         return query.AsExpandableEFCore();

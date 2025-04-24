@@ -15,7 +15,7 @@ public class SensorRefDto : BaseDto
         Id = s.Id,
         Name = s.Name,
         Description = s.Description,
-        Type = s.Type.ToString().ToUpper(),
+        Type = s.Type.ToString(),
         Key = s.ConnectorKey
     };
 }

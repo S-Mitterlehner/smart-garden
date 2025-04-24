@@ -18,13 +18,13 @@ public class ActuatorStateDto
         {
             DiscreteActuatorState ds => new ActuatorStateDto
             {
-                ConnectionState = ds.ConnectionState.ToString().ToUpper()
+                ConnectionState = ds.ConnectionState.ToString()
                 , State = ds.State
                 , Type = ds.Type.ToString()
             }
             , ContinuousActuatorState cs => new ActuatorStateDto
             {
-                ConnectionState = cs.ConnectionState.ToString().ToUpper()
+                ConnectionState = cs.ConnectionState.ToString()
                 , Type = cs.Type.ToString()
                 , Value = cs.CurrentValue
                 , Min = cs.MinValue

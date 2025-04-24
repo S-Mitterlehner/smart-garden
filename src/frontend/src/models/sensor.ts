@@ -1,9 +1,9 @@
 import { ConnectionState } from "./general";
 
 export enum SensorType {
-  TEMPERATURE = "TEMPERATURE",
-  HUMIDITY = "HUMIDITY",
-  LIGHT = "LIGHT",
+  Temperature = "Temperature",
+  Humidity = "Humidity",
+  Light = "Light",
 }
 
 export type SensorRef = {

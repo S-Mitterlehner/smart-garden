@@ -83,8 +83,8 @@ export default function BedPage() {
       <Drawer
         opened={showSensorDrawer}
         position="right"
-        offset={5}
-        radius={5}
+        offset={15}
+        radius={10}
         onClose={() => setShowSensorDrawer(false)}
         title="Add Sensor"
       >

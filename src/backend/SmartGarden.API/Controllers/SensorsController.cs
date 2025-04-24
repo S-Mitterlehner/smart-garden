@@ -33,7 +33,7 @@ public class SensorsController(ApplicationContext db, ISensorManager sensorManag
             MaxValue = data.Max,
             MinValue = data.Min,
             CurrentValue = data.CurrentValue,
-            Type = reference.Type.ToString().ToUpper()
+            Type = reference.Type.ToString()
         });
     }
 }

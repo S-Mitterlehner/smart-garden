@@ -9,7 +9,8 @@ import Gauge from "../Gauge";
 import Card from "../Card";
 import useSensor from "../../hooks/useSensor";
 import { ConnectionState } from "../../models/general";
-import { Menu } from "@mantine/core";
+import { Menu, Tooltip } from "@mantine/core";
+import { getTypeIconCircle } from "./utils";
 
 export default function SensorCard({
   sensor: sensorRef,
@@ -68,12 +69,21 @@ export default function SensorCard({
     <Menu shadow="md">
       <Menu.Target>
         <button className="text-left cursor-pointer w-full phone:w-auto">
-          <Card title={sensor.name} className=" hover:bg-gray-50!">
-            <div className="flex flex-col text-xs absolute top-3 right-2 text-right">
-              <span className="text-gray-400">Last Update: </span>
-              <span>{getTimeString()}</span>
-            </div>
-
+          <Card
+            title={sensor.name}
+            className=" hover:bg-gray-50!"
+            icon={
+              <Tooltip label={sensor.type} position="top" withArrow>
+                {getTypeIconCircle(sensor.type)}
+              </Tooltip>
+            }
+            right={
+              <div className="flex flex-col text-xs text-right">
+                <span className="text-gray-400">Last Update: </span>
+                <span>{getTimeString()}</span>
+              </div>
+            }
+          >
             <div className="flex flex-col items-center gap-2">
               <div className="min-h-44 flex justify-center items-center">
                 {getGauge()}

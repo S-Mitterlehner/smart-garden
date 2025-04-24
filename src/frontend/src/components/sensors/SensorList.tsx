@@ -1,4 +1,5 @@
 import { SensorRef } from "../../models/sensor";
+import { getTypeIconCircle } from "./utils";
 
 export type SensorListProps = {
   sensors: SensorRef[];
@@ -20,14 +21,19 @@ export default function SensorList({
           disabled={disabledSensors.some((s) => s.id === sensor.id)}
           onClick={() => onSelectSensor(sensor)}
         >
-          <div className="grid grid-cols-2 gap-4">
-            <span className="text-xl font-bold">{sensor.name}</span>
+          <div className="grid grid-cols-[1fr_auto] gap-4">
+            <span className="text-xl font-bold flex flex-row gap-3 items-center">
+              <div>{getTypeIconCircle(sensor.type)}</div>
+              <span className="line-clamp-1">{sensor.name}</span>
+            </span>
             <span className="text-gray-400 text-sm text-right self-center">
               {sensor.type}
             </span>
-            <span className="text-gray-500 col-span-2">
-              {sensor.description}
-            </span>
+          </div>
+
+          <span className="text-gray-500 col-span-2">{sensor.description}</span>
+
+          <div className="grid grid-cols-[1fr_auto] gap-4">
             <span className="text-red-500 text-xs">
               {disabledSensors.some((s) => s.id === sensor.id)
                 ? "already connected"

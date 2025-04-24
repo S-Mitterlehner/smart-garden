@@ -1,10 +1,10 @@
 import { ConnectionState } from "./general";
 
 export enum ActuatorStateStrings {
-  Open = "OPEN",
-  Closed = "CLOSED",
-  Running = "RUNNING",
-  Stopped = "STOPPED",
+  Open = "Open",
+  Closed = "Closed",
+  Running = "Running",
+  Stopped = "Stopped",
 }
 
 export enum ActionType {

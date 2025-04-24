@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { SensorRef } from "../models/sensor";
 import { ActuatorRef } from "../models/actuator";
 import { API_URL } from "../environment";
+import { notifications } from "@mantine/notifications";
 
 export type CurrentBed = {
   bed: Bed;
@@ -16,12 +17,18 @@ export type CurrentBed = {
   };
   sensors: SensorRef[];
   actuators: ActuatorRef[];
+  addSensor: (sensor: SensorRef) => void;
+  removeSensor: (sensor: SensorRef) => void;
 };
 
 export function useCurrentBed(id: string) {
   const queryClient = useQueryClient();
 
-  const { data: bed, isFetched: bedFetched } = useQuery<Bed | null>({
+  const {
+    data: bed,
+    isFetched: bedFetched,
+    refetch,
+  } = useQuery<Bed | null>({
     queryKey: ["bed", id],
     enabled: !!id,
     refetchOnMount: "always",
@@ -50,6 +57,60 @@ export function useCurrentBed(id: string) {
     queryClient.setQueryData(["bed", id], updatedbed);
   };
 
+  const addSensor = (sensor: SensorRef) => {
+    if (!bed) return;
+
+    fetch(`${API_URL}/beds/${id}/sensors/${sensor.id}`, {
+      method: "PATCH",
+    })
+      .then((r) => {
+        if (r.status === 200) {
+          refetch();
+          notifications.show({
+            title: "Sensor added",
+            message: `Sensor ${sensor.name} added to bed ${bed.name}`,
+            color: "green",
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to add sensor ${sensor.name} to bed ${bed.name}`,
+          color: "red",
+        });
+      });
+  };
+
+  const removeSensor = (sensor: SensorRef) => {
+    if (!bed) return;
+
+    if (!confirm("are you sure?")) return;
+
+    fetch(`${API_URL}/beds/${id}/sensors/${sensor.id}`, {
+      method: "DELETE",
+    })
+      .then((r) => {
+        if (r.status === 200) {
+          refetch();
+          notifications.show({
+            title: "Sensor removed",
+            message: `Sensor ${sensor.name} removed from bed ${bed.name}`,
+            color: "red",
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to remove sensor ${sensor.name} from bed ${bed.name}`,
+          color: "red",
+        });
+      });
+  };
+
   return {
     bed,
     isFetched: bedFetched && plantFetched,
@@ -59,5 +120,7 @@ export function useCurrentBed(id: string) {
     },
     sensors: bed?.sensors ?? [],
     actuators: bed?.actuators ?? [],
+    addSensor,
+    removeSensor,
   } as CurrentBed;
 }

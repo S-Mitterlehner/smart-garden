@@ -10,6 +10,8 @@ export type SensorRef = {
   id: string;
   type: SensorType;
   key?: string;
+  name: string;
+  description: string;
 };
 
 export type Sensor = SensorRef & {

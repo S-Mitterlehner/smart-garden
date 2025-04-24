@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos;
 using SmartGarden.EntityFramework;
@@ -10,6 +9,11 @@ namespace SmartGarden.API.Controllers;
 
 public class BedsController(ApplicationContext db) : BaseController
 {
+    [HttpGet]
+    public async Task<IActionResult> GetAll() 
+        => Ok(db.Get<Bed>().Select(BedDto.FromEntity).ToList());
+
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetBed(Guid id)
     {

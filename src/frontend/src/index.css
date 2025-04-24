@@ -12,7 +12,3 @@
 #root {
   @apply bg-gray-100 min-h-screen;
 }
-
-h2 {
-  @apply text-2xl font-bold text-gray-800 pb-4 pt-6 phone:pb-6 phone:border-t phone:border-gray-300 phone:mt-8;
-}

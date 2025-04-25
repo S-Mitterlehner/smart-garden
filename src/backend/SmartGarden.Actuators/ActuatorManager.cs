@@ -1,33 +1,89 @@
 ﻿using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MQTTnet;
 using SmartGarden.Actuators.Connectors;
-using SmartGarden.Actuators.Connectors.Dummies;
+using SmartGarden.Actuators.Models;
 using SmartGarden.Core.Enums;
+using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Models;
+using SmartGarden.Mqtt;
 
 namespace SmartGarden.Actuators;
 
-public class ActuatorManager(IServiceProvider sp) : IActuatorManager
+public partial class ActuatorManager(IServiceProvider sp, ILogger<ActuatorManager> logger) : IActuatorManager
 {
-    private readonly BlockingCollection<IActuatorConnector> _connectors = new();
+    public const string RegisterTopic = "smart-garden/register/actuator";
+    private readonly ConcurrentDictionary<string, IActuatorConnector> _connectors = new();
 
-    public IActuatorConnector GetConnector(string key, ActuatorType type)
+
+    public async Task<IActuatorConnector> GetConnectorAsync(ActuatorRef reference) 
+        => GetConnectorFromList(reference.ConnectorKey, reference.Type) ?? await CreateConnectorAsync(reference);
+
+    public async Task SetupRegisterListenerAsync()
     {
-        var connector = _connectors.FirstOrDefault(x => x.Key == key);
-        if(connector == null)
+        var mqttClient = sp.GetRequiredService<IMqttClient>();
+
+        mqttClient.ApplicationMessageReceivedAsync += TryRegisterDevice;
+        await mqttClient.SubscribeAsync(RegisterTopic);
+    }
+    
+    private async Task TryRegisterDevice(MqttApplicationMessageReceivedEventArgs e)
+    {
+        if(e.ApplicationMessage.Topic != RegisterTopic || e.ApplicationMessage.Payload.Length <= 0) return;
+
+        var data = e.Parse<MqttActuatorRegisterData>();
+        var key = data.ActuatorKey;
+
+        foreach (var topic in data.Topics)
         {
-            connector = CreateConnector(key, type);
-            _connectors.Add(connector);
+            if (!Enum.TryParse<ActuatorType>(topic.Key, true, out var actuatorType))
+            {
+                logger.LogWarning("Actuator type {ActuatorType} not found -> skipped", topic.Key);
+                continue;
+            }
+                
+            var connector = GetConnectorFromList(key, actuatorType);
+
+            if (connector is not null) return;
+                
+            await using var scope = sp.CreateAsyncScope();
+            await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+            connector = CreateConnectorInstance(key, actuatorType, topic.Value);
+            _connectors.TryAdd(GetDictKey(key, actuatorType), connector);
+
+            var reference = await db.Get<ActuatorRef>()
+                                    .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == actuatorType);
+
+            if (reference is null)
+            {
+                reference = db.New<ActuatorRef>();
+                reference.Name = connector.Name;
+                reference.Description = connector.Description;
+                reference.ConnectorKey = connector.Key;
+                reference.Type = connector.Type;
+            }
+
+            reference.Topic = topic.Value;
+
+            await db.SaveChangesAsync();
         }
+    }
+
+    private IActuatorConnector? GetConnectorFromList(string key, ActuatorType type) 
+        => _connectors.GetValueOrDefault(GetDictKey(key, type));
+
+    private async Task<IActuatorConnector> CreateConnectorAsync(ActuatorRef reference)
+    {
+        var connector = CreateConnectorInstance(reference.ConnectorKey, reference.Type, reference.Topic);
+
+        _connectors.TryAdd(GetDictKey(reference.ConnectorKey, reference.Type), connector);
+        await connector.InitializeAsync();
 
         return connector;
     }
 
-    protected IActuatorConnector CreateConnector(string key, ActuatorType type)
-        => type switch
-        {
-            // TODO: activate real connectors
-            ActuatorType.Pump => DummyPumpActuatorConnector.Create(key, sp), // PumpActuatorConnector.Create(key, sp)
-            ActuatorType.Hatch => DummyHatchActuatorConnector.Create(key, sp), // HatchActuatorConnector.Create(key, sp)
-            // TODO add more
-            _ => throw new ActuatorTypeNotFoundException(type)
-        };
+    private string GetDictKey(string key, ActuatorType type) => $"{key}-{type}";
 }

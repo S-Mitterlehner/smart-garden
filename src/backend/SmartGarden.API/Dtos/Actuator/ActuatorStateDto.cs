@@ -4,34 +4,31 @@ namespace SmartGarden.API.Dtos.Actuator;
 
 public class ActuatorStateDto
 {
+    public string ActuatorKey { get; set; }
+    public string ActuatorType { get; set; }
     public string ConnectionState { get; set; }
-    public string Type { get; set; }
+    public string StateType { get; set; }
     public string? State { get; set; }
     public double? Value { get; set; }
     public double? Min { get; set; }
     public double? Max { get; set; }
     public string? Unit { get; set; }
+    public DateTime LastUpdate { get; set; }
 
-    public static ActuatorStateDto FromState(ActuatorState state)
-    {
-        return state switch
+    public IEnumerable<ActuatorActionDto> Actions { get; set; }
+
+    public static ActuatorStateDto FromState(ActuatorState state, IEnumerable<ActionDefinition> actions) => new()
         {
-            DiscreteActuatorState ds => new ActuatorStateDto
-            {
-                ConnectionState = ds.ConnectionState.ToString()
-                , State = ds.State
-                , Type = ds.Type.ToString()
-            }
-            , ContinuousActuatorState cs => new ActuatorStateDto
-            {
-                ConnectionState = cs.ConnectionState.ToString()
-                , Type = cs.Type.ToString()
-                , Value = cs.CurrentValue
-                , Min = cs.MinValue
-                , Max = cs.MaxValue
-                , Unit = cs.Unit
-            }
-            , _ => throw new ArgumentException("Invalid actuator state type", nameof(state))
-        };
-    }
+            ActuatorKey = state.ActuatorKey
+            , ActuatorType = state.ActuatorType.ToString()
+            , ConnectionState = state.ConnectionState.ToString()
+            , StateType = state.StateType.ToString()
+            , State = state.State
+            , Value = state.CurrentValue
+            , Min = state.Min
+            , Max = state.Max
+            , Unit = state.Unit
+            , LastUpdate = DateTime.UtcNow
+            , Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
+    };
 }

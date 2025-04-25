@@ -8,43 +8,45 @@ public static class HatchActuatorConnectorActions
     public const string Open = "hatch.open";
 }
 
-public class HatchActuatorConnector(string key) : IActuatorConnector
-{
-    public string Key => key;
-    public string Name => "Hatch";
-    public string Description => "Hatch actuator for opening and closing hatches.";
+// TODO: implement like PumpActuatorConnector
 
-    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync() =>
-    [
-        new ActionDefinition
-        {
-            Name = "Open"
-            , ActionType = ActionType.Value
-            , Description = "Open the hatch to a certain value"
-            , Key = "hatch.open"
-            , IsAllowed = true
-            , Min = 0
-            , Max = 30
-        }
-    ];
+//public class HatchActuatorConnector(string key) : IActuatorConnector
+//{
+//    public string Key => key;
+//    public string Name => "Hatch";
+//    public string Description => "Hatch actuator for opening and closing hatches.";
 
-    public async Task<ActuatorState> GetStateAsync() =>
-        // TODO: Ask actual actuator or take from listener
-        new ContinuousActuatorState
-        {
-            ConnectionState = ConnectionState.Connected,
-            ActuatorKey = key,
-            CurrentValue = 15,
-            MinValue = 0,
-            MaxValue = 30,
-            Unit = "°"
-        };
+//    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync() =>
+//    [
+//        new ActionDefinition
+//        {
+//            Name = "Open"
+//            , ActionType = ActionType.Value
+//            , Description = "Open the hatch to a certain value"
+//            , Key = "hatch.open"
+//            , IsAllowed = true
+//            , Min = 0
+//            , Max = 30
+//        }
+//    ];
 
-    public Task ExecuteAsync(ActionExecution execution)
-    {
-        // TODO: Call actual actuator
-        return Task.CompletedTask;
-    }
+//    public async Task<ActuatorState> GetStateAsync() =>
+//        // TODO: Ask actual actuator or take from listener
+//        new ContinuousActuatorState
+//        {
+//            ConnectionState = ConnectionState.Connected,
+//            ActuatorKey = key,
+//            CurrentValue = 15,
+//            MinValue = 0,
+//            MaxValue = 30,
+//            Unit = "°"
+//        };
 
-    public static HatchActuatorConnector Create(string key, IServiceProvider sp) => new(key);
-}
+//    public Task ExecuteAsync(ActionExecution execution)
+//    {
+//        // TODO: Call actual actuator
+//        return Task.CompletedTask;
+//    }
+
+//    public static HatchActuatorConnector Create(string key, IServiceProvider sp) => new(key);
+//}

@@ -12,7 +12,7 @@ using SmartGarden.Sensors.Models;
 
 namespace SmartGarden.Sensors;
 
-public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) : ISensorManager
+public partial class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) : ISensorManager
 {
     public const string RegisterTopic = "smart-garden/register/sensor";
 
@@ -33,7 +33,7 @@ public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) :
     {
         if(e.ApplicationMessage.Topic != RegisterTopic || e.ApplicationMessage.Payload.Length <= 0) return;
 
-        var data = e.Parse<MqttRegisterData>();
+        var data = e.Parse<MqttSensorRegisterData>();
         var key = data.SensorKey;
 
         foreach (var topic in data.Topics)
@@ -84,15 +84,6 @@ public class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) :
 
         return connector;
     }
-
-    private ISensorConnector CreateConnectorInstance(string key, SensorType type, string topic)
-        => type switch
-        {
-            SensorType.Temperature => ActivatorUtilities.CreateInstance<TemperatureSensorConnector>(sp, key, topic),       
-            SensorType.Humidity=> ActivatorUtilities.CreateInstance<HumiditySensorConnector>(sp, key, topic),
-            // TODO add more
-            _ => throw new SensorTypeNotFoundException(type)
-        };
 
     private string GetDictKey(string key, SensorType type) => $"{key}-{type}";
 }

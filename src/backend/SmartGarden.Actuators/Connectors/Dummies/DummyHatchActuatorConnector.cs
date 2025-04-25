@@ -1,18 +1,30 @@
-﻿using SmartGarden.Actuators.Enums;
+﻿using SmartGarden.Actuators;
+using SmartGarden.Actuators.Connectors;
+using SmartGarden.Actuators.Connectors.Dummies;
+using SmartGarden.Actuators.Enums;
 using SmartGarden.Actuators.Models;
 using SmartGarden.Core.Enums;
 
-namespace SmartGarden.Actuators.Connectors.Dummies;
-
-public class DummyHatchActuatorConnector(string key) : IActuatorConnector
+public class DummyHatchActuatorConnector(string key, string topic, IActuatorListener listener) : DummyBaseActuatorConnector(key, topic, listener)
 {
-    private double value = 30;
+    public override ActuatorType Type => ActuatorType.Hatch;
+    public override string Name => "Dummy Hatch";
+    public override string Description => "Dummy hatch actuator for testing purposes";
 
-    public string Key => key;
-    public string Name => "Hatch";
-    public string Description => "Hatch actuator for opening and closing hatches.";
+    protected override ActuatorState InitialState =>
+        new ActuatorState
+        {
+            ConnectionState = ConnectionState.NotConnected
+            , ActuatorType = Type
+            , StateType = StateType.Continuous
+            , ActuatorKey = Key
+            , Unit = "%"
+            , CurrentValue = 0
+            , Min = 0
+            , Max = 100
+        };
 
-    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
+    public override async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
     {
         var state = await GetStateAsync();
         return
@@ -24,36 +36,23 @@ public class DummyHatchActuatorConnector(string key) : IActuatorConnector
                 , Description = "Open the hatch to a certain value"
                 , Key = HatchActuatorConnectorActions.Open
                 , IsAllowed = true
-                , CurrentValue = ((ContinuousActuatorState)state).CurrentValue
-                , Min = ((ContinuousActuatorState)state).MinValue
-                , Max = ((ContinuousActuatorState)state).MaxValue
+                , CurrentValue = state.CurrentValue
+                , Min = state.Min
+                , Max = state.Max
             }
         ];
     }
 
-    public async Task<ActuatorState> GetStateAsync() =>
-        new ContinuousActuatorState
+    protected override ActuatorState GetStateAfterExecution(ActionExecution execution) => new()
         {
-            ConnectionState = ConnectionState.Connected,
-            ActuatorKey = key,
-            CurrentValue = value,
-            MinValue = 0,
-            MaxValue = 30,
-            Unit = "°"
+            StateType = StateType.Continuous
+            , Unit = "%"
+            , ActuatorKey = Key
+            , ConnectionState = ConnectionState.Connected
+            , CurrentValue = execution.Value
+            , Max = 100
+            , Min = 0
+            , LastUpdate = DateTime.UtcNow
+            , ActuatorType = Type
         };
-
-    public Task ExecuteAsync(ActionExecution execution)
-    {
-        if (execution is not ValueActionExecution ex)
-            throw new ArgumentException($"Execution must be of type {nameof(ValueActionExecution)}");
-
-        if (execution.Key == HatchActuatorConnectorActions.Open)
-        {
-            value = Math.Clamp(ex.Value, 0, 30);
-        }
-
-        return Task.CompletedTask;
-    }
-    
-    public static DummyHatchActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

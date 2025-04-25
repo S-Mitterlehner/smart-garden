@@ -1,8 +1,10 @@
 ﻿using SmartGarden.Core.Enums;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.Actuators;
 
 public interface IActuatorManager
 {
-    IActuatorConnector GetConnector(string key, ActuatorType type);
+    Task<IActuatorConnector> GetConnectorAsync(ActuatorRef reference);
+    Task SetupRegisterListenerAsync();
 }

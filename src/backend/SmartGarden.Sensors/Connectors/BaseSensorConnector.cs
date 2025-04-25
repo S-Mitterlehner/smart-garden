@@ -15,8 +15,8 @@ public abstract class BaseSensorConnector(string key, string topic, ISensorListe
 {
     private SensorData _lastData = null!;
 
-    public string Key { get; } = key;
-    public string Topic { get; } = topic;
+    public string Key => key;
+    public string Topic => topic;
     public abstract SensorType Type { get; }
     public abstract string Name { get; }
     public abstract string Description { get; }
@@ -27,11 +27,11 @@ public abstract class BaseSensorConnector(string key, string topic, ISensorListe
     {
         try
         {
-            var data = e.Parse<MqttSensorData>();
-
             if (e.ApplicationMessage.Topic != Topic) return; // Ignore messages not for this topic
 
-            _lastData = SensorData.FromMqtt(data, Type);
+            var data = e.Parse<MqttSensorData>();
+
+            _lastData = GetDataFromMqtt(data, Type);
             await listener.PublishMeasurementAsync(_lastData);
         }
         catch (Exception ex)
@@ -49,4 +49,16 @@ public abstract class BaseSensorConnector(string key, string topic, ISensorListe
     }
 
     public Task<SensorData> GetDataAsync() => Task.FromResult(_lastData);
+
+    private SensorData GetDataFromMqtt(MqttSensorData? data, SensorType type) => new SensorData
+    {
+        SensorKey = data?.SensorKey ?? "",
+        SensorType = type,
+        CurrentValue = data?.CurrentValue ?? 0,
+        Min = data?.Min ?? 0,
+        Max = data?.Max ?? 0,
+        ConnectionState = ConnectionState.Connected,
+        Unit = data?.Unit ?? "",
+        LastUpdate = DateTime.UtcNow
+    };
 }

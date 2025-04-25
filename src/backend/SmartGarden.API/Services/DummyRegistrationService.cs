@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartGarden.Actuators;
 using SmartGarden.Core.Enums;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
@@ -10,7 +11,7 @@ namespace SmartGarden.API.Services;
 ///     Dummy service to simulate the automatic "registration" of Sensors and Actuators
 /// </summary>
 /// <param name="sensorManager"></param>
-public class DummyRegistrationService(IServiceProvider sp, ISensorManager sensorManager) : BackgroundService
+public class DummyRegistrationService(IServiceProvider sp, ISensorManager sensorManager, IActuatorManager actuatorManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -21,6 +22,13 @@ public class DummyRegistrationService(IServiceProvider sp, ISensorManager sensor
         foreach (var sensorRef in sensors)
         {
             await sensorManager.GetConnectorAsync(sensorRef);
+        }
+
+        var actuators = await db.Get<ActuatorRef>().Where(x => x.ConnectorKey != null).ToListAsync(cancellationToken: stoppingToken);
+        
+        foreach (var actuatorRef in actuators)
+        {
+            await actuatorManager.GetConnectorAsync(actuatorRef);
         }
     }
 }

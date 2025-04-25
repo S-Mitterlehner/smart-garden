@@ -2,7 +2,7 @@
 
 namespace SmartGarden.Sensors.Models;
 
-public class MqttRegisterData
+public class MqttSensorRegisterData
 {
     
     [JsonPropertyName("sensorKey")]

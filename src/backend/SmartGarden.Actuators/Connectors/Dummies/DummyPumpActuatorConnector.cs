@@ -4,21 +4,23 @@ using SmartGarden.Core.Enums;
 
 namespace SmartGarden.Actuators.Connectors.Dummies;
 
-
-public class DummyPumpActuatorConnector(string key) : IActuatorConnector
+public class DummyPumpActuatorConnector(string key, string topic, IActuatorListener listener) : DummyBaseActuatorConnector(key, topic, listener)
 {
-    private string _state = PumpActuatorConnectorStates.Stopped;
+    public override ActuatorType Type => ActuatorType.Pump;
+    public override string Name => "Dummy Pump";
+    public override string Description => "Just a dummy pump for testing.";
+    protected override ActuatorState InitialState => new ActuatorState
+    {
+        ConnectionState = ConnectionState.NotConnected, 
+        ActuatorType = Type, 
+        StateType = StateType.Discrete, 
+        ActuatorKey = Key, 
+        State = PumpActuatorConnectorStates.Stopped
+    };
 
-    public string Key => key;
-    public string Name => "Water Pump";
-    public string Description => "Water Pump for irrigation";
-
-    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
+    public override async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
     {
         var state = await GetStateAsync();
-
-        if(state is not DiscreteActuatorState ds)
-            throw new InvalidOperationException("State is not a DiscreteActuatorState");
 
         return [
             new ActionDefinition
@@ -27,7 +29,7 @@ public class DummyPumpActuatorConnector(string key) : IActuatorConnector
                 Description = "Start the water pump",
                 ActionType = ActionType.Command,
                 Key = PumpActuatorConnectorActions.Start,
-                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == PumpActuatorConnectorStates.Stopped,
+                IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Stopped },
                 Icon = ActionIcons.Play
             },
             new ActionDefinition
@@ -35,34 +37,31 @@ public class DummyPumpActuatorConnector(string key) : IActuatorConnector
                 Name = "Stop",
                 Description = "Stop the water pump",
                 ActionType = ActionType.Command,
-                Key = PumpActuatorConnectorActions.Stop,
-                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == PumpActuatorConnectorStates.Running,
+                Key =  PumpActuatorConnectorActions.Stop,
+                IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Running },
                 Icon = ActionIcons.Stop
             }
         ];
     }
 
-
-    public async Task<ActuatorState> GetStateAsync() =>
-        new DiscreteActuatorState
+    protected override ActuatorState GetStateAfterExecution(ActionExecution execution) => execution.Key switch
         {
-            ConnectionState = ConnectionState.Connected,
-            ActuatorKey = Key,
-            State = _state
+            PumpActuatorConnectorActions.Start => new ActuatorState
+            {
+                ConnectionState = ConnectionState.Connected
+                , ActuatorType = Type
+                , StateType = StateType.Discrete
+                , ActuatorKey = Key
+                , State = PumpActuatorConnectorStates.Running
+            }
+            , PumpActuatorConnectorActions.Stop => new ActuatorState
+            {
+                ConnectionState = ConnectionState.Connected
+                , ActuatorType = Type
+                , StateType = StateType.Discrete
+                , ActuatorKey = Key
+                , State = PumpActuatorConnectorStates.Stopped
+            }
+            , _ => throw new ArgumentOutOfRangeException(nameof(execution), "Action not found for this Actuator")
         };
-
-    public async Task ExecuteAsync(ActionExecution execution)
-    {
-        if (execution is not CommandActionExecution c)
-            throw new ArgumentException($"Execution must be of type {nameof(CommandActionExecution)}");
-
-        _state = c.Key switch
-        {
-            PumpActuatorConnectorActions.Start => _state = PumpActuatorConnectorStates.Running,
-            PumpActuatorConnectorActions.Stop => _state = PumpActuatorConnectorStates.Stopped,
-            _ => throw new ArgumentException($"Unknown action key: {c.Key}")
-        };
-    }
-    
-    public static DummyPumpActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

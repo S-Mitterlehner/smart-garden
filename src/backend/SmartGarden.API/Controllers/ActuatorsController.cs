@@ -21,7 +21,7 @@ public class ActuatorsController(ApplicationContext db, IActuatorManager actuato
         var reference = await db.Get<ActuatorRef>().FirstOrDefaultAsync(x => x.Id == id);
         if (reference == null) return NotFound();
         
-        var connector = actuatorManager.GetConnector(reference.ConnectorKey, reference.Type);
+        var connector = await actuatorManager.GetConnectorAsync(reference);
         var state = await connector.GetStateAsync();
         var actions = await connector.GetActionsAsync();
 
@@ -29,8 +29,10 @@ public class ActuatorsController(ApplicationContext db, IActuatorManager actuato
         {
             Id  = reference.Id,
             Name = reference.Name,
+            Key = reference.ConnectorKey,
+            Type = reference.Type.ToString(),
             Description = connector.Description,
-            State = ActuatorStateDto.FromState(state),
+            State = ActuatorStateDto.FromState(state, await connector.GetActionsAsync()),
             Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
         });
     }
@@ -42,26 +44,14 @@ public class ActuatorsController(ApplicationContext db, IActuatorManager actuato
         
         if (reference == null) return NotFound();
 
-        var connector = actuatorManager.GetConnector(reference.ConnectorKey, reference.Type);
+        var connector = await actuatorManager.GetConnectorAsync(reference);
         var action = await connector.GetActionDefinitionByKeyAsync(actionKey);
         
         if (action == null) return NotFound();
         if (action.ActionType == ActionType.Value && value == null)
             return BadRequest("Action requires a value");
 
-        ActionExecution execution = action.ActionType switch
-        {
-            ActionType.Command => new CommandActionExecution
-            {
-                Key = actionKey
-            },
-            ActionType.Value => new ValueActionExecution
-            {
-                Key = actionKey,
-                Value = value ?? 0
-            },
-            _ => throw new ArgumentException("what?")
-        };
+        var execution = new ActionExecution {Key = actionKey, Type = action.ActionType, Value = value};
 
         await connector.ExecuteAsync(execution);
         return NoContent();

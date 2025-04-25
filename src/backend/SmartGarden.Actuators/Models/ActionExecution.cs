@@ -1,13 +1,10 @@
-﻿namespace SmartGarden.Actuators.Models;
+﻿using SmartGarden.Actuators.Enums;
 
-public abstract class ActionExecution
+namespace SmartGarden.Actuators.Models;
+
+public class ActionExecution
 {
     public string Key { get; set; }
-}
-
-public class CommandActionExecution : ActionExecution;
-
-public class ValueActionExecution : ActionExecution
-{
-    public double Value { get; set; }
+    public ActionType Type { get; set; }
+    public double? Value { get; set; }
 }

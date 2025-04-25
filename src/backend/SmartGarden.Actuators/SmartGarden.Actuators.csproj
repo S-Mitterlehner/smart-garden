@@ -8,6 +8,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartGarden.Core\SmartGarden.Core.csproj" />
+    <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
+    <ProjectReference Include="..\SmartGarden.Mqtt\SmartGarden.Mqtt.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+       <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.4\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

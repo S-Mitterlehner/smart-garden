@@ -1,5 +1,9 @@
 import { ConnectionState } from "./general";
 
+export enum ActuatorType {
+  Pump = "Pump",
+}
+
 export enum ActuatorStateStrings {
   Open = "Open",
   Closed = "Closed",
@@ -25,29 +29,35 @@ export enum ActionIcon {
 export type ActuatorRef = {
   id: string;
   name: string;
+  description: string;
+  key: string;
+  type: string;
 };
 
 export type Actuator = ActuatorRef & {
-  description: string;
   state: ActuatorState;
   actions: ActuatorAction[];
 };
 
 export type ActuatorState = {
+  actuatorKey: string;
+  actuatorType: string;
   connectionState: ConnectionState;
-  type: StateType;
-  state: string;
-  value: number;
-  min: number;
-  max: number;
-  unit: string;
+  stateType: StateType;
+  state?: string;
+  value?: number;
+  min?: number;
+  max?: number;
+  unit?: string;
+  actions: ActuatorAction[];
+  lastUpdate: Date;
 };
 
 export type ActuatorAction = {
-  type: ActionType;
   key: string;
   name: string;
   description: string;
+  type: ActionType;
   isAllowed: boolean;
   icon: ActionIcon;
   currentValue?: number;

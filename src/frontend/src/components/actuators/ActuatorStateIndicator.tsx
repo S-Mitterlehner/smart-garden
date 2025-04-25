@@ -12,27 +12,34 @@ import {
 } from "@tabler/icons-react";
 import { ConnectionState } from "../../models/general";
 import Gauge from "../Gauge";
+import { Tooltip } from "@mantine/core";
 
 export type ActuatorStateProps = {
   state: ActuatorState;
+  connectionState?: ConnectionState;
 };
 
-export default function ActuatorStateIndicator({ state }: ActuatorStateProps) {
+export default function ActuatorStateIndicator({
+  state,
+  connectionState,
+}: ActuatorStateProps) {
   const getStateTemplate = () => {
-    if (state.connectionState === ConnectionState.NotConnected)
+    if (connectionState === ConnectionState.NotConnected)
       return (
-        <span className="text-gray-500 min-h-44">
-          <IconPlugConnectedX className="w-24 h-24" />
+        <span className="text-gray-500 min-h-44 flex justify-center items-center">
+          <Tooltip label="Not connected" withArrow position="top">
+            <IconPlugConnectedX className="w-24 h-24" />
+          </Tooltip>
         </span>
       );
 
-    if (state.type === StateType.Continuous)
+    if (state.stateType === StateType.Continuous)
       return (
         <span className="min-h-44">
           <Gauge
-            value={state.value}
-            min={state.min}
-            max={state.max}
+            value={state.value!}
+            min={state.min!}
+            max={state.max!}
             showValue={true}
             unit={state.unit}
           />
@@ -55,9 +62,11 @@ export default function ActuatorStateIndicator({ state }: ActuatorStateProps) {
     };
 
     return (
-      <div className="min-h-44 flex justify-center items-center">
-        {getIndicator()}
-      </div>
+      <Tooltip label={state.state} withArrow position="top">
+        <div className="min-h-44 flex justify-center items-center">
+          {getIndicator()}
+        </div>
+      </Tooltip>
     );
   };
 

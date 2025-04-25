@@ -16,6 +16,7 @@ builder.Services.RegisterDbContext(builder.Configuration);
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
+builder.Services.AddSingleton<IActuatorListener, SignalRActuatorListener>();
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
@@ -25,6 +26,7 @@ builder.Services.AddMqttClient();
 // BackgroundServices 
 builder.Services.AddHostedService<DbInitializer>();
 builder.Services.AddHostedService<SensorInitializer>();
+builder.Services.AddHostedService<ActuatorInitializer>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -63,5 +65,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<SensorHub>("/sockets/sensor");
+app.MapHub<ActuatorHub>("/sockets/actuator");
 
 app.Run();

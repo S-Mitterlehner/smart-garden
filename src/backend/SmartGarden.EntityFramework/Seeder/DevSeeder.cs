@@ -52,18 +52,22 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         {
             Id = new Guid("f3948dbb-4c99-4173-86d6-3e24834639df"),
             Name = "Water Pump",
+            Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
             Type = ActuatorType.Pump,
             Order = 1,
-            ConnectorKey = "waterpump"
+            ConnectorKey = "sm-48ca435508f0",
+            Topic = "smart-garden/sm-48ca435508f0/waterpump"
         });
-        
+
         var c2 = await CreateOrUpdateAsync(new ActuatorRef
         {
             Id = new Guid("6060f089-42a3-4e7d-9ef6-2557866023a4"),
             Name = "Hatch",
+            Description = "Hatch is a device that opens and closes to allow access to a space. It is often used in greenhouses.",
             Type = ActuatorType.Hatch,
             Order = 2,
-            ConnectorKey = "hatch"
+            ConnectorKey = "dummy",
+            Topic = "dummy"
         });
 
         var s1 = await CreateOrUpdateAsync(new SensorRef

@@ -1,6 +1,8 @@
-﻿using SmartGarden.Actuators.Enums;
+﻿using MQTTnet;
+using SmartGarden.Actuators.Enums;
 using SmartGarden.Actuators.Models;
 using SmartGarden.Core.Enums;
+using SmartGarden.Mqtt;
 
 namespace SmartGarden.Actuators.Connectors;
 
@@ -12,22 +14,28 @@ public static class PumpActuatorConnectorActions
 
 public static class PumpActuatorConnectorStates
 {
-    public const string Running = "RUNNING";
-    public const string Stopped = "STOPPED";
+    public const string Running = "Running";
+    public const string Stopped = "Stopped";
 }
 
-public class PumpActuatorConnector(string key) : IActuatorConnector
+public class PumpActuatorConnector(string key, string topic, IMqttClient mqttClient, IActuatorListener listener) : BaseActuatorConnector(key, topic, mqttClient, listener)
 {
-    public string Key => key;
-    public string Name => "Water Pump";
-    public string Description => "Water Pump for irrigation";
+    public override ActuatorType Type => ActuatorType.Pump;
+    public override string Name => "Water Pump";
+    public override string Description => "Water Pump for irrigation";
 
-    public async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
+    protected override ActuatorState InitialState => new ActuatorState
+    {
+        ConnectionState = ConnectionState.NotConnected,
+        ActuatorType = Type,
+        StateType = StateType.Discrete,
+        ActuatorKey = Key,
+        State = PumpActuatorConnectorStates.Stopped
+    };
+
+    public override async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
     {
         var state = await GetStateAsync();
-
-        if(state is not DiscreteActuatorState ds)
-            throw new InvalidOperationException("State is not a DiscreteActuatorState");
 
         return [
             new ActionDefinition
@@ -35,8 +43,8 @@ public class PumpActuatorConnector(string key) : IActuatorConnector
                 Name = "Start",
                 Description = "Start the water pump",
                 ActionType = ActionType.Command,
-                Key = "pump.start",
-                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == PumpActuatorConnectorStates.Stopped,
+                Key = PumpActuatorConnectorActions.Start,
+                IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Stopped },
                 Icon = ActionIcons.Play
             },
             new ActionDefinition
@@ -44,30 +52,10 @@ public class PumpActuatorConnector(string key) : IActuatorConnector
                 Name = "Stop",
                 Description = "Stop the water pump",
                 ActionType = ActionType.Command,
-                Key = "pump.stop",
-                IsAllowed = state.ConnectionState == ConnectionState.Connected && ds.State == PumpActuatorConnectorStates.Running,
+                Key =  PumpActuatorConnectorActions.Stop,
+                IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Running },
                 Icon = ActionIcons.Stop
             }
         ];
     }
-
-
-    public async Task<ActuatorState> GetStateAsync()
-    {
-        // TODO: Ask actual actuator or take from listener
-        return new DiscreteActuatorState
-        {
-            ConnectionState = ConnectionState.Connected,
-            ActuatorKey = Key,
-            State = PumpActuatorConnectorStates.Stopped
-        };
-    }
-
-    public Task ExecuteAsync(ActionExecution execution)
-    {
-        // TODO: Call actual actuator
-        return Task.CompletedTask;
-    }
-    
-    public static PumpActuatorConnector Create(string key, IServiceProvider sp) => new(key);
 }

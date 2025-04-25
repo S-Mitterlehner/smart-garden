@@ -2,4 +2,4 @@
 
 namespace SmartGarden.API.Hubs;
 
-public class SensorHub : Hub;
+public class ActuatorHub : Hub;

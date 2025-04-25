@@ -60,7 +60,7 @@ export default function useSensor(sensorId: string): SensorValue {
     connection
       .start()
       .then(() => {
-        console.log("ws started");
+        console.log(`sensor ${sensor?.key}/${sensor?.type} ws connected`);
         setConnectionState(ConnectionState.Connected);
       })
       .catch(() => {
@@ -69,7 +69,7 @@ export default function useSensor(sensorId: string): SensorValue {
 
     return () => {
       connection.stop();
-      console.log("ws stopped");
+      console.log(`sensor ${sensor?.key}/${sensor?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
   }, [sensor?.key, sensor?.type]);

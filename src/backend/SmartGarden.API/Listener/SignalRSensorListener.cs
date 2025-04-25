@@ -21,11 +21,11 @@ public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<Signa
             , Min = data.Min
             , Max = data.Max
             , SensorKey = data.SensorKey
-            , SensorType = data.SensorType
+            , SensorType = data.SensorType.ToString()
             , ConnectionState = data.ConnectionState.ToString()
             , LastUpdate = data.LastUpdate
         };
         
-        await context.Clients.All.SendAsync(MEASUREMENT_MADE, data.SensorKey, data.SensorType, dto);
+        await context.Clients.All.SendAsync(MEASUREMENT_MADE, data.SensorKey, data.SensorType.ToString(), dto);
     }
 }

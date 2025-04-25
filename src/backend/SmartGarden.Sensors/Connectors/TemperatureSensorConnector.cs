@@ -15,7 +15,7 @@ public class TemperatureSensorConnector(string key, string topic, ISensorListene
     protected override SensorData InitialData => new()
     {
         SensorKey = Key,
-        SensorType = Type.ToString(),
+        SensorType = Type,
         ConnectionState = ConnectionState.NotConnected,
         CurrentValue = 0,
         Min = 0,

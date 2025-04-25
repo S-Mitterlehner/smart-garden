@@ -15,7 +15,7 @@ public class HumiditySensorConnector(string key, string topic, ISensorListener l
     protected override SensorData InitialData => new SensorData
     {
         SensorKey = Key,
-        SensorType = Type.ToString(),
+        SensorType = Type,
         ConnectionState = ConnectionState.NotConnected,
         CurrentValue = 0,
         Min = 0,

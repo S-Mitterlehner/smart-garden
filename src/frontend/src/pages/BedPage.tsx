@@ -12,6 +12,9 @@ import SensorList from "../components/sensors/SensorList";
 import useSensors from "../hooks/useSensors";
 import SectionTitle from "../components/SectionTitle";
 import { notifications } from "@mantine/notifications";
+import { ActuatorRef } from "../models/actuator";
+import useActuators from "../hooks/useActuators";
+import ActuatorList from "../components/actuators/ActuatorList";
 
 export default function BedPage() {
   const bedId = useParams().bedId as string;
@@ -22,10 +25,14 @@ export default function BedPage() {
     actuators,
     addSensor,
     removeSensor,
+    addActuator,
+    removeActuator,
   } = useCurrentBed(bedId);
 
   const { data: availableSensors } = useSensors();
+  const { data: availableActuators } = useActuators();
   const [showSensorDrawer, setShowSensorDrawer] = useState(false);
+  const [showActuatorDrawer, setShowActuatorDrawer] = useState(false);
 
   const getSensorConfig = (sensorType: SensorType) => {
     const defaultConfig: PlantSensorConfig = {
@@ -57,9 +64,28 @@ export default function BedPage() {
     }
   };
 
+  const handleActuatorAction = (actuator: ActuatorRef, action: string) => {
+    switch (action) {
+      case "remove":
+        removeActuator(actuator);
+        break;
+      case "details":
+        notifications.show({
+          title: "TODO",
+          message: `Show Drawer or Modal?`,
+        });
+        break;
+    }
+  };
+
   const handleSensorAdd = (sensor: SensorRef) => {
     addSensor(sensor);
     setShowSensorDrawer(false);
+  };
+
+  const handleActuatorAdd = (actuator: ActuatorRef) => {
+    addActuator(actuator);
+    setShowActuatorDrawer(false);
   };
 
   if (!isFetched) {
@@ -67,12 +93,23 @@ export default function BedPage() {
     //TODO: make a loading spinner or skeleton
   }
 
-  const actionComponent = (
+  const sensorActionComponent = (
     <ActionIcon
       variant="subtle"
       size="xl"
       color="oklch(76.5% 0.177 163.223)"
       onClick={() => setShowSensorDrawer(!showSensorDrawer)}
+    >
+      <IconPlus className="w-6 h-6" />
+    </ActionIcon>
+  );
+
+  const actuatorActionComponent = (
+    <ActionIcon
+      variant="subtle"
+      size="xl"
+      color="oklch(76.5% 0.177 163.223)"
+      onClick={() => setShowActuatorDrawer(!showActuatorDrawer)}
     >
       <IconPlus className="w-6 h-6" />
     </ActionIcon>
@@ -94,6 +131,22 @@ export default function BedPage() {
           onSelectSensor={handleSensorAdd}
         />
       </Drawer>
+
+      <Drawer
+        opened={showActuatorDrawer}
+        position="right"
+        offset={15}
+        radius={10}
+        onClose={() => setShowActuatorDrawer(false)}
+        title="Add Actuator"
+      >
+        <ActuatorList
+          Actuators={availableActuators}
+          disabledActuators={actuators}
+          onSelectActuator={handleActuatorAdd}
+        />
+      </Drawer>
+
       <div className="flex flex-col gap-4">
         <div className="flex flex-row gap-4">
           <PlantSelector selectedPlant={plant} setSelectedPlant={setPlant} />
@@ -106,7 +159,7 @@ export default function BedPage() {
         <div>
           <SectionTitle
             title="Sensors"
-            actionComponent={actionComponent}
+            actionComponent={sensorActionComponent}
             description="Click on a sensor to see options."
             icon={<IconBinoculars className="w-8 h-8 text-emerald-400" />}
           ></SectionTitle>
@@ -126,13 +179,18 @@ export default function BedPage() {
         <div>
           <SectionTitle
             title="Actuators"
+            actionComponent={actuatorActionComponent}
             description="Click on an actuator to see actions and options."
             icon={<IconEngine className="w-8 h-8 text-emerald-400" />}
           ></SectionTitle>
 
           <div className="flex flex-row gap-4 flex-wrap">
             {actuators.map((actuator) => (
-              <ActuatorCard key={actuator.id} actuator={actuator} />
+              <ActuatorCard
+                key={actuator.id}
+                actuator={actuator}
+                onMenuAction={handleActuatorAction}
+              />
             ))}
           </div>
         </div>

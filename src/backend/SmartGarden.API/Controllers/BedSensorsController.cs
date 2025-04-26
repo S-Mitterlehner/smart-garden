@@ -11,7 +11,6 @@ public class BedSensorsController(ApplicationContext db) : BaseController
     [FromRoute(Name = "id")]
     public Guid BedId { get; set; }
 
-
     [HttpPatch("{sensorId}")]
     public async Task<IActionResult> AddSensor(Guid sensorId)
     {
@@ -37,6 +36,7 @@ public class BedSensorsController(ApplicationContext db) : BaseController
     public async Task<IActionResult> RemoveSensor(Guid sensorId)
     {
         var bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == BedId);
+
         if (bed == null)
             return NotFound($"bed with id {BedId} not found");
 

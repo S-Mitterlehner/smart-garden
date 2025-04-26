@@ -32,7 +32,7 @@ export type ActuatorRef = {
   name: string;
   description: string;
   key: string;
-  type: string;
+  type: ActuatorType;
 };
 
 export type Actuator = ActuatorRef & {

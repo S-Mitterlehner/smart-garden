@@ -19,6 +19,8 @@ export type CurrentBed = {
   actuators: ActuatorRef[];
   addSensor: (sensor: SensorRef) => void;
   removeSensor: (sensor: SensorRef) => void;
+  addActuator: (actuator: ActuatorRef) => void;
+  removeActuator: (actuator: ActuatorRef) => void;
 };
 
 export function useCurrentBed(id: string) {
@@ -111,6 +113,60 @@ export function useCurrentBed(id: string) {
       });
   };
 
+  const addActuator = (actuator: ActuatorRef) => {
+    if (!bed) return;
+
+    fetch(`${API_URL}/beds/${id}/Actuators/${actuator.id}`, {
+      method: "PATCH",
+    })
+      .then((r) => {
+        if (r.status === 200) {
+          refetch();
+          notifications.show({
+            title: "Actuator added",
+            message: `Actuator ${actuator.name} added to bed ${bed.name}`,
+            color: "green",
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to add Actuator ${actuator.name} to bed ${bed.name}`,
+          color: "red",
+        });
+      });
+  };
+
+  const removeActuator = (actuator: ActuatorRef) => {
+    if (!bed) return;
+
+    if (!confirm("are you sure?")) return;
+
+    fetch(`${API_URL}/beds/${id}/actuators/${actuator.id}`, {
+      method: "DELETE",
+    })
+      .then((r) => {
+        if (r.status === 200) {
+          refetch();
+          notifications.show({
+            title: "Actuator removed",
+            message: `Actuator ${actuator.name} removed from bed ${bed.name}`,
+            color: "red",
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to remove actuator ${actuator.name} from bed ${bed.name}`,
+          color: "red",
+        });
+      });
+  };
+
   return {
     bed,
     isFetched: bedFetched && plantFetched,
@@ -122,5 +178,7 @@ export function useCurrentBed(id: string) {
     actuators: bed?.actuators ?? [],
     addSensor,
     removeSensor,
+    addActuator,
+    removeActuator,
   } as CurrentBed;
 }

@@ -4,6 +4,7 @@ import {
   StateType,
 } from "../../models/actuator";
 import {
+  IconHourglassEmpty,
   IconPlugConnectedX,
   IconSettings,
   IconSettingsPause,
@@ -15,7 +16,7 @@ import Gauge from "../Gauge";
 import { Tooltip } from "@mantine/core";
 
 export type ActuatorStateProps = {
-  state: ActuatorState;
+  state: ActuatorState | null;
   connectionState?: ConnectionState;
 };
 
@@ -29,6 +30,15 @@ export default function ActuatorStateIndicator({
         <span className="text-gray-500 min-h-44 flex justify-center items-center">
           <Tooltip label="Not connected" withArrow position="top">
             <IconPlugConnectedX className="w-24 h-24" />
+          </Tooltip>
+        </span>
+      );
+
+    if (state === null)
+      return (
+        <span className="text-gray-500 min-h-44 flex justify-center items-center">
+          <Tooltip label="Waiting for Status" withArrow position="top">
+            <IconHourglassEmpty className="w-24 h-24" />
           </Tooltip>
         </span>
       );

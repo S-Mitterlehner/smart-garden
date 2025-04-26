@@ -15,6 +15,8 @@ public class ActuatorActionDto
     public double? CurrentValue { get; set; }
     public double? Min { get; set; }
     public double? Max { get; set; }
+    public double? Increment { get; set; }
+    public string? Unit { get; set; }
 
     public static Expression<Func<ActionDefinition, ActuatorActionDto>> FromEntity => ca => new ActuatorActionDto
     {
@@ -26,6 +28,8 @@ public class ActuatorActionDto
         CurrentValue = ca.CurrentValue,
         Min = ca.Min,
         Max = ca.Max,
+        Unit = ca.Unit,
+        Increment = ca.Increment,
         IsAllowed = ca.IsAllowed
     };
 }

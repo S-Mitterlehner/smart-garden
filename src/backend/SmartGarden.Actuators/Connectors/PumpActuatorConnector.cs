@@ -65,9 +65,11 @@ public class PumpActuatorConnector(string key, string topic, IMqttClient mqttCli
                 ActionType = ActionType.Value,
                 IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Stopped },
                 Icon = ActionIcons.Timer,
-                CurrentValue = 0,
+                CurrentValue = 1,
                 Min = 1,
-                Max = 120
+                Max = 120,
+                Increment = 1,
+                Unit = "sec"
             }
         ];
     }

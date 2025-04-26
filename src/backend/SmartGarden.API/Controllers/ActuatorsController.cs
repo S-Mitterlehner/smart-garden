@@ -23,7 +23,6 @@ public class ActuatorsController(ApplicationContext db, IActuatorManager actuato
         
         var connector = await actuatorManager.GetConnectorAsync(reference);
         var state = await connector.GetStateAsync();
-        var actions = await connector.GetActionsAsync();
 
         return Ok(new ActuatorDto
         {

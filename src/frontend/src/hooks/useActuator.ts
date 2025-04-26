@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  ActionType,
   Actuator,
   ActuatorAction,
   ActuatorState,
@@ -13,7 +14,7 @@ import { notifications } from "@mantine/notifications";
 
 export type ActuatorValue = {
   actuator: Actuator;
-  state: ActuatorState;
+  state: ActuatorState | null;
   connectionState: ConnectionState;
   actions: ActuatorAction[];
   canDoAction: boolean;
@@ -26,11 +27,7 @@ export default function useActuator(actuatorId: string): ActuatorValue {
     ConnectionState.NotConnected
   );
   const [loading, setLoading] = useState(false);
-  const {
-    data: actuator,
-    refetch,
-    isFetched,
-  } = useQuery<Actuator | null>({
+  const { data: actuator, isFetched } = useQuery<Actuator | null>({
     queryKey: ["actuator", actuatorId],
     enabled: !!actuatorId,
     refetchOnMount: "always",
@@ -95,10 +92,10 @@ export default function useActuator(actuatorId: string): ActuatorValue {
         connectionState: ConnectionState.NotConnected,
         value: actuator.state.value,
         min: actuator.state.min,
-        max: actuator.state.min,
+        max: actuator.state.max,
         unit: actuator.state.unit,
         lastUpdate: new Date(),
-        actions: actuator.actions,
+        actions: actuator.state.actions,
         stateType: actuator.state.stateType,
         state: actuator.state.state,
         actuatorType: actuator.type,
@@ -108,7 +105,7 @@ export default function useActuator(actuatorId: string): ActuatorValue {
 
   return {
     actuator: actuator ?? ({} as Actuator),
-    state: currentState ?? ({} as ActuatorState),
+    state: currentState ?? actuator?.state ?? null,
     actions: currentState?.actions ?? [],
     connectionState,
     canDoAction:
@@ -117,7 +114,7 @@ export default function useActuator(actuatorId: string): ActuatorValue {
       setLoading(true);
       const r = await fetch(
         `${API_URL}/actuators/${actuatorId}/action/${action.key}${
-          !!value ? `?value=${value}` : ""
+          action.type === ActionType.Value ? `?value=${value}` : ""
         }`,
         {
           method: "HEAD",
@@ -125,10 +122,9 @@ export default function useActuator(actuatorId: string): ActuatorValue {
       );
       if (r.ok) {
         notifications.show({
-          message: `Action "${action.name}" requested. This may take a few seconds.`,
+          message: `Action "${action.name}" requested. This may take a few moments.`,
           color: "green",
         });
-        refetch();
         setLoading(false);
       }
     },

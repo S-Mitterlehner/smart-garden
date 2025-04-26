@@ -11,9 +11,11 @@ public class ActionDefinition
     public ActionType ActionType { get; internal init; }
     public bool IsAllowed { get; set; }
 
-    public ActionIcons Icon { get; set; } = ActionIcons.Play;
+    public ActionIcons Icon { get; internal init; } = ActionIcons.Play;
     
     public double? CurrentValue { get; internal init; }
     public double? Min { get; internal init; }
     public double? Max { get; internal init; }
+    public double? Increment { get; set; }
+    public string? Unit { get; internal init; }
 }

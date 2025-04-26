@@ -39,6 +39,7 @@ public class DummyHatchActuatorConnector(string key, string topic, IActuatorList
                 , CurrentValue = state.CurrentValue
                 , Min = state.Min
                 , Max = state.Max
+                , Unit = "°"
             }
         ];
     }

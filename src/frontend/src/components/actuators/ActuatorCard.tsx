@@ -12,6 +12,7 @@ import {
   IconListDetails,
   IconPlayerPlay,
   IconPlayerStop,
+  IconStopwatch,
   IconTrash,
 } from "@tabler/icons-react";
 import { useState } from "react";
@@ -47,6 +48,8 @@ export default function ActuatorCard({
         return <IconPlayerPlay className="w-4 h-4 text-emerald-600" />;
       case ActionIcon.stop:
         return <IconPlayerStop className="w-4 h-4 text-red-700" />;
+      case ActionIcon.timer:
+        return <IconStopwatch className="w-4 h-4 text-yellow-500" />;
       default:
         return <IconPlayerPlay className="w-4 h-4" />;
     }
@@ -59,7 +62,7 @@ export default function ActuatorCard({
 
     if (action.type === ActionType.Value && value === undefined) {
       setShowValueModal(true);
-      setSliderValue(state.value ?? state.min);
+      setSliderValue(currentAction?.currentValue ?? currentAction?.min ?? 1);
       return;
     }
 
@@ -83,14 +86,14 @@ export default function ActuatorCard({
           <Slider
             color="oklch(69.6% 0.17 162.48)"
             className="w-full"
-            min={state.min}
-            max={state.max}
-            step={0.01}
+            min={currentAction?.min ?? 0}
+            max={currentAction?.max ?? 100}
+            step={currentAction?.increment ?? 1}
             value={sliderValue}
             onChange={setSliderValue}
           ></Slider>
           <span className="text-sm text-gray-500 w-24 text-right">
-            {`${sliderValue} ${state.unit}`}
+            {`${sliderValue} ${currentAction?.unit ?? ""}`}
           </span>
         </div>
 

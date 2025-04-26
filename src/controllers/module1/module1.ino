@@ -17,7 +17,7 @@ const String actionMessageType = "Action";
 // Invervals
 const unsigned long temperatureInterval = 5000;
 const unsigned long humidityInterval = 5000;
-const unsigned long pumpInterval = 1000;
+const unsigned long pumpInterval = 10000;
 
 // Device Variables
 String deviceId = "temp";
@@ -82,17 +82,17 @@ void loop()
 
   mqttClient.loop();
 
-  if (now - lastTemperatureTime < temperatureInterval) {
+  if (now - lastTemperatureTime >= temperatureInterval) {
     lastTemperatureTime = now;
     measureTemperature();
   }
 
-  if (now - lastHumidityTime < humidityInterval) {
+  if (now - lastHumidityTime >= humidityInterval) {
     lastHumidityTime = now;
     measureHumidity();
   }
 
-  if (now - lastPumpStatusTime < pumpInterval) {
+  if (now - lastPumpStatusTime >= pumpInterval) {
     lastPumpStatusTime = now;
     sendPumpStatus();
   }
@@ -174,18 +174,19 @@ void listen(char* topic, byte* payload, unsigned int length) {
   // Check if the message is for this device and a command
   if ( doc["messageType"].as<String>() == actionMessageType 
     && doc["actuatorKey"].as<String>() == deviceId
-    && doc["actuatorType"].as<String>() == "Pump"
-    && doc["actionType"].as<String>() == "Command") {
+    && doc["actuatorType"].as<String>() == "Pump") {
     
     String actionKey = doc["actionKey"].as<String>();
 
-    if (actionKey == "pump.start") {
+    if (actionKey == "pump.start" && doc["actionType"].as<String>() == "Command") {
       setPump(true);
-    } else if (actionKey == "pump.stop") {
+    } else if (actionKey == "pump.stop" && doc["actionType"].as<String>() == "Command") {
       setPump(false);
-    } else if (actionKey == "pump.run" && doc["value"].as<float>() > 0) {
+      pumpRunningForDuration = false;
+    } else if (actionKey == "pump.run" && doc["value"].as<float>() > 0 && doc["actionType"].as<String>() == "Value") {
       float value = doc["value"].as<float>();
-      pumpStopTime = millis() + value;
+
+      pumpStopTime = millis() + (value * 1000);
       pumpRunningForDuration = true;
       setPump(true);
     } else {

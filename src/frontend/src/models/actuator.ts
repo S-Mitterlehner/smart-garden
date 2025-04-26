@@ -24,6 +24,7 @@ export enum StateType {
 export enum ActionIcon {
   play = "play",
   stop = "stop",
+  timer = "timer",
 }
 
 export type ActuatorRef = {
@@ -36,7 +37,6 @@ export type ActuatorRef = {
 
 export type Actuator = ActuatorRef & {
   state: ActuatorState;
-  actions: ActuatorAction[];
 };
 
 export type ActuatorState = {
@@ -63,4 +63,6 @@ export type ActuatorAction = {
   currentValue?: number;
   min?: number;
   max?: number;
+  increment?: number;
+  unit?: string;
 };

@@ -1,6 +1,7 @@
 import { SensorRef } from "../../models/sensor";
 import { PlantSensorConfig } from "../../models/plant";
 import {
+  IconHourglassEmpty,
   IconListDetails,
   IconPlugConnectedX,
   IconTrash,
@@ -11,6 +12,7 @@ import useSensor from "../../hooks/useSensor";
 import { ConnectionState } from "../../models/general";
 import { Menu, Tooltip } from "@mantine/core";
 import { getTypeIconCircle } from "./utils";
+import { getTimeString } from "../../utils";
 
 export default function SensorCard({
   sensor: sensorRef,
@@ -29,40 +31,37 @@ export default function SensorCard({
   const rangeTo = plantConfig?.rangeTo ?? -1;
 
   const getGauge = () => {
-    if (connectionState === ConnectionState.Connected && isFetched) {
+    if (!isFetched || connectionState === ConnectionState.NotConnected)
       return (
-        <Gauge
-          min={currentState.min}
-          max={currentState.max}
-          value={currentState.currentValue!}
-          rangeFrom={rangeFrom}
-          rangeTo={rangeTo}
-          unit={currentState.unit}
-          showValue={true}
-        ></Gauge>
+        <Tooltip label="Not Connected" withArrow position="top">
+          <IconPlugConnectedX className="w-24 h-24 text-gray-500" />
+        </Tooltip>
       );
-    } else {
-      return <IconPlugConnectedX className="w-24 h-24 text-gray-500" />;
+
+    if (currentState === null) {
+      return (
+        <Tooltip label="Waiting for Status" withArrow position="top">
+          <IconHourglassEmpty className="w-24 h-24" />
+        </Tooltip>
+      );
     }
+    return (
+      <Gauge
+        min={currentState.min}
+        max={currentState.max}
+        value={currentState.currentValue!}
+        rangeFrom={rangeFrom}
+        rangeTo={rangeTo}
+        unit={currentState.unit}
+        showValue={true}
+      ></Gauge>
+    );
   };
 
   const getRangeString = () => {
     if (rangeFrom > -1 && rangeTo > -1)
       return `${rangeFrom} - ${rangeTo} ${sensor.unit}`;
     else return "not defined";
-  };
-
-  const getTimeString = () => {
-    if (currentState.lastUpdate) {
-      const date = new Date(currentState.lastUpdate);
-      const format = (t: number) => `00${t}`.slice(-2);
-
-      return `${format(date.getHours())}:${format(date.getMinutes())}:${format(
-        date.getSeconds()
-      )}`;
-    } else {
-      return "not available";
-    }
   };
 
   return (
@@ -80,7 +79,7 @@ export default function SensorCard({
             right={
               <div className="flex flex-col text-xs text-right">
                 <span className="text-gray-400">Last Update: </span>
-                <span>{getTimeString()}</span>
+                <span>{getTimeString(currentState?.lastUpdate)}</span>
               </div>
             }
           >
@@ -97,7 +96,8 @@ export default function SensorCard({
                 <div className="flex flex-col text-right">
                   <span className="text-gray-400">Sensor:</span>
                   <span>
-                    {currentState.min} - {currentState.max} {sensor.unit}
+                    {currentState?.min ?? sensor.minValue} -{" "}
+                    {currentState?.max ?? sensor.maxValue} {sensor.unit}
                   </span>
                 </div>
               </div>

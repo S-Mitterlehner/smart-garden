@@ -47,6 +47,7 @@ export default function useActuator(actuatorId: string): ActuatorValue {
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${API_URL}/sockets/actuator`)
+      .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();
 
@@ -71,7 +72,7 @@ export default function useActuator(actuatorId: string): ActuatorValue {
     connection
       .start()
       .then(() => {
-        console.log(`actuator ${actuator?.key}/${actuator?.type} ws connected`);
+        // console.log(`actuator ${actuator?.key}/${actuator?.type} ws connected`);
         setConnectionState(ConnectionState.Connected);
       })
       .catch(() => {
@@ -80,7 +81,7 @@ export default function useActuator(actuatorId: string): ActuatorValue {
 
     return () => {
       connection.stop();
-      console.log(`actuator ${actuator?.key}/${actuator?.type} ws stopped`);
+      // console.log(`actuator ${actuator?.key}/${actuator?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
   }, [actuator?.key, actuator?.type]);

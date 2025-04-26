@@ -1,4 +1,4 @@
-import { Button, Menu, Modal, Slider } from "@mantine/core";
+import { Button, Menu, Modal, Slider, Tooltip } from "@mantine/core";
 import useActuator from "../../hooks/useActuator";
 import {
   ActionIcon,
@@ -16,6 +16,8 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import { getTimeString } from "../../utils";
+import { getTypeIconCircle } from "./utils";
 
 export default function ActuatorCard({
   actuator: actuatorRef,
@@ -112,7 +114,20 @@ export default function ActuatorCard({
       <Menu shadow="md">
         <Menu.Target>
           <button className="text-left cursor-pointer w-full phone:w-auto">
-            <Card title={actuator.name}>
+            <Card
+              title={actuator.name}
+              icon={
+                <Tooltip label={actuator.type} position="top" withArrow>
+                  {getTypeIconCircle(actuator.type)}
+                </Tooltip>
+              }
+              right={
+                <div className="flex flex-col text-xs text-right">
+                  <span className="text-gray-400">Last Update: </span>
+                  <span>{getTimeString(state?.lastUpdate)}</span>
+                </div>
+              }
+            >
               <div className="flex flex-col items-center gap-4">
                 <ActuatorStateIndicator
                   state={state}
@@ -136,7 +151,7 @@ export default function ActuatorCard({
               </Menu.Item>
             );
           })}
-          <Menu.Label>Bed Actions</Menu.Label>
+          <Menu.Label>Misc</Menu.Label>
           <Menu.Item
             onClick={() => onMenuAction(actuatorRef, "details")}
             leftSection={<IconListDetails className="w-4 h-4" />}

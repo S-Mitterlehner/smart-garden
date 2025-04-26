@@ -10,16 +10,16 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         var psc1 = await CreateOrUpdateAsync(new PlantSensorConfig
         {
             Id = new Guid("1b9c649b-55e1-422b-b86c-876c72fd2ea1"),
-            RangeFrom = 15,
-            RangeTo = 25,
+            RangeFrom = 21,
+            RangeTo = 29,
             SensorType = SensorType.Temperature
         });
         
         var psc2 = await CreateOrUpdateAsync(new PlantSensorConfig
         {
             Id = new Guid("13be42e3-d80c-4566-9b1c-8fce80fe8c38"),
-            RangeFrom = 40,
-            RangeTo = 50,
+            RangeFrom = 60,
+            RangeTo = 70,
             SensorType = SensorType.Humidity
         });
 

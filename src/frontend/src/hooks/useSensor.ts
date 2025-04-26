@@ -8,7 +8,7 @@ import { ConnectionState } from "../models/general";
 export type SensorValue = {
   isFetched: boolean;
   sensor: Sensor;
-  currentState: SensorData;
+  currentState: SensorData | null;
   connectionState: ConnectionState;
 };
 
@@ -36,6 +36,7 @@ export default function useSensor(sensorId: string): SensorValue {
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${API_URL}/sockets/sensor`)
+      .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();
 
@@ -60,7 +61,7 @@ export default function useSensor(sensorId: string): SensorValue {
     connection
       .start()
       .then(() => {
-        console.log(`sensor ${sensor?.key}/${sensor?.type} ws connected`);
+        // console.log(`sensor ${sensor?.key}/${sensor?.type} ws connected`);
         setConnectionState(ConnectionState.Connected);
       })
       .catch(() => {
@@ -69,7 +70,7 @@ export default function useSensor(sensorId: string): SensorValue {
 
     return () => {
       connection.stop();
-      console.log(`sensor ${sensor?.key}/${sensor?.type} ws stopped`);
+      // console.log(`sensor ${sensor?.key}/${sensor?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
   }, [sensor?.key, sensor?.type]);
@@ -92,7 +93,7 @@ export default function useSensor(sensorId: string): SensorValue {
   return {
     isFetched,
     sensor: sensor ?? ({} as Sensor),
-    currentState: currentState ?? ({} as SensorData),
+    currentState: currentState ?? null,
     connectionState,
   };
 }

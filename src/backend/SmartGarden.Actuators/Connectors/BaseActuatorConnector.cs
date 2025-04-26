@@ -92,6 +92,7 @@ public abstract class BaseActuatorConnector(string key, string topic, IMqttClien
                     ActuatorKey = Key,
                     ActuatorType = Type,
                     ConnectionState = ConnectionState.Connected,
+                    LastUpdate = DateTime.UtcNow
                 };
             case StateType.Continuous:
                 return new ActuatorState

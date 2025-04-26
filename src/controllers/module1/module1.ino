@@ -1,34 +1,50 @@
-#include <dht11.h> // TODO: Import dht11.zip (source: https://github.com/adidax/dht11#)
+#include <DHT.h> // TODO: install "DHT sensor library"
 #include <WiFiS3.h>
-#include <PubSubClient.h> // TODO: install PubSubClient
-#include <ArduinoJson.h> // TODO: install ArduinoJson
+#include <PubSubClient.h> // TODO: install "PubSubClient"
+#include <ArduinoJson.h> // TODO: install "ArduinoJson"
 
 #include "utils.h"
 
-// Pins
+// Constants
+#define DHTTYPE DHT11
 const int DHT_PIN = 11;
-const int motorBI = 9;
-const int motorFI = 10;
+const int pumpBI = 9;
+const int pumpFI = 10;
 
-dht11 DHT11;
+const String actionMessageType = "Action";
 
+
+// Invervals
+const unsigned long temperatureInterval = 5000;
+const unsigned long humidityInterval = 5000;
+const unsigned long pumpInterval = 1000;
+
+// Device Variables
+String deviceId = "temp";
 String sensorRegisterTopic = "smart-garden/register/sensor";
 String actuatorRegisterTopic = "smart-garden/register/actuator";
 String temperatureTopic = "smart-garden/temp/temperature";
 String humidityTopic = "smart-garden/temp/humidity";
 String pumpTopic = "smart-garden/temp/waterpump";
 
-String actionMessageType = "Action";
 
-String deviceId = "temp";
-
+// References
 extern WiFiClient network;
 extern PubSubClient mqttClient;
 extern String macAddress;
+DHT dht(DHT_PIN, DHTTYPE);
 
-unsigned long lastPublishTime = 0;
 
+// State
 String pumpState = "Stopped";
+
+// Timing Variables
+unsigned long lastTemperatureTime = 0;
+unsigned long lastHumidityTime = 0;
+unsigned long lastPumpStatusTime = 0;
+unsigned long pumpStopTime = 0;
+bool pumpRunningForDuration = false;
+
 
 void  setup()
 {
@@ -37,21 +53,57 @@ void  setup()
     ; // wait for serial port to connect. Needed for native USB port only
   }
   
-  pinMode(motorBI, OUTPUT);
-  pinMode(motorFI, OUTPUT);
+  // Temperature & Humidity Sensor
+  dht.begin();
 
-  Serial.println("start motor");
-
-  // setMotor(true);
-  // Keep the pump on for 5 seconds
-  // delay(5000);
-
-  // Serial.println("stop motor");
-  // setMotor(false);
-
-  Serial.println("motor should stop");
+  // Pump
+  pinMode(pumpBI, OUTPUT);
+  pinMode(pumpFI, OUTPUT);
 
   connectWifi();
+  setupDeviceStrings();
+
+  Serial.println("Connecting to MQTT...");
+  connectMQTT(deviceId);
+
+  Serial.println("Connected to MQTT");
+  Serial.println("Registering Sensor and Actuator...");
+
+  registerSensor();
+  registerActuator();
+
+  mqttClient.setCallback(listen);
+  mqttClient.subscribe(pumpTopic.c_str());
+}
+
+void loop()
+{
+  unsigned long now = millis();
+
+  mqttClient.loop();
+
+  if (now - lastTemperatureTime < temperatureInterval) {
+    lastTemperatureTime = now;
+    measureTemperature();
+  }
+
+  if (now - lastHumidityTime < humidityInterval) {
+    lastHumidityTime = now;
+    measureHumidity();
+  }
+
+  if (now - lastPumpStatusTime < pumpInterval) {
+    lastPumpStatusTime = now;
+    sendPumpStatus();
+  }
+
+  if (pumpRunningForDuration && now >= pumpStopTime) {
+    setPump(false);
+    pumpRunningForDuration = false;
+  }
+}
+
+void setupDeviceStrings() {
   String d = String(macAddress.c_str());
   d.replace(":", "");
   deviceId = "sm-" + d;
@@ -68,27 +120,14 @@ void  setup()
   Serial.print("Humidity Topic: ");
   Serial.println(humidityTopic);
 
-  connectMQTT(deviceId);
-  registerSensor();
-  registerActuator();
-
-  mqttClient.setCallback(listen);
-  mqttClient.subscribe(pumpTopic.c_str());
+  Serial.print("Pump Topic: ");
+  Serial.println(pumpTopic);
 }
 
-void loop()
-{
-  sendMotorStatus();
-
-  Serial.println();
-
-  int chk = DHT11.read(DHT_PIN);
-
-  Serial.print("Humidity (%): ");
-  Serial.println((float)DHT11.humidity, 2);
-
+void measureTemperature() {
+  float temperature = dht.readTemperature();
   Serial.print("Temperature  (C): ");
-  Serial.println((float)DHT11.temperature, 2);
+  Serial.println(temperature, 2);
 
   StaticJsonDocument<200> temperatureMessage;
   temperatureMessage["sensorKey"] = deviceId;
@@ -96,17 +135,17 @@ void loop()
   temperatureMessage["min"] = 0;
   temperatureMessage["max"] = 50;
   temperatureMessage["unit"] = "°C";
-  temperatureMessage["currentValue"] = (float)DHT11.temperature;  // Or you can read data from other sensors
+  temperatureMessage["currentValue"] = temperature;
   char temperatureMessageBuffer[512];
   serializeJson(temperatureMessage, temperatureMessageBuffer);
 
-  mqttClient.loop();
   sendToMQTT(temperatureTopic, temperatureMessageBuffer);
+}
 
-  delayWithLoop(5000);
-  sendMotorStatus();
-
-  chk = DHT11.read(DHT_PIN);
+void measureHumidity() {
+  float humidity = dht.readHumidity();
+  Serial.print("Humidity (%): ");
+  Serial.println(humidity, 2);
 
   StaticJsonDocument<200> humidityMessage;
   humidityMessage["sensorKey"] = deviceId;
@@ -114,19 +153,15 @@ void loop()
   humidityMessage["min"] = 20;
   humidityMessage["max"] = 90;
   humidityMessage["unit"] = "%";
-  humidityMessage["currentValue"] = (float)DHT11.humidity;  // Or you can read data from other sensors
+  humidityMessage["currentValue"] = humidity;
   char humidityMessageBuffer[512];
   serializeJson(humidityMessage, humidityMessageBuffer);
-
   
   sendToMQTT(humidityTopic, humidityMessageBuffer);
-
-  delayWithLoop(5000);
 }
 
 void listen(char* topic, byte* payload, unsigned int length) {
-  // parse the following message:
-  // { "messageType": "", "actuatorKey": "sm-me", "actuatorType": "Pump", "actionType": "Command", "value": 12.34 }
+  // messageForm: { "messageType": "", "actuatorKey": "sm-me", "actuatorType": "Pump", "actionType": "Command", "value": 12.34 }
   Serial.println("MESSAGE RECEIVED");
   StaticJsonDocument<200> doc;
   DeserializationError error = deserializeJson(doc, payload, length);
@@ -136,6 +171,7 @@ void listen(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
+  // Check if the message is for this device and a command
   if ( doc["messageType"].as<String>() == actionMessageType 
     && doc["actuatorKey"].as<String>() == deviceId
     && doc["actuatorType"].as<String>() == "Pump"
@@ -144,11 +180,16 @@ void listen(char* topic, byte* payload, unsigned int length) {
     String actionKey = doc["actionKey"].as<String>();
 
     if (actionKey == "pump.start") {
-      Serial.println("Pump ON");
-      setMotor(true);
+      setPump(true);
     } else if (actionKey == "pump.stop") {
-      Serial.println("Pump OFF");
-      setMotor(false);
+      setPump(false);
+    } else if (actionKey == "pump.run" && doc["value"].as<float>() > 0) {
+      float value = doc["value"].as<float>();
+      pumpStopTime = millis() + value;
+      pumpRunningForDuration = true;
+      setPump(true);
+    } else {
+      Serial.println("Unknown action key");
     }
   }
 }
@@ -180,39 +221,33 @@ void registerActuator() {
   Serial.println("Actuator Registered");
 }
 
-void setMotor(bool on) {
+void setPump(bool on) {
   if(on) {
-    digitalWrite(motorBI, HIGH);
-    digitalWrite(motorFI, LOW);
+    digitalWrite(pumpBI, HIGH);
+    digitalWrite(pumpFI, LOW);
     pumpState = "Running";
   } else {
-    digitalWrite(motorBI, LOW);
-    digitalWrite(motorFI, LOW);
+    digitalWrite(pumpBI, LOW);
+    digitalWrite(pumpFI, LOW);
     pumpState = "Stopped";
   }
 
-  sendMotorStatus();
+  sendPumpStatus();
 }
 
-void sendMotorStatus() {
+void sendPumpStatus() {
   JsonDocument doc;
   doc["messageType"] = "State";
   doc["actuatorKey"] = deviceId;
   doc["actuatorType"] = "Pump";
   doc["stateType"] = "Discrete";
   doc["state"] = pumpState;
+
   char buffer[512];
   serializeJson(doc, buffer);
+
   sendToMQTTRetained(pumpTopic, buffer);
-  Serial.print("Motor Status: ");
+
+  Serial.print("Pump Status: ");
   Serial.println(buffer);
-}
-
-void delayWithLoop(int ms) {
-  int parts = ms / 1000;
-
-  for (int i = 0; i < parts; i++) {
-    delay(1000);
-    mqttClient.loop();
-  }
 }

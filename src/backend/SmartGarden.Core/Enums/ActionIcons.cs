@@ -3,5 +3,6 @@
 public enum ActionIcons
 {
     Play,
-    Stop
+    Stop,
+    Timer
 }

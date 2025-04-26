@@ -118,6 +118,15 @@ void connectMQTT(String deviceId) {
   }
 }
 
+void delayWithLoop(int ms) {
+  int parts = ms / 1000;
+
+  for (int i = 0; i < parts; i++) {
+    delay(1000);
+    mqttClient.loop();
+  }
+}
+
 void sendToMQTT(const String topic, const String json) {
   if(mqttClient.connected()) {
     mqttClient.loop();

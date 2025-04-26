@@ -126,10 +126,11 @@ export default function BedPage() {
         <div>
           <SectionTitle
             title="Actuators"
+            description="Click on an actuator to see actions and options."
             icon={<IconEngine className="w-8 h-8 text-emerald-400" />}
           ></SectionTitle>
 
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 flex-wrap">
             {actuators.map((actuator) => (
               <ActuatorCard key={actuator.id} actuator={actuator} />
             ))}

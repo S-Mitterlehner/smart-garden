@@ -10,6 +10,7 @@ public static class PumpActuatorConnectorActions
 {
     public const string Start = "pump.start";
     public const string Stop = "pump.stop";
+    public const string RunFor = "pump.run";
 }
 
 public static class PumpActuatorConnectorStates
@@ -55,6 +56,18 @@ public class PumpActuatorConnector(string key, string topic, IMqttClient mqttCli
                 Key =  PumpActuatorConnectorActions.Stop,
                 IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Running },
                 Icon = ActionIcons.Stop
+            },
+            new ActionDefinition
+            {
+                Name = "Run for",
+                Description = "Run the water pump for a specified time in seconds",
+                Key = PumpActuatorConnectorActions.RunFor,
+                ActionType = ActionType.Value,
+                IsAllowed = state is { ConnectionState: ConnectionState.Connected, State: PumpActuatorConnectorStates.Stopped },
+                Icon = ActionIcons.Timer,
+                CurrentValue = 0,
+                Min = 1,
+                Max = 120
             }
         ];
     }

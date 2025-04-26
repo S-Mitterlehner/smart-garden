@@ -4,6 +4,4 @@ public class ActuatorDto : ActuatorRefDto
 {
     public string Description { get; set; }
     public ActuatorStateDto State { get; set; }
-    public IEnumerable<ActuatorActionDto> Actions { get; set; } = new List<ActuatorActionDto>();
-    
 }

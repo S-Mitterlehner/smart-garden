@@ -32,8 +32,7 @@ public class ActuatorsController(ApplicationContext db, IActuatorManager actuato
             Key = reference.ConnectorKey,
             Type = reference.Type.ToString(),
             Description = connector.Description,
-            State = ActuatorStateDto.FromState(state, await connector.GetActionsAsync()),
-            Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
+            State = ActuatorStateDto.FromState(state, await connector.GetActionsAsync())
         });
     }
 

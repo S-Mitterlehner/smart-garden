@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 export type GaugeProps = {
   value: number;
   min: number;
@@ -17,6 +19,40 @@ export default function Gauge({
   showValue = false,
   unit = "",
 }: GaugeProps) {
+  const [animatedValue, setAnimatedValue] = useState(0);
+  const requestRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    let start: number | null = null;
+    const duration = 300;
+    const initialValue = animatedValue;
+    const changeInValue = value - initialValue;
+
+    const animate = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+
+      const progress = Math.min(elapsed / duration, 1);
+      setAnimatedValue(initialValue + changeInValue * progress);
+
+      if (progress < 1) {
+        requestRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    if (requestRef.current) {
+      cancelAnimationFrame(requestRef.current);
+    }
+
+    requestRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [value]);
+
   const getGauge = () => {
     if (rangeFrom > -1 && rangeTo > -1) {
       return (
@@ -57,11 +93,11 @@ export default function Gauge({
             fill="none"
           />
           <path
-            d={describeNeedle({ min, max, value })}
+            d={describeNeedle({ min, max, value: animatedValue })}
             stroke="black"
             strokeWidth="5"
             fill="none"
-          />
+          ></path>
         </svg>
       );
     } else {
@@ -80,7 +116,7 @@ export default function Gauge({
           />
 
           <path
-            d={describeNeedle({ min, max, value })}
+            d={describeNeedle({ min, max, value: animatedValue })}
             stroke="black"
             strokeWidth="5"
             fill="none"

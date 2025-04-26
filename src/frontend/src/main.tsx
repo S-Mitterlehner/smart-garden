@@ -4,7 +4,7 @@ import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-import BedPage from "./pages/BedPage.tsx";
+import BedPage from "./pages/bed/BedPage.tsx";
 import { MantineProvider } from "@mantine/core";
 import Header from "./components/Header.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

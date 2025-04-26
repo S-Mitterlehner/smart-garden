@@ -10,9 +10,11 @@ import Gauge from "../Gauge";
 import Card from "../Card";
 import useSensor from "../../hooks/useSensor";
 import { ConnectionState } from "../../models/general";
-import { Menu, Tooltip } from "@mantine/core";
+import { Drawer, Menu, Tooltip } from "@mantine/core";
 import { getTypeIconCircle } from "./utils";
 import { getTimeString } from "../../utils";
+import { useState } from "react";
+import SensorProperties from "./SensorProperties";
 
 export default function SensorCard({
   sensor: sensorRef,
@@ -26,6 +28,7 @@ export default function SensorCard({
   const { sensor, currentState, isFetched, connectionState } = useSensor(
     sensorRef.id
   );
+  const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
 
   const rangeFrom = plantConfig?.rangeFrom ?? -1;
   const rangeTo = plantConfig?.rangeTo ?? -1;
@@ -65,61 +68,76 @@ export default function SensorCard({
   };
 
   return (
-    <Menu shadow="md">
-      <Menu.Target>
-        <button className="text-left cursor-pointer w-full phone:w-auto">
-          <Card
-            title={sensor.name}
-            className=" hover:bg-gray-50!"
-            icon={
-              <Tooltip label={sensor.type} position="top" withArrow>
-                {getTypeIconCircle(sensor.type)}
-              </Tooltip>
-            }
-            right={
-              <div className="flex flex-col text-xs text-right">
-                <span className="text-gray-400">Last Update: </span>
-                <span>{getTimeString(currentState?.lastUpdate)}</span>
-              </div>
-            }
-          >
-            <div className="flex flex-col items-center gap-2">
-              <div className="min-h-44 flex justify-center items-center">
-                {getGauge()}
-              </div>
+    <>
+      <Drawer
+        opened={showPropertiesDrawer}
+        onClose={() => setShowPropertiesDrawer(false)}
+        offset={15}
+        radius={10}
+        position="right"
+      >
+        <SensorProperties
+          sensor={sensor}
+          state={currentState}
+          connectionState={connectionState}
+        />
+      </Drawer>
+      <Menu shadow="md">
+        <Menu.Target>
+          <button className="text-left cursor-pointer w-full phone:w-auto">
+            <Card
+              title={sensor.name}
+              className=" hover:bg-gray-50!"
+              icon={
+                <Tooltip label={sensor.type} position="top" withArrow>
+                  {getTypeIconCircle(sensor.type)}
+                </Tooltip>
+              }
+              right={
+                <div className="flex flex-col text-xs text-right">
+                  <span className="text-gray-400">Last Update: </span>
+                  <span>{getTimeString(currentState?.lastUpdate)}</span>
+                </div>
+              }
+            >
+              <div className="flex flex-col items-center gap-2">
+                <div className="min-h-44 flex justify-center items-center">
+                  {getGauge()}
+                </div>
 
-              <div className="grid grid-cols-2 text-xs w-full gap-4">
-                <div className="flex flex-col">
-                  <span className="text-gray-400">Target: </span>
-                  <span>{getRangeString()}</span>
-                </div>
-                <div className="flex flex-col text-right">
-                  <span className="text-gray-400">Sensor:</span>
-                  <span>
-                    {currentState?.min ?? sensor.minValue} -{" "}
-                    {currentState?.max ?? sensor.maxValue} {sensor.unit}
-                  </span>
+                <div className="grid grid-cols-2 text-xs w-full gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-gray-400">Target: </span>
+                    <span>{getRangeString()}</span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-gray-400">Sensor:</span>
+                    <span>
+                      {currentState?.min ?? sensor.minValue} -{" "}
+                      {currentState?.max ?? sensor.maxValue} {sensor.unit}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        </button>
-      </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Item
-          onClick={() => onAction(sensorRef, "details")}
-          leftSection={<IconListDetails className="w-4 h-4" />}
-        >
-          View Sensor Details
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => onAction(sensorRef, "remove")}
-          color="red"
-          leftSection={<IconTrash className="w-4 h-4" />}
-        >
-          Remove Sensor from Bed
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+            </Card>
+          </button>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item
+            onClick={() => setShowPropertiesDrawer(true)}
+            leftSection={<IconListDetails className="w-4 h-4" />}
+          >
+            View Sensor Details
+          </Menu.Item>
+          <Menu.Item
+            onClick={() => onAction(sensorRef, "remove")}
+            color="red"
+            leftSection={<IconTrash className="w-4 h-4" />}
+          >
+            Remove Sensor from Bed
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </>
   );
 }

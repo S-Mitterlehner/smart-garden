@@ -1,24 +1,50 @@
+using System.Reflection.Emit;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SmartGarden.API.Dtos;
+using SmartGarden.API.Controllers.Base;
+using SmartGarden.API.Dtos.Automation;
 using SmartGarden.EntityFramework;
-using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Actuators.Enums;
+using SmartGarden.Modules.Models;
+using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.Controllers;
 
 [Route("Beds/{id}/Rules")]
-public class BedRulesController(ApplicationContext db) : BaseController
+public class BedRulesController(ApplicationContext db, IActuatorManager actuatorManager, ISensorManager sensorManager) : BaseBedsController
 {
-    [FromRoute(Name="id")]
-    public Guid BedId { get; set; }
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == BedId);
+        var bed = await GetBedAsync();
         
         if (bed == null) return NotFound();
 
         return Ok(bed.Rules.AsQueryable().Select(AutomationRuleDto.FromEntity).ToList());
+    }
+
+    [HttpGet("config")]
+    public async Task<IActionResult> GetConfig()
+    {
+        var bed = await GetBedAsync();
+        if (bed == null) return NotFound();
+
+        var moduleConfig = new List<ModuleAutomationConfig>();
+
+        foreach (var sensor in bed.Sensors)
+        {
+            var connector = await sensorManager.GetConnectorAsync(sensor);
+            moduleConfig.Add(await connector.GetAutomationConfigAsync());
+        }
+
+        foreach (var reference in bed.Actuators)
+        {
+            var connector = await actuatorManager.GetConnectorAsync(reference);
+            moduleConfig.Add(await connector.GetAutomationConfigAsync());
+        }
+
+        var fields = moduleConfig.AsQueryable().Select(ParameterFieldDto.FromModel).ToList();
+
+
     }
 }

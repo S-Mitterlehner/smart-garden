@@ -83,16 +83,31 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 
         var s2 = await CreateOrUpdateAsync(new SensorRef
         {
-            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
-            , Name = "Humidity"
-            , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
-            , Type = SensorType.Humidity
-            , ConnectorKey = "sm-48ca435508f0"
-            , Topic = "smart-garden/sm-48ca435508f0/humidity"
-            , Order = 2
+            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166"), Name = "Humidity",
+            Description =
+                "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations.",
+            Type = SensorType.Humidity, ConnectorKey = "sm-48ca435508f0",
+            Topic = "smart-garden/sm-48ca435508f0/humidity", Order = 2
         });
 
         await context.SaveChangesAsync();
+
+        var r1 = await CreateOrUpdateAsync(new AutomationRule
+        {
+            Id = new Guid("f2b0c4a1-3d8e-4b5e-8f6c-7a2d9f1c3b5e"),
+            Name = "Watering",
+            Order = 1,
+            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.temperature > {psc1.RangeTo}",
+            Actions =
+            [
+                new AutomationRuleAction
+                {
+                    ActuatorId = c.Id,
+                    ActionKey = "pump.run",
+                    Value = 10
+                }
+            ]
+        });
 
         var bed = new Bed
         {
@@ -100,6 +115,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Name = "Test Bed"
             , Description = "Test Bed"
             , PlantId = p.Id
+            , Rules = [r1]
         };
 
         bed.Actuators.AddRange(c, c2);

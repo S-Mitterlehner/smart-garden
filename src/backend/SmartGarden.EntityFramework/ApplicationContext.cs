@@ -20,7 +20,9 @@ public class ApplicationContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<PlantSensorConfig>();
         modelBuilder.Entity<SensorRef>();
         modelBuilder.Entity<ActuatorRef>();
-        //modelBuilder.Entity<ActuatorAction>();
+
+        modelBuilder.Entity<AutomationRule>();
+        modelBuilder.Entity<AutomationRuleAction>();
 
         modelBuilder.Entity<Bed>()
                     .HasMany(x => x.Sensors)

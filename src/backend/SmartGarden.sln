@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Sensors", "Smar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Mqtt", "SmartGarden.Mqtt\SmartGarden.Mqtt.csproj", "{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Automation", "SmartGarden.Automation\SmartGarden.Automation.csproj", "{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

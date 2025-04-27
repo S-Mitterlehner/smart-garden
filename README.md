@@ -34,4 +34,11 @@ This will also start the postgresdb for the application.
 
 #### Controller / Arduino
 
-TODO
+In order to compile the `ino`-files you need to create a `arduino_secrets.h` file in each module. The content of this file should look like this:
+
+```cpp
+#define SECRET_SSID "yourwifissid"
+#define SECRET_PASS "yourwifipw"
+```
+
+Please refer to the module descriptions in order to prepare the correct setup for each module.

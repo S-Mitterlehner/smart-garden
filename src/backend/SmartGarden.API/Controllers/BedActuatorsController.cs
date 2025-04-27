@@ -1,20 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.API.Controllers.Base;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Controllers;
 
 [Route("Beds/{id}/Actuators")]
-public class BedActuatorsController(ApplicationContext db) : BaseController
+public class BedActuatorsController(ApplicationContext db) : BaseBedsController
 {
-    [FromRoute(Name = "id")]
-    public Guid BedId { get; set; }
 
     [HttpPatch("{actuatorId}")]
     public async Task<IActionResult> AddActuator(Guid actuatorId)
     {
-        var bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == BedId);
+        var bed = await GetBedAsync();
 
         if (bed == null)
             return NotFound($"bed with id {BedId} not found");
@@ -35,7 +34,7 @@ public class BedActuatorsController(ApplicationContext db) : BaseController
     [HttpDelete("{actuatorId}")]
     public async Task<IActionResult> RemoveActuator(Guid actuatorId)
     {
-        var bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == BedId);
+        var bed = await GetBedAsync();
 
         if (bed == null)
             return NotFound($"bed with id {BedId} not found");

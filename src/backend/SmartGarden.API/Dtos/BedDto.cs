@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using SmartGarden.API.Dtos.Actuator;
+using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Dtos;

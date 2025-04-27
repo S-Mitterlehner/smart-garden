@@ -36,4 +36,19 @@ public class SensorsController(ApplicationContext db, ISensorManager sensorManag
             Type = reference.Type.ToString()
         });
     }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateRef([FromBody] SensorRefDto sensor)
+    {
+        var reference = await db.Get<SensorRef>().FirstOrDefaultAsync(x => x.Id == sensor.Id);
+
+        if (reference == null) return NotFound();
+
+        reference.Name = sensor.Name;
+        reference.Description = sensor.Description;
+
+        await db.SaveChangesAsync();
+
+        return Ok();
+    }
 }

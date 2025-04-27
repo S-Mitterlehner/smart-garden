@@ -18,7 +18,8 @@ export default function Card({
       radius="md"
       p="xs"
       className={
-        "w-full phone:w-64 relative" + (className ? " " + className : "")
+        "w-full phone:w-64 relative min-h-[270px]" +
+        (className ? " " + className : "")
       }
     >
       <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-center">

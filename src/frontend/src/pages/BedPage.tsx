@@ -1,17 +1,21 @@
-import PlantSelector from "../../components/PlantSelector";
-import { useCurrentBed } from "../../hooks/useCurrentBed";
+import PlantSelector from "../components/PlantSelector";
+import { BedProvider, useBedContext } from "../hooks/useCurrentBed";
 import { useParams } from "react-router";
-import SensorSection from "./SensorSection";
-import ActuatorSection from "./ActuatorSection";
 import { Loader } from "@mantine/core";
+import SensorSection from "../components/sensors/SensorSection";
+import ActuatorSection from "../components/actuators/ActuatorSection";
 
 export default function BedPage() {
   const bedId = useParams().bedId as string;
-  const bed = useCurrentBed(bedId);
+
+  return <BedProvider id={bedId}>{<BedPageContent />}</BedProvider>;
+}
+
+export function BedPageContent() {
   const {
     isFetched,
     currentPlant: { value: plant, set: setPlant },
-  } = bed;
+  } = useBedContext();
 
   if (!isFetched) {
     return (
@@ -32,8 +36,8 @@ export default function BedPage() {
         </div>
       </div>
 
-      <SensorSection bed={bed} />
-      <ActuatorSection bed={bed} />
+      <SensorSection />
+      <ActuatorSection />
     </div>
   );
 }

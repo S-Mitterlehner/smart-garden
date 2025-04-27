@@ -1,23 +1,53 @@
 import { useQuery } from "@tanstack/react-query";
 import { Sensor, SensorData, SensorType } from "../models/sensor";
 import { API_URL } from "../environment";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { ConnectionState } from "../models/general";
+import { notifications } from "@mantine/notifications";
 
 export type SensorValue = {
   isFetched: boolean;
   sensor: Sensor;
   currentState: SensorData | null;
   connectionState: ConnectionState;
+  updateRef: (id: string, changes: Sensor) => Promise<void>;
 };
 
-export default function useSensor(sensorId: string): SensorValue {
+const SensorContext = createContext<SensorValue | null>(null);
+
+export function SensorProvider({
+  sensorId,
+  children,
+}: {
+  sensorId: string;
+  children: React.ReactNode;
+}) {
+  const sensor = useSensor(sensorId);
+
+  return (
+    <SensorContext.Provider value={sensor}>{children}</SensorContext.Provider>
+  );
+}
+
+export function useSensorContext(): SensorValue {
+  const context = useContext(SensorContext);
+  if (!context) {
+    throw new Error("useSensor must be used within a SensorProvider");
+  }
+  return context;
+}
+
+export function useSensor(sensorId: string): SensorValue {
   const [currentState, setCurrentState] = useState<SensorData | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(
     ConnectionState.NotConnected
   );
-  const { data: sensor, isFetched } = useQuery<Sensor | null>({
+  const {
+    data: sensor,
+    isFetched,
+    refetch,
+  } = useQuery<Sensor | null>({
     queryKey: ["sensor", sensorId],
     enabled: !!sensorId,
     refetchOnMount: "always",
@@ -95,5 +125,30 @@ export default function useSensor(sensorId: string): SensorValue {
     sensor: sensor ?? ({} as Sensor),
     currentState: currentState ?? null,
     connectionState,
+    updateRef: async (id: string, changes: Sensor) => {
+      const resp = await fetch(`${API_URL}/sensors/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(changes),
+      });
+
+      if (resp.status === 200) {
+        notifications.show({
+          title: "Sensor updated",
+          message: `Sensor ${changes.name} updated`,
+          color: "oklch(69.6% 0.17 162.48)",
+        });
+      } else {
+        notifications.show({
+          title: "Error",
+          message: `Failed to update sensor ${changes.name}`,
+          color: "red",
+        });
+      }
+
+      await refetch();
+    },
   };
 }

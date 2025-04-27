@@ -8,7 +8,7 @@ import {
 } from "@tabler/icons-react";
 import Gauge from "../Gauge";
 import Card from "../Card";
-import useSensor from "../../hooks/useSensor";
+import { useSensorContext } from "../../hooks/useSensor";
 import { ConnectionState } from "../../models/general";
 import { Drawer, Menu, Tooltip } from "@mantine/core";
 import { getTypeIconCircle } from "./utils";
@@ -17,17 +17,16 @@ import { useState } from "react";
 import SensorProperties from "./SensorProperties";
 
 export default function SensorCard({
-  sensor: sensorRef,
+  // sensor: sensorRef,
   plantConfig,
   onAction,
 }: {
-  sensor: SensorRef;
+  // sensor: SensorRef;
   plantConfig: PlantSensorConfig;
   onAction: (sensor: SensorRef, action: string, actionData?: unknown) => void;
 }) {
-  const { sensor, currentState, isFetched, connectionState } = useSensor(
-    sensorRef.id
-  );
+  const { sensor, currentState, isFetched, connectionState } =
+    useSensorContext();
   const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
 
   const rangeFrom = plantConfig?.rangeFrom ?? -1;
@@ -76,11 +75,7 @@ export default function SensorCard({
         radius={10}
         position="right"
       >
-        <SensorProperties
-          sensor={sensor}
-          state={currentState}
-          connectionState={connectionState}
-        />
+        <SensorProperties />
       </Drawer>
       <Menu shadow="md">
         <Menu.Target>
@@ -130,7 +125,7 @@ export default function SensorCard({
             View Sensor Details
           </Menu.Item>
           <Menu.Item
-            onClick={() => onAction(sensorRef, "remove")}
+            onClick={() => onAction(sensor, "remove")}
             color="red"
             leftSection={<IconTrash className="w-4 h-4" />}
           >

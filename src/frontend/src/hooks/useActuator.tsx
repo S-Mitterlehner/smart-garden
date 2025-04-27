@@ -8,7 +8,7 @@ import {
 } from "../models/actuator";
 import { API_URL } from "../environment";
 import { ConnectionState } from "../models/general";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { notifications } from "@mantine/notifications";
 
@@ -18,16 +18,47 @@ export type ActuatorValue = {
   connectionState: ConnectionState;
   actions: ActuatorAction[];
   canDoAction: boolean;
-  startAction: (action: ActuatorAction, value?: number) => void;
+  startAction: (action: ActuatorAction, value?: number) => Promise<void>;
+  updateRef: (id: string, changes: Actuator) => Promise<void>;
 };
 
-export default function useActuator(actuatorId: string): ActuatorValue {
+const ActuatorContext = createContext<ActuatorValue | null>(null);
+
+export function ActuatorProvider({
+  actuatorId,
+  children,
+}: {
+  actuatorId: string;
+  children: React.ReactNode;
+}) {
+  const actuator = useActuator(actuatorId);
+
+  return (
+    <ActuatorContext.Provider value={actuator}>
+      {children}
+    </ActuatorContext.Provider>
+  );
+}
+
+export function useActuatorContext(): ActuatorValue {
+  const context = useContext(ActuatorContext);
+  if (!context) {
+    throw new Error("useActuator must be used within a ActuatorProvider");
+  }
+  return context;
+}
+
+export function useActuator(actuatorId: string): ActuatorValue {
   const [currentState, setCurrentState] = useState<ActuatorState | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(
     ConnectionState.NotConnected
   );
   const [loading, setLoading] = useState(false);
-  const { data: actuator, isFetched } = useQuery<Actuator | null>({
+  const {
+    data: actuator,
+    isFetched,
+    refetch,
+  } = useQuery<Actuator | null>({
     queryKey: ["actuator", actuatorId],
     enabled: !!actuatorId,
     refetchOnMount: "always",
@@ -128,6 +159,29 @@ export default function useActuator(actuatorId: string): ActuatorValue {
         });
         setLoading(false);
       }
+    },
+    updateRef: async (id: string, changes: Actuator) => {
+      const resp = await fetch(`${API_URL}/actuators/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(changes),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (resp.status === 200) {
+        notifications.show({
+          title: "Actuator updated",
+          message: `Actuator ${changes.name} updated`,
+          color: "oklch(69.6% 0.17 162.48)",
+        });
+      } else {
+        notifications.show({
+          title: "Error",
+          message: `Failed to update actuator ${changes.name}`,
+          color: "red",
+        });
+      }
+      await refetch();
     },
   };
 }

@@ -4,13 +4,13 @@ import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-import BedPage from "./pages/bed/BedPage.tsx";
 import { MantineProvider } from "@mantine/core";
 import Header from "./components/Header.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ArcElement, Chart as ChartJs } from "chart.js";
 import GardenPage from "./pages/GardenPage.tsx";
 import { Notifications } from "@mantine/notifications";
+import BedPage from "./pages/BedPage.tsx";
 
 const queryClient = new QueryClient();
 

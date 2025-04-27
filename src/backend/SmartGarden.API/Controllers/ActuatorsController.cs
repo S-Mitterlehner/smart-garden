@@ -35,6 +35,21 @@ public class ActuatorsController(ApplicationContext db, IActuatorManager actuato
         });
     }
 
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateRef([FromBody] ActuatorRefDto actuator)
+    {
+        var reference = await db.Get<ActuatorRef>().FirstOrDefaultAsync(x => x.Id == actuator.Id);
+     
+        if (reference == null) return NotFound();
+
+        reference.Name = actuator.Name;
+        reference.Description = actuator.Description;
+        
+        await db.SaveChangesAsync();
+        
+        return Ok();
+    }
+
     [HttpHead("{id}/action/{actionKey}")]
     public async Task<IActionResult> ExecuteAction(Guid id, string actionKey, [FromQuery] double? value)
     {

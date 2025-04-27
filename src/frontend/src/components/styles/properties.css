@@ -1,17 +1,17 @@
-.sensor-input .mantine-Input-input {
+.properties-input .mantine-Input-input {
   border-bottom: 1px solid transparent /*#ddd*/;
   padding-bottom: 1px;
 }
 
-.sensor-input .mantine-Input-input:hover,
-.sensor-input .mantine-Input-input:active,
-.sensor-input .mantine-Input-input:focus {
+.properties-input .mantine-Input-input:hover,
+.properties-input .mantine-Input-input:active,
+.properties-input .mantine-Input-input:focus {
   /* @apply border-b-emerald-500; */
   border-bottom: 2px solid #34d399; /* Tailwind's emerald-500 */
   padding-bottom: 0;
 }
 
-.sensor-description .mantine-Textarea-input {
+.properties-description .mantine-Textarea-input {
   /* @apply text-gray-500; */
   color: #6b7280; /* Tailwind's gray-500 */
 }

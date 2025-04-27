@@ -4,23 +4,19 @@ import "../styles/properties.css";
 import { getTypeIconCircle } from "./utils";
 import { ConnectionState } from "../../models/general";
 import { getTimeString } from "../../utils";
-import { useSensorContext } from "../../hooks/useSensor";
+import { useActuatorContext } from "../../hooks/useActuator";
 import PropertyEntry from "../properties/PropertyEntry";
+import { StateType } from "../../models/actuator";
 
-export default function SensorProperties() {
-  const {
-    sensor,
-    currentState: state,
-    connectionState,
-    updateRef,
-  } = useSensorContext();
-  const [name, setName] = useState(sensor.name);
-  const [description, setDescription] = useState(sensor.description);
+export default function ActuatorProperties() {
+  const { actuator, state, connectionState, updateRef } = useActuatorContext();
+  const [name, setName] = useState(actuator.name);
+  const [description, setDescription] = useState(actuator.description);
   const [hasChanges, setHasChanges] = useState(false);
 
   const saveChanges = async () => {
-    await updateRef(sensor.id, {
-      ...sensor,
+    await updateRef(actuator.id, {
+      ...actuator,
       name: name,
       description: description,
     });
@@ -31,13 +27,13 @@ export default function SensorProperties() {
     <div>
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-[auto_1fr_auto] gap-8 items-center">
-          <Tooltip label={sensor.type} position="top" withArrow>
-            {getTypeIconCircle(sensor.type, "w-10 h-10")}
+          <Tooltip label={actuator.type} position="top" withArrow>
+            {getTypeIconCircle(actuator.type, "w-10 h-10")}
           </Tooltip>
 
           <div className="flex flex-col">
             <span className="text-sm text-gray-400">Device-Id</span>
-            <span className="text-sm text-gray-600">{sensor.key}</span>
+            <span className="text-sm text-gray-600">{actuator.key}</span>
           </div>
 
           <div className="flex flex-col gap-2 items-end">
@@ -115,13 +111,28 @@ export default function SensorProperties() {
 
         <h4 className="text-md text-gray-600 font-semibold mb-4">State</h4>
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-          <PropertyEntry
-            property="Value"
-            value={state?.currentValue}
-            unit={state?.unit}
-          />
-          <PropertyEntry property="Min" value={state?.min} unit={state?.unit} />
-          <PropertyEntry property="Max" value={state?.max} unit={state?.unit} />
+          {state?.stateType === StateType.Discrete ? (
+            <PropertyEntry property="State" value={state?.state} />
+          ) : null}
+          {state?.stateType === StateType.Continuous ? (
+            <>
+              <PropertyEntry
+                property="Value"
+                value={state?.value}
+                unit={state?.unit}
+              />
+              <PropertyEntry
+                property="Min"
+                value={state?.min}
+                unit={state?.unit}
+              />
+              <PropertyEntry
+                property="Max"
+                value={state?.max}
+                unit={state?.unit}
+              />
+            </>
+          ) : null}
         </div>
 
         {/* <span className="border-b border-gray-300 mt-6 mb-2" /> */}

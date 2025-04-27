@@ -2,13 +2,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bed } from "../models/bed";
 import usePlants from "./usePlants";
 import { Plant } from "../models/plant";
-import { useMemo } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { SensorRef } from "../models/sensor";
 import { ActuatorRef } from "../models/actuator";
 import { API_URL } from "../environment";
 import { notifications } from "@mantine/notifications";
 
-export type CurrentBed = {
+export type BedValue = {
   bed: Bed;
   isFetched: boolean;
   currentPlant: {
@@ -23,7 +23,29 @@ export type CurrentBed = {
   removeActuator: (actuator: ActuatorRef) => void;
 };
 
-export function useCurrentBed(id: string) {
+const BedContext = createContext<BedValue | null>(null);
+
+export function BedProvider({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) {
+  const bed = useBed(id);
+
+  return <BedContext.Provider value={bed}>{children}</BedContext.Provider>;
+}
+
+export function useBedContext(): BedValue {
+  const context = useContext(BedContext);
+  if (!context) {
+    throw new Error("useBed must be used within a BedProvider");
+  }
+  return context;
+}
+
+export function useBed(id: string) {
   const queryClient = useQueryClient();
 
   const {
@@ -180,5 +202,5 @@ export function useCurrentBed(id: string) {
     removeSensor,
     addActuator,
     removeActuator,
-  } as CurrentBed;
+  } as BedValue;
 }

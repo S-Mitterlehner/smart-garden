@@ -1,5 +1,5 @@
-import { Button, Menu, Modal, Slider, Tooltip } from "@mantine/core";
-import useActuator from "../../hooks/useActuator";
+import { Button, Drawer, Menu, Modal, Slider, Tooltip } from "@mantine/core";
+import { useActuatorContext } from "../../hooks/useActuator";
 import {
   ActionIcon,
   ActionType,
@@ -18,23 +18,17 @@ import {
 import { useState } from "react";
 import { getTimeString } from "../../utils";
 import { getTypeIconCircle } from "./utils";
+import ActuatorProperties from "./ActuatorProperties";
 
 export default function ActuatorCard({
-  actuator: actuatorRef,
   onMenuAction = () => {},
 }: {
-  actuator: ActuatorRef;
   onMenuAction?: (
     actuator: ActuatorRef,
     action: string,
     actionData?: unknown
   ) => void;
 }) {
-  const [showValueModal, setShowValueModal] = useState(false);
-  const [sliderValue, setSliderValue] = useState<number | undefined>(undefined);
-  const [currentAction, setCurrentAction] = useState<ActuatorAction | null>(
-    null
-  );
   const {
     actuator,
     state,
@@ -42,7 +36,14 @@ export default function ActuatorCard({
     actions,
     canDoAction,
     startAction,
-  } = useActuator(actuatorRef.id);
+  } = useActuatorContext();
+
+  const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
+  const [showValueModal, setShowValueModal] = useState(false);
+  const [sliderValue, setSliderValue] = useState<number | undefined>(undefined);
+  const [currentAction, setCurrentAction] = useState<ActuatorAction | null>(
+    null
+  );
 
   const getIcon = (icon: ActionIcon) => {
     switch (icon) {
@@ -75,6 +76,15 @@ export default function ActuatorCard({
 
   return (
     <>
+      <Drawer
+        opened={showPropertiesDrawer}
+        onClose={() => setShowPropertiesDrawer(false)}
+        offset={15}
+        radius={10}
+        position="right"
+      >
+        <ActuatorProperties />
+      </Drawer>
       <Modal
         opened={showValueModal}
         onClose={() => {
@@ -128,7 +138,7 @@ export default function ActuatorCard({
                 </div>
               }
             >
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center gap-4 h-full justify-center">
                 <ActuatorStateIndicator
                   state={state}
                   connectionState={connectionState}
@@ -153,13 +163,13 @@ export default function ActuatorCard({
           })}
           <Menu.Label>Misc</Menu.Label>
           <Menu.Item
-            onClick={() => onMenuAction(actuatorRef, "details")}
+            onClick={() => setShowPropertiesDrawer(true)}
             leftSection={<IconListDetails className="w-4 h-4" />}
           >
             View Actuator Details
           </Menu.Item>
           <Menu.Item
-            onClick={() => onMenuAction(actuatorRef, "remove")}
+            onClick={() => onMenuAction(actuator, "remove")}
             color="red"
             leftSection={<IconTrash className="w-4 h-4" />}
           >

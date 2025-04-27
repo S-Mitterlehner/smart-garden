@@ -92,11 +92,26 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 
         await context.SaveChangesAsync();
 
+
+        var bed = new Bed
+        {
+            Id = new Guid("a3c51a2a-0b07-442f-af31-3b7d88dda10d")
+            , Name = "Test Bed"
+            , Description = "Test Bed"
+            , PlantId = p.Id
+        };
+
+        bed.Actuators.AddRange(c, c2);
+        bed.Sensors.AddRange(s1, s2);
+        await CreateOrUpdateAsync(bed);
+
+        
         var r1 = await CreateOrUpdateAsync(new AutomationRule
         {
             Id = new Guid("f2b0c4a1-3d8e-4b5e-8f6c-7a2d9f1c3b5e"),
             Name = "Watering",
             Order = 1,
+            BedId = bed.Id,
             Expression = $"{s1.ConnectorKey.Replace("-", "_")}.temperature > {psc1.RangeTo}",
             Actions =
             [
@@ -108,19 +123,6 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
                 }
             ]
         });
-
-        var bed = new Bed
-        {
-            Id = new Guid("a3c51a2a-0b07-442f-af31-3b7d88dda10d")
-            , Name = "Test Bed"
-            , Description = "Test Bed"
-            , PlantId = p.Id
-            , Rules = [r1]
-        };
-
-        bed.Actuators.AddRange(c, c2);
-        bed.Sensors.AddRange(s1, s2);
-        await CreateOrUpdateAsync(bed);
 
         await context.SaveChangesAsync();
     }

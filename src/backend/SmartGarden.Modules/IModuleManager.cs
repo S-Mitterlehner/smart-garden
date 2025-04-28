@@ -1,6 +1,4 @@
-﻿using SmartGarden.EntityFramework.Models;
-
-namespace SmartGarden.Modules;
+﻿namespace SmartGarden.Modules;
 
 public interface IModuleManager
 {

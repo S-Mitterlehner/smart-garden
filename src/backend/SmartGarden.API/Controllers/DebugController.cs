@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MQTTnet;
 using RulesEngine.Models;
-using SmartGarden.Actuators;
-using SmartGarden.Sensors;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.Controllers;
 
@@ -40,7 +40,7 @@ public class DebugController(IMqttClient client) : BaseController
             RuleName = "Test-Rule",
             SuccessEvent = "RUN",
             ErrorMessage = "Nope",
-            Expression = "sm_1234.value > 10",
+            Expression = "sm_1234.value > 10 and currentTime > targetTime",
             RuleExpressionType = RuleExpressionType.LambdaExpression
         };
         rules.Add(rule);
@@ -52,7 +52,7 @@ public class DebugController(IMqttClient client) : BaseController
         };
 
         var result = new RulesEngine.RulesEngine([wf]);
-        var input = new { sm_1234 = new { value = 16 } };
+        var input = new { sm_1234 = new { value = 16 }, currentTime = DateTime.Now.TimeOfDay, targetTime = new TimeSpan(6, 0, 0) };
         var workflowResult = result.ExecuteAllRulesAsync("Test-Workflow", input).Result;
 
         return Ok(workflowResult);

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Controllers.Base;
 
-public abstract class BaseBedsController : BaseController
+public abstract class BaseBedsController(ApplicationContext db) : BaseController
 {
     
     [FromRoute(Name = "id")]

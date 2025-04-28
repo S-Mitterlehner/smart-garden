@@ -40,4 +40,10 @@
     <ProjectReference Include="..\SmartGarden.Mqtt\SmartGarden.Mqtt.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="SmartGarden.Core">
+      <HintPath>..\SmartGarden.Core\bin\Debug\net9.0\SmartGarden.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

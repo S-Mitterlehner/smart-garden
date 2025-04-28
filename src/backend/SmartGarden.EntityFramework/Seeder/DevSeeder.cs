@@ -1,5 +1,5 @@
-﻿using SmartGarden.Core.Enums;
-using SmartGarden.EntityFramework.Models;
+﻿using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.EntityFramework.Seeder;
 
@@ -112,7 +112,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Name = "Watering",
             Order = 1,
             BedId = bed.Id,
-            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.temperature > {psc1.RangeTo}",
+            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.Temperature < {psc1.RangeTo}",
             Actions =
             [
                 new AutomationRuleAction

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
-using SmartGarden.Sensors;
+using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.Controllers;
 

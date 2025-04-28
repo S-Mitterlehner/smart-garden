@@ -1,35 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Dynamic;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using RulesEngine.Models;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
-using SmartGarden.Sensors;
+using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.Automation;
 
 public class AutomationService(
-    ApplicationContext db, 
-    SensorManager sensorManager, 
+    ILogger<AutomationService> logger,
+    ISensorManager sensorManager, 
     ActionExecutor executor, 
     IServiceProvider sp) 
     : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        logger.LogInformation("AutomationService - Execute");
+        await using var scope = sp.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+        
         var beds = await db.Get<Bed>().ToListAsync();
-
-        var engine = new RulesEngine.RulesEngine();
+        
+        var parameters = new List<RuleParameter>();
+        parameters.Add(new RuleParameter("CurrentTime", DateTime.Now.TimeOfDay));
 
         var sensors = await db.Get<SensorRef>().ToListAsync();
-        
-        var parameters = new List<ScopedParam>();
-        
-        parameters.Add(new ScopedParam
-        {
-            Name = "CurrentTime",
-            Expression = DateTime.Now.ToString("HH:mm:ss")
-        });
-
+        var parameterDict = new Dictionary<string, dynamic>();
         foreach (var sensor in sensors)
         {
             var connector = await sensorManager.GetConnectorAsync(sensor);
@@ -37,15 +38,18 @@ public class AutomationService(
                 continue;
             
             var sensorData = await connector.GetDataAsync();
-
-            var p = new ScopedParam
+        
+            if (!parameterDict.TryGetValue(sensor.ConnectorKey, out dynamic subParams))
             {
-                Name = $"{sensor.ConnectorKey.Replace("-", "_")}.{sensor.Type}",
-                Expression = sensorData.CurrentValue.ToString(),
-            };
-            
-            parameters.Add(p);
+                subParams = new ExpandoObject();
+                parameterDict.Add(sensor.ConnectorKey, subParams);
+            }
+
+            ((IDictionary<string, object>)subParams)[sensor.Type.ToString()] = sensorData.CurrentValue;
         }
+
+        parameters.AddRange(parameterDict.Select(pair => new RuleParameter(pair.Key.Replace("-", "_"), pair.Value)));
+        var engine = new RulesEngine.RulesEngine();
 
         foreach (var bed in beds)
         {
@@ -59,15 +63,21 @@ public class AutomationService(
                     Expression = r.Expression
                 })
             };
-            
             engine.AddWorkflow(wf);
-            var result = await engine.ExecuteAllRulesAsync(wfName, parameters);
+            var result = await engine.ExecuteAllRulesAsync(wfName, parameters.ToArray());
 
             foreach (var ruleResult in result)
             {
-                Console.WriteLine($"{ruleResult.Rule.RuleName}: {ruleResult.IsSuccess}");
+                logger.LogInformation("RuleCheck - {expression}: {IsSuccess} ({parameters})", 
+                    ruleResult.Rule.Expression, 
+                    ruleResult.IsSuccess,
+                    JsonConvert.SerializeObject(parameters));
             }
         }
-        
     }
+}
+
+public class SensorData
+{
+    public int Temperature { get; set; }
 }

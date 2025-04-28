@@ -26,4 +26,14 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="SmartGarden.Core">
+      <HintPath>..\SmartGarden.Core\bin\Debug\net9.0\SmartGarden.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
+  </ItemGroup>
+
 </Project>

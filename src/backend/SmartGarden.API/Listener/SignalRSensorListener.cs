@@ -1,9 +1,10 @@
 ﻿using System.Data;
 using Microsoft.AspNetCore.SignalR;
 using SmartGarden.API.Dtos;
+using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.API.Hubs;
-using SmartGarden.Sensors;
-using SmartGarden.Sensors.Models;
+using SmartGarden.Modules.Sensors;
+using SmartGarden.Modules.Sensors.Models;
 
 namespace SmartGarden.API.Listener;
 

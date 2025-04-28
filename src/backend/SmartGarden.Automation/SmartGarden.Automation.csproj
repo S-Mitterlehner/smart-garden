@@ -7,13 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Quartz" Version="3.14.0" />
       <PackageReference Include="RulesEngine" Version="5.0.6" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
-      <ProjectReference Include="..\SmartGarden.Sensors\SmartGarden.Sensors.csproj" />
+      <ProjectReference Include="..\SmartGarden.Modules.Actuators\SmartGarden.Modules.Actuators.csproj" />
+      <ProjectReference Include="..\SmartGarden.Modules.Sensors\SmartGarden.Modules.Sensors.csproj" />
     </ItemGroup>
 
 </Project>

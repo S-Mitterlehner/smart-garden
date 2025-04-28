@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SmartGarden.Actuators;
-using SmartGarden.Actuators.Models;
 using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.API.Hubs;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Actuators.Models;
 
 namespace SmartGarden.API.Listener;
 

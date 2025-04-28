@@ -1,16 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using MQTTnet;
 using Quartz;
 using Quartz.AspNetCore;
-using SmartGarden.Actuators;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Seeder;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Sensors;
 using SmartGarden.Mqtt;
-using SmartGarden.Sensors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +21,7 @@ builder.Services.AddSingleton<IActuatorListener, SignalRActuatorListener>();
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
 builder.Services.AddSingleton<ActionExecutor>();
+builder.Services.AddSingleton<AutomationService>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
 builder.Services.AddMqttClient();
@@ -31,12 +30,12 @@ builder.Services.AddQuartz(o =>
 {
     var jobKey = new JobKey("Automation");
     o.AddJob<AutomationService>(o => o.WithIdentity(jobKey));
-
-    o.AddTrigger(o =>
+    
+    o.AddTrigger(op =>
     {
-        o.ForJob(jobKey)
+        op.ForJob(jobKey)
             .WithIdentity("AutomationTrigger")
-            .WithCronSchedule("0/0 * * ? * * *");
+            .WithCronSchedule("0 * * ? * * *");
     });
 });
 builder.Services.AddQuartzServer(options =>

@@ -9,6 +9,7 @@ public class RulesEngine(string rule)
     private int _current = 0;
 
     private string CurrentToken => _tokens[_current];
+    private bool IsEnd => _current >= _tokens.Length;
 
     public RuleEvaluator Parse()
     {
@@ -31,7 +32,7 @@ public class RulesEngine(string rule)
     private Expression ParseOr()
     {
         var left = ParseAnd();
-        while (CurrentToken == "or")
+        while (!IsEnd && CurrentToken == "or")
         {
             _current++;
             var right = ParseAnd();
@@ -43,7 +44,7 @@ public class RulesEngine(string rule)
     private Expression ParseAnd()
     {
         var left = ParseCondition();
-        while (CurrentToken == "and")
+        while (!IsEnd && CurrentToken == "and")
         {
             _current++;
             var right = ParseCondition();
@@ -54,11 +55,40 @@ public class RulesEngine(string rule)
 
     private Expression ParseCondition() // xxx op val
     {
-        var left = ParseValue();
+        var leftToken = CurrentToken;
         _current++;
         var op = CurrentToken;
         _current++;
-        var right = ParseValue();
+        var rightToken = CurrentToken;
+        _current++;
+
+        // assume right is always value
+        Type expectedType = null;
+        
+        if (Double.TryParse(rightToken, out _))
+        {
+            expectedType = typeof(double);
+        } 
+        else if (TimeSpan.TryParse(rightToken, out _))
+        {
+            expectedType = typeof(TimeSpan);
+        }
+        else if (bool.TryParse(rightToken, out _))
+        {
+            expectedType = typeof(bool);
+        }
+        else if (rightToken.StartsWith('"') || rightToken.StartsWith('"'))
+        {
+            expectedType = typeof(string);
+        }
+        else
+        {
+            expectedType = typeof(object);
+        }
+
+        var left = ParseValue(leftToken, expectedType);
+        var right = ParseValue(rightToken); 
+        
 
         return op switch
         {
@@ -72,19 +102,24 @@ public class RulesEngine(string rule)
         };
     }
 
-    private Expression ParseValue()
+    private Expression ParseValue(string? token = null, Type? expectedType = null)
     {
-        if (Double.TryParse(CurrentToken, out var dbl))
+        token = token ?? CurrentToken;
+        
+        if (Double.TryParse(token, out var dbl))
             return Expression.Constant(dbl);
 
-        if (bool.TryParse(CurrentToken, out var boolean))
+        if (TimeSpan.TryParse(token, out var ts))
+            return Expression.Constant(ts);
+
+        if (bool.TryParse(token, out var boolean))
             return Expression.Constant(boolean);
 
-        if (CurrentToken.StartsWith("\"") || CurrentToken.StartsWith("\""))
-            return Expression.Constant(CurrentToken.Trim('"'));
+        if (token.StartsWith('"') || token.StartsWith('"'))
+            return Expression.Constant(token.Trim('"'));
 
-        var key = Expression.Constant(CurrentToken);
+        var key = Expression.Constant(token);
         var indexer = Expression.Property(_parameters, "Item", key);
-        return Expression.Convert(indexer, typeof(object));
+        return Expression.Convert(indexer, expectedType ?? typeof(object));
     }
 }

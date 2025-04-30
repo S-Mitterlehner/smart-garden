@@ -12,7 +12,7 @@ namespace SmartGarden.API.Controllers;
 
 [Route("Beds/{id}/Rules")]
 public class BedRulesController(ApplicationContext db, IActuatorManager actuatorManager, ISensorManager sensorManager) 
-    : BaseBedsController(db)
+    : BaseBedController(db)
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -46,6 +46,9 @@ public class BedRulesController(ApplicationContext db, IActuatorManager actuator
 
         var fields = moduleConfig.AsQueryable().Select(ParameterFieldDto.FromModel).ToList();
 
-        return Ok(); // TODO
+        return Ok(new AutomationConfigDto
+        {
+            Fields = fields
+        });
     }
 }

@@ -6,6 +6,8 @@ using Quartz;
 using SmartGarden.Automation.RulesEngine;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Actuators.Enums;
 using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.Automation;
@@ -13,6 +15,7 @@ namespace SmartGarden.Automation;
 public class AutomationService(
     ILogger<AutomationService> logger,
     ISensorManager sensorManager, 
+    IActuatorManager actuatorManager,
     ActionExecutor executor, 
     IServiceProvider sp) 
     : IJob
@@ -23,6 +26,11 @@ public class AutomationService(
         await using var scope = sp.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
         
+        var rules = await db.Get<AutomationRule>().Where(x => x.IsEnabled).ToListAsync();
+
+        if (!rules.Any())
+            return;
+        
         var parameters = new List<RuleParameter>();
         parameters.Add(new RuleParameter("CurrentTime", DateTime.Now.TimeOfDay));
 
@@ -30,18 +38,25 @@ public class AutomationService(
         foreach (var sensor in sensors)
         {
             var connector = await sensorManager.GetConnectorAsync(sensor);
-            if (connector == null)
-                continue;
-            
             var sensorData = await connector.GetDataAsync();
         
             parameters.Add(new RuleParameter($"{sensor.ConnectorKey.Replace("-", "_")}.{sensor.Type}", sensorData.CurrentValue));
         }
 
-        var rules = await db.Get<AutomationRule>().ToListAsync();
+        var actuators = await db.Get<ActuatorRef>().ToListAsync();
+        foreach (var actuator in actuators)
+        {
+            var connector = await actuatorManager.GetConnectorAsync(actuator);
+            var state = await connector.GetStateAsync();
 
+            parameters.Add(new RuleParameter($"{actuator.ConnectorKey.Replace("-", "_")}.{actuator.Type}", state.StateType == StateType.Discrete ? state.State : state.CurrentValue));
+        }
+
+        var lastRunParam = new RuleParameter("ElapsedTimeSinceLastRun", DateTime.Now);
+        parameters.Add(lastRunParam);
         foreach (var rule in rules)
         {
+            lastRunParam.Value = DateTime.Now - (rule.LastActionRunAt ?? DateTime.Now);
             var evaluator = RulesEngine.RulesEngine.Parse(rule.Expression);
             var ruleResult = evaluator.Evaluate(parameters);
 
@@ -49,6 +64,8 @@ public class AutomationService(
                                   ruleResult.Rule, 
                                   ruleResult.IsSuccess,
                                   JsonConvert.SerializeObject(parameters));
+
+            await executor.ExecuteActionsAsync(rule.Actions);
         }
     }
 }

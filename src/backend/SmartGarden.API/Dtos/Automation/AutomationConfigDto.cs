@@ -10,16 +10,22 @@ public class AutomationConfigDto
 
 public class ParameterFieldDto
 {
-    public string Label { get; set; }
+    public string ConnectorKey { get; set; }
+    public virtual string Type { get; set; }
     public string TsType { get; set; }
+
     public double? Min { get; set; }
+
     public double? Max { get; set; }
+    public string? Unit { get; set; }
+
     public List<AutomationSelectValueDto>? Values { get; set; }
 
     public static Expression<Func<ModuleAutomationConfig, ParameterFieldDto>> FromModel =>
         c => new ParameterFieldDto
         {
-            Label = c.ConnectorKey
+            ConnectorKey = c.ConnectorKey
+            , Type = c.Type.ToString()
             , TsType = c.TsType
             , Min = c.Min
             , Max = c.Max

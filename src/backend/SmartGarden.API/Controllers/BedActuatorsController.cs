@@ -7,7 +7,7 @@ using SmartGarden.EntityFramework.Models;
 namespace SmartGarden.API.Controllers;
 
 [Route("Beds/{id}/Actuators")]
-public class BedActuatorsController(ApplicationContext db) : BaseBedsController(db)
+public class BedActuatorsController(ApplicationContext db) : BaseBedController(db)
 {
 
     [HttpPatch("{actuatorId}")]

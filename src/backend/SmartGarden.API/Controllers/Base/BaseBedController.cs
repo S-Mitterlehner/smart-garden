@@ -5,7 +5,7 @@ using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.API.Controllers.Base;
 
-public abstract class BaseBedsController(ApplicationContext db) : BaseController
+public abstract class BaseBedController(ApplicationContext db) : BaseController
 {
     
     [FromRoute(Name = "id")]

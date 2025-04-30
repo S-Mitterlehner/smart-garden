@@ -10,6 +10,12 @@ public class AutomationRule : BaseEntityWithOrder
     
     public string Name { get; set; }
     public string Expression { get; set; }
+
+    public bool IsEnabled { get; set; } = true;
+
+    public DateTime? LastActionRunAt { get; set; }
+
+    public TimeSpan CoolDown { get; set; }
     
     public virtual List<AutomationRuleAction> Actions { get; set; } = new();
 }

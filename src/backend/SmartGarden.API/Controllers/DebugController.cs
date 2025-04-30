@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MQTTnet;
 using RulesEngine.Models;
+using SmartGarden.API.Controllers.Base;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Sensors;
 

@@ -106,13 +106,33 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         await CreateOrUpdateAsync(bed);
 
         
-        var r1 = await CreateOrUpdateAsync(new AutomationRule
+        await CreateOrUpdateAsync(new AutomationRule
         {
             Id = new Guid("f2b0c4a1-3d8e-4b5e-8f6c-7a2d9f1c3b5e"),
             Name = "Watering",
             Order = 1,
             BedId = bed.Id,
-            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.Temperature < {psc1.RangeTo}",
+            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.Temperature < 30",
+            IsEnabled = false,
+            Actions =
+            [
+                new AutomationRuleAction
+                {
+                    ActuatorId = c.Id,
+                    ActionKey = "pump.run",
+                    Value = 10
+                }
+            ]
+        });
+
+        await CreateOrUpdateAsync(new AutomationRule
+        {
+            Id = new Guid("2d954786-1209-41d3-82ae-bd3618c3d038"),
+            Name = "Watering 2",
+            Order = 1,
+            BedId = bed.Id,
+            Expression = $"CurrentTime > 19:00:00 and CurrentTime < 19:30:00",
+            IsEnabled = false,
             Actions =
             [
                 new AutomationRuleAction

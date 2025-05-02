@@ -29,6 +29,7 @@ public class ParameterFieldDto
             , TsType = c.TsType
             , Min = c.Min
             , Max = c.Max
+            , Unit = c.Unit
             , Values = c.Values != null ? c.Values.Select(v => new AutomationSelectValueDto {Label = v.Label, Value = v.Value}).ToList() : null
         };
 }

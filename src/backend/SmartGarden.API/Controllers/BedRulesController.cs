@@ -51,4 +51,27 @@ public class BedRulesController(ApplicationContext db, IActuatorManager actuator
             Fields = fields
         });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] AutomationRuleDto dto)
+    {
+        // TODO
+
+        return Ok();
+    }
+    
+    [HttpDelete("{ruleId}")]
+    public async Task<IActionResult> Delete(Guid ruleId)
+    {
+        var bed = await GetBedAsync();
+        if (bed == null) return NotFound();
+
+        var rule = bed.Rules.FirstOrDefault(x => x.Id == ruleId);
+        if (rule == null) return NotFound();
+
+        db.Remove(rule);
+        await db.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

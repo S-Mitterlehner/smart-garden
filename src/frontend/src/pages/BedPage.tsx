@@ -1,9 +1,12 @@
 import PlantSelector from "../components/PlantSelector";
 import { BedProvider, useBedContext } from "../hooks/useCurrentBed";
 import { useParams } from "react-router";
-import { Loader } from "@mantine/core";
+import { ActionIcon, Drawer, Loader } from "@mantine/core";
 import SensorSection from "../components/sensors/SensorSection";
 import ActuatorSection from "../components/actuators/ActuatorSection";
+import { IconAutomaticGearbox, IconMenu3 } from "@tabler/icons-react";
+import { useState } from "react";
+import RuleEditor from "../components/automation/RuleEditor";
 
 export default function BedPage() {
   const bedId = useParams().bedId as string;
@@ -16,6 +19,7 @@ export function BedPageContent() {
     isFetched,
     currentPlant: { value: plant, set: setPlant },
   } = useBedContext();
+  const [showRulesDrawer, setShowRulesDrawer] = useState(false);
 
   if (!isFetched) {
     return (
@@ -27,17 +31,36 @@ export function BedPageContent() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-row gap-4">
-        <PlantSelector selectedPlant={plant} setSelectedPlant={setPlant} />
-        <div className="flex flex-col gap-2">
-          <span className="text-2xl font-bold">{plant?.name}</span>
-          <span className="text-gray-500">{plant?.description}</span>
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-[auto_1fr_auto] gap-4">
+          <PlantSelector selectedPlant={plant} setSelectedPlant={setPlant} />
+          <div className="flex flex-col gap-2">
+            <span className="text-2xl font-bold">{plant?.name}</span>
+            <span className="text-gray-500">{plant?.description}</span>
+          </div>
+          <div className="justify-self-end">
+            <ActionIcon
+              variant="subtle"
+              size="xl"
+              color="oklch(76.5% 0.177 163.223)"
+              onClick={() => setShowRulesDrawer(!showRulesDrawer)}
+            >
+              <IconAutomaticGearbox className="w-6 h-6" />
+            </ActionIcon>
+          </div>
         </div>
+
+        <SensorSection />
+        <ActuatorSection />
       </div>
 
-      <SensorSection />
-      <ActuatorSection />
-    </div>
+      <Drawer
+        opened={showRulesDrawer}
+        onClose={() => setShowRulesDrawer(false)}
+      >
+        <RuleEditor />
+      </Drawer>
+    </>
   );
 }

@@ -7,6 +7,7 @@ import { SensorRef } from "../models/sensor";
 import { ActuatorRef } from "../models/actuator";
 import { API_URL } from "../environment";
 import { notifications } from "@mantine/notifications";
+import { AutomationRule } from "../models/automation";
 
 export type BedValue = {
   bed: Bed;
@@ -17,6 +18,7 @@ export type BedValue = {
   };
   sensors: SensorRef[];
   actuators: ActuatorRef[];
+  rules: AutomationRule[];
   addSensor: (sensor: SensorRef) => void;
   removeSensor: (sensor: SensorRef) => void;
   addActuator: (actuator: ActuatorRef) => void;
@@ -198,6 +200,7 @@ export function useBed(id: string) {
     },
     sensors: bed?.sensors ?? [],
     actuators: bed?.actuators ?? [],
+    rules: bed?.rules ?? [],
     addSensor,
     removeSensor,
     addActuator,

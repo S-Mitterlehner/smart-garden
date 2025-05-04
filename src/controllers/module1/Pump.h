@@ -58,24 +58,48 @@ public:
     parent["pump"] = pumpTopic;
   }
 
-  void onActionMessage(JsonDocument& doc) {
-    if (doc["actuatorType"].as<String>() == "Pump") {
-      String actionKey = doc["actionKey"].as<String>();
+  // void onActionMessage(JsonDocument& doc) override {
+  //   if (doc["actuatorType"].as<String>() == "Pump") {
+  //     String actionKey = doc["actionKey"].as<String>();
 
-      if (actionKey == "pump.start" && doc["actionType"].as<String>() == "Command") {
-        setPump(true);
-      } else if (actionKey == "pump.stop" && doc["actionType"].as<String>() == "Command") {
-        setPump(false);
-        pumpRunningForDuration = false;
-      } else if (actionKey == "pump.run" && doc["value"].as<float>() > 0 && doc["actionType"].as<String>() == "Value") {
-        float value = doc["value"].as<float>();
+  //     if (actionKey == "pump.start" && doc["actionType"].as<String>() == "Command") {
+  //       setPump(true);
+  //     } else if (actionKey == "pump.stop" && doc["actionType"].as<String>() == "Command") {
+  //       setPump(false);
+  //       pumpRunningForDuration = false;
+  //     } else if (actionKey == "pump.run" && doc["value"].as<float>() > 0 && doc["actionType"].as<String>() == "Value") {
+  //       float value = doc["value"].as<float>();
 
-        pumpStopTime = millis() + (value * 1000);
+  //       pumpStopTime = millis() + (value * 1000);
+  //       pumpRunningForDuration = true;
+  //       setPump(true);
+  //     } else {
+  //       Serial.println("Unknown action key");
+  //     }
+  //   }
+  // }
+
+  void onActionMessage(JsonDocument& doc) override {
+    String actuatorType = doc["actuatorType"] | "";
+    if (actuatorType != "Pump") return;
+
+    String actionKey = doc["actionKey"] | "";
+    String actionType = doc["actionType"] | "";
+
+    if (actionKey == "pump.start" && actionType == "Command") {
+      setPump(true);
+    } else if (actionKey == "pump.stop" && actionType == "Command") {
+      setPump(false);
+      pumpRunningForDuration = false;
+    } else if (actionKey == "pump.run" && actionType == "Value") {
+      float value = doc["value"].as<float>();
+      if (value > 0.0f) {
+        pumpStopTime = millis() + static_cast<unsigned long>(value * 1000);
         pumpRunningForDuration = true;
         setPump(true);
-      } else {
-        Serial.println("Unknown action key");
       }
+    } else {
+      Serial.println("Unknown action key or type");
     }
   }
 

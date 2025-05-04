@@ -91,7 +91,7 @@ void connectWifi() {
   }
 
   // you're connected now, so print out the data:
-  Serial.print("You're connected to the network");
+  Serial.println("You're connected to the network");
 
   byte mac[6];
   WiFi.macAddress(mac);

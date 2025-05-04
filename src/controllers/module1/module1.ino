@@ -7,8 +7,13 @@
 #include "ActuatorManager.h"
 #include "DHTSensor.h"
 #include "Pump.h"
+#include "StepperMotor.h"
 
 // Constants
+const int PIN_MOTOR_IN1 = 2;
+const int PIN_MOTOR_IN2 = 3;
+const int PIN_MOTOR_IN3 = 4;
+const int PIN_MOTOR_IN4 = 5;
 const int PIN_pumpBI = 9;
 const int PIN_pumpFI = 10;
 const int PIN_DHT = 11;
@@ -64,6 +69,7 @@ void setupSensors() {
 
 void setupActuators() {
   actuatorManager.addActuator(new Pump(PIN_pumpBI, PIN_pumpFI, deviceId));
+  actuatorManager.addActuator(new StepperMotor(PIN_MOTOR_IN1, PIN_MOTOR_IN2, PIN_MOTOR_IN3, PIN_MOTOR_IN4, deviceId));
   // actuatorManager.addActuator(new ...);
   actuatorManager.initializeActuators();
 }

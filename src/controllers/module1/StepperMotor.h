@@ -1,7 +1,7 @@
 #ifndef STEPPER_MOTOR_H
 #define STEPPER_MOTOR_H
 
-#include <Stepper.h>
+#include <AccelStepper.h>  // TODO install AccelStepper
 #include <ArduinoJson.h>
 #include "ActuatorManager.h"
 #include "utils.h"
@@ -13,23 +13,18 @@ private:
   const String id;
   const String stepperMotorTopic;
 
-  Stepper stepper;
-  int rotatingSpeed = 10;
+  AccelStepper stepper;
   int motorState = 0;  // 0-100%
 
-  unsigned int currentPosition = 0;
   unsigned int targetPosition = 0;
 
-  unsigned long lastStepTime = 0;
-  const unsigned long stepDelay = 0;  // ms between steps
-
-  const unsigned long interval = 10000;
   unsigned long lastMotorStatusTime = 0;
+  const unsigned long interval = 10000;
 
 public:
   StepperMotor(int pin1, int pin2, int pin3, int pin4, String deviceId)
     : id(deviceId),
-      stepper(STEPS_PER_REV, pin1, pin2, pin3, pin4),
+      stepper(AccelStepper::FULL4WIRE, pin1, pin2, pin3, pin4),
       stepperMotorTopic("smart-garden/" + deviceId + "/stepper-motor") {
 
     Serial.print("Stepper Motor Topic: ");
@@ -37,21 +32,16 @@ public:
   }
 
   void initialize() override {
-    stepper.setSpeed(rotatingSpeed);
+    stepper.setMaxSpeed(1000);      // Steps per second
+    stepper.setAcceleration(1000);  // Maximum acceleration
   }
 
   void update() override {
+    stepper.run();
+    int position = stepper.currentPosition();
+    motorState = map(position, 0, STEPS_PER_REV, 0, 100);
+
     unsigned long now = millis();
-
-    // non blocking step of the motor
-    if (currentPosition != targetPosition && now - lastStepTime >= stepDelay) {
-      int direction = (targetPosition > currentPosition) ? 1 : -1;
-      stepper.step(direction);
-      currentPosition += direction;
-      motorState = map(currentPosition, 0, STEPS_PER_REV, 0, 100);
-      lastStepTime = now;
-    }
-
     if (now - lastMotorStatusTime >= interval) {
       lastMotorStatusTime = now;
       sendMotorStatus();
@@ -72,10 +62,12 @@ public:
 
     if ((actionKey == "motor.open" || actionKey == "motor.close") && actionType == "Command") {
       targetPosition = (actionKey == "motor.open") ? STEPS_PER_REV : 0;
+      stepper.moveTo(targetPosition);
     } else if (actionKey == "motor.set" && actionType == "Value") {
       float percent = value.toFloat();
       if (percent >= 0.0f && percent <= 100.0f) {
         targetPosition = map(percent, 0.0, 100.0, 0, STEPS_PER_REV);
+        stepper.moveTo(targetPosition);
       } else {
         Serial.println("Invalid value for motor.set (expect 0-100)");
       }

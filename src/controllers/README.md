@@ -10,3 +10,14 @@ The content of this file should look like this:
 #define SECRET_SSID "yourwifissid"
 #define SECRET_PASS "yourwifipw"
 ```
+
+## Module 1
+
+### Dependencies
+
+Install the following dependencies by the exact name
+
+- "PubSubClient"
+- "ArduinoJson"
+- "DHT sensor library"
+- "AccelStepper"

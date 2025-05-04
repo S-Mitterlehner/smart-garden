@@ -77,7 +77,7 @@ void setupActuators() {
 String getDeviceId() {
   String d = String(macAddress.c_str());
   d.replace(":", "");
-  return "sm-" + d;
+  return "sg-" + d;
 }
 
 void listen(char* topic, byte* payload, unsigned int length) {

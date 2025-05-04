@@ -55,8 +55,8 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
             Type = ActuatorType.Pump,
             Order = 1,
-            ConnectorKey = "sm-48ca435508f0",
-            Topic = "smart-garden/sm-48ca435508f0/waterpump"
+            ConnectorKey = "sg-48ca435508f0",
+            Topic = "smart-garden/sg-48ca435508f0/waterpump"
         });
 
         var c2 = await CreateOrUpdateAsync(new ActuatorRef
@@ -76,8 +76,8 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Name = "Temperature"
             , Description = "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations."
             , Type = SensorType.Temperature
-            , ConnectorKey = "sm-48ca435508f0"
-            , Topic = "smart-garden/sm-48ca435508f0/temperature"
+            , ConnectorKey = "sg-48ca435508f0"
+            , Topic = "smart-garden/sg-48ca435508f0/temperature"
             , Order = 1
         });
 
@@ -86,8 +86,8 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Id = new Guid("28525480-9434-4318-82f7-3d89cb231166"), Name = "Humidity",
             Description =
                 "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations.",
-            Type = SensorType.Humidity, ConnectorKey = "sm-48ca435508f0",
-            Topic = "smart-garden/sm-48ca435508f0/humidity", Order = 2
+            Type = SensorType.Humidity, ConnectorKey = "sg-48ca435508f0",
+            Topic = "smart-garden/sg-48ca435508f0/humidity", Order = 2
         });
 
         await context.SaveChangesAsync();

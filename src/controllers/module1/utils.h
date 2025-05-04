@@ -1,12 +1,15 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <WiFiS3.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 
-#include "arduino_secrets.h" 
+#include "arduino_secrets.h"
 
-char ssid[] = SECRET_SSID;        // your network SSID (name)
+char ssid[] = SECRET_SSID;    // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
-int status = WL_IDLE_STATUS;     // the WiFi radio's status
+int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 String macAddress;
 
@@ -58,7 +61,7 @@ void printWifiData() {
   // print your board's IP address:
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
-  
+
   Serial.println(ip);
 }
 
@@ -67,7 +70,8 @@ void connectWifi() {
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
     // don't continue
-    while (true);
+    while (true)
+      ;
   }
 
   String fv = WiFi.firmwareVersion();
@@ -88,27 +92,27 @@ void connectWifi() {
 
   // you're connected now, so print out the data:
   Serial.print("You're connected to the network");
-  
+
   byte mac[6];
   WiFi.macAddress(mac);
   macAddress = getMacAddressAsString(mac);
   Serial.print("MAC address: ");
   Serial.println(macAddress);
-  
+
 
   printCurrentNet();
   printWifiData();
 }
 
 void connectMQTT(String deviceId) {
-  if(mqttClient.connected()) {
+  if (mqttClient.connected()) {
     mqttClient.disconnect();
   }
 
   mqttClient.setServer(mqttServerAddress, mqttServerPort);
   while (!mqttClient.connected()) {
     if (mqttClient.connect(deviceId.c_str())) {
-      Serial.println("connected");
+      Serial.println("Success, MQTT device with ID " + deviceId + " connected!");
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
@@ -128,15 +132,17 @@ void delayWithLoop(int ms) {
 }
 
 void sendToMQTT(const String topic, const String json) {
-  if(mqttClient.connected()) {
+  if (mqttClient.connected()) {
     mqttClient.loop();
     mqttClient.publish(topic.c_str(), json.c_str(), false);
   }
 }
 
 void sendToMQTTRetained(const String topic, const String json) {
-  if(mqttClient.connected()) {
+  if (mqttClient.connected()) {
     mqttClient.loop();
     mqttClient.publish(topic.c_str(), json.c_str(), true);
   }
 }
+
+#endif

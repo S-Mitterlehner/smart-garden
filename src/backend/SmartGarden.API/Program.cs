@@ -26,22 +26,22 @@ builder.Services.AddScoped<ISeeder, DevSeeder>();
 
 builder.Services.AddMqttClient();
 builder.Services.AddSignalR();
-builder.Services.AddQuartz(o =>
-{
-    var jobKey = new JobKey("Automation");
-    o.AddJob<AutomationService>(o => o.WithIdentity(jobKey));
+//builder.Services.AddQuartz(o =>
+//{
+//    var jobKey = new JobKey("Automation");
+//    o.AddJob<AutomationService>(o => o.WithIdentity(jobKey));
     
-    o.AddTrigger(op =>
-    {
-        op.ForJob(jobKey)
-            .WithIdentity("AutomationTrigger")
-            .WithCronSchedule("0 * * ? * * *");
-    });
-});
-builder.Services.AddQuartzServer(options =>
-{
-    options.WaitForJobsToComplete = true;
-});
+//    o.AddTrigger(op =>
+//    {
+//        op.ForJob(jobKey)
+//            .WithIdentity("AutomationTrigger")
+//            .WithCronSchedule("0 * * ? * * *");
+//    });
+//});
+//builder.Services.AddQuartzServer(options =>
+//{
+//    options.WaitForJobsToComplete = true;
+//});
 
 // BackgroundServices 
 builder.Services.AddHostedService<DbInitializer>();

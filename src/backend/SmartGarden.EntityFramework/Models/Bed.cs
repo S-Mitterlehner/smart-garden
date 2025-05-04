@@ -14,4 +14,5 @@ public class Bed : BaseEntity
 
     public virtual List<SensorRef> Sensors { get; set; } = new();
     public virtual List<ActuatorRef> Actuators { get; set; } = new();
+    public virtual List<AutomationRule> Rules { get; set; } = new();
 }

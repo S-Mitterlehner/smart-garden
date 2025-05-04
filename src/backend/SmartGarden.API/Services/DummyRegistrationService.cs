@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartGarden.Actuators;
-using SmartGarden.Core.Enums;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
-using SmartGarden.Sensors;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.Services;
 

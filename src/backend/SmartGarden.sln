@@ -9,13 +9,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.EntityFramework
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "..\docker\docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Actuators", "SmartGarden.Actuators\SmartGarden.Actuators.csproj", "{FBF74119-CA2A-42B3-89BD-D05A1AAAD722}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Modules.Actuators", "SmartGarden.Modules.Actuators\SmartGarden.Modules.Actuators.csproj", "{FBF74119-CA2A-42B3-89BD-D05A1AAAD722}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Core", "SmartGarden.Core\SmartGarden.Core.csproj", "{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Modules", "SmartGarden.Modules\SmartGarden.Modules.csproj", "{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Sensors", "SmartGarden.Sensors\SmartGarden.Sensors.csproj", "{FD082041-FF5C-4288-9411-60A5E3C6BF86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Modules.Sensors", "SmartGarden.Modules.Sensors\SmartGarden.Modules.Sensors.csproj", "{FD082041-FF5C-4288-9411-60A5E3C6BF86}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Mqtt", "SmartGarden.Mqtt\SmartGarden.Mqtt.csproj", "{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Automation", "SmartGarden.Automation\SmartGarden.Automation.csproj", "{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +55,18 @@ Global
 		{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E9B53C3-8866-4FA3-B66C-1770DD6123E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90A7FC8B-C948-4599-9C62-47F9C2B29CD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FBF74119-CA2A-42B3-89BD-D05A1AAAD722} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{FD082041-FF5C-4288-9411-60A5E3C6BF86} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E08F91EB-3EE9-4F99-BB83-C04E638752B7}

@@ -1,5 +1,5 @@
 ﻿using MQTTnet;
-using SmartGarden.Sensors;
+using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.Services;
 

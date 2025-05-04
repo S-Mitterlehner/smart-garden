@@ -27,7 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartGarden.Core\SmartGarden.Core.csproj" />
+    <Reference Include="SmartGarden.Core">
+      <HintPath>..\SmartGarden.Core\bin\Debug\net9.0\SmartGarden.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
   </ItemGroup>
 
 </Project>

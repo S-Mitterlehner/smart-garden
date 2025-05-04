@@ -28,10 +28,17 @@ npm run api-mock
 
 ### Backend
 
-In order to run the Backend, all you need to do is to open the sln with Visual Studio or Rider. After that you can run the docker-compose project in VS or the `Docker Compose [Windows/Unix]` Configuration in Rider.
+In order to run the Backend, all you need to do is to open the sln with Visual Studio or Rider. After that you can run the docker-compose project in VS or the `Docker Compose [Windows/Unix/Linux]` Configuration in Rider.
 
 This will also start the postgresdb for the application.
 
 #### Controller / Arduino
 
-TODO
+In order to compile the `ino`-files you need to create a `arduino_secrets.h` file in each module. The content of this file should look like this:
+
+```cpp
+#define SECRET_SSID "yourwifissid"
+#define SECRET_PASS "yourwifipw"
+```
+
+Please refer to the module descriptions in order to prepare the correct setup for each module.

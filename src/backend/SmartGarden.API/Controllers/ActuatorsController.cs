@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SmartGarden.Actuators;
-using SmartGarden.Actuators.Enums;
-using SmartGarden.Actuators.Models;
+using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Actuators.Enums;
+using SmartGarden.Modules.Actuators.Models;
 
 namespace SmartGarden.API.Controllers;
 

@@ -1,6 +1,7 @@
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;

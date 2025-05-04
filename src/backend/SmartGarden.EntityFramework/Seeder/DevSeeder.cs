@@ -1,5 +1,5 @@
-﻿using SmartGarden.Core.Enums;
-using SmartGarden.EntityFramework.Models;
+﻿using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.EntityFramework.Seeder;
 
@@ -83,16 +83,15 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 
         var s2 = await CreateOrUpdateAsync(new SensorRef
         {
-            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
-            , Name = "Humidity"
-            , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
-            , Type = SensorType.Humidity
-            , ConnectorKey = "sm-48ca435508f0"
-            , Topic = "smart-garden/sm-48ca435508f0/humidity"
-            , Order = 2
+            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166"), Name = "Humidity",
+            Description =
+                "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations.",
+            Type = SensorType.Humidity, ConnectorKey = "sm-48ca435508f0",
+            Topic = "smart-garden/sm-48ca435508f0/humidity", Order = 2
         });
 
         await context.SaveChangesAsync();
+
 
         var bed = new Bed
         {
@@ -105,6 +104,45 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         bed.Actuators.AddRange(c, c2);
         bed.Sensors.AddRange(s1, s2);
         await CreateOrUpdateAsync(bed);
+
+        
+        await CreateOrUpdateAsync(new AutomationRule
+        {
+            Id = new Guid("f2b0c4a1-3d8e-4b5e-8f6c-7a2d9f1c3b5e"),
+            Name = "Watering",
+            Order = 1,
+            BedId = bed.Id,
+            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.Temperature < 30",
+            IsEnabled = false,
+            Actions =
+            [
+                new AutomationRuleAction
+                {
+                    ActuatorId = c.Id,
+                    ActionKey = "pump.run",
+                    Value = 10
+                }
+            ]
+        });
+
+        await CreateOrUpdateAsync(new AutomationRule
+        {
+            Id = new Guid("2d954786-1209-41d3-82ae-bd3618c3d038"),
+            Name = "Watering 2",
+            Order = 1,
+            BedId = bed.Id,
+            Expression = $"CurrentTime > 19:00:00 and CurrentTime < 19:30:00",
+            IsEnabled = false,
+            Actions =
+            [
+                new AutomationRuleAction
+                {
+                    ActuatorId = c.Id,
+                    ActionKey = "pump.run",
+                    Value = 10
+                }
+            ]
+        });
 
         await context.SaveChangesAsync();
     }

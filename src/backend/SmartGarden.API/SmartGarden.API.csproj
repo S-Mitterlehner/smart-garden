@@ -24,14 +24,26 @@
     <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
     <PackageReference Include="MQTTnet.AspNetCore" Version="5.0.1.1416" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Quartz" Version="3.14.0" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
+    <PackageReference Include="RulesEngine" Version="5.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartGarden.Actuators\SmartGarden.Actuators.csproj" />
+    <ProjectReference Include="..\SmartGarden.Automation\SmartGarden.Automation.csproj" />
     <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
+    <ProjectReference Include="..\SmartGarden.Modules.Actuators\SmartGarden.Modules.Actuators.csproj" />
+    <ProjectReference Include="..\SmartGarden.Modules.Sensors\SmartGarden.Modules.Sensors.csproj" />
+    <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
     <ProjectReference Include="..\SmartGarden.Mqtt\SmartGarden.Mqtt.csproj" />
-    <ProjectReference Include="..\SmartGarden.Sensors\SmartGarden.Sensors.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SmartGarden.Core">
+      <HintPath>..\SmartGarden.Core\bin\Debug\net9.0\SmartGarden.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

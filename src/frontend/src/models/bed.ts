@@ -1,4 +1,5 @@
 import { ActuatorRef } from "./actuator";
+import { AutomationRule } from "./automation";
 import { PlantRef } from "./plant";
 import { SensorRef } from "./sensor";
 
@@ -12,4 +13,5 @@ export type Bed = BedRef & {
   plant: PlantRef;
   sensors: SensorRef[];
   actuators: ActuatorRef[];
+  rules: AutomationRule[];
 };

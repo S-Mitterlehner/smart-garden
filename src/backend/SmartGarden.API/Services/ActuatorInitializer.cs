@@ -1,4 +1,4 @@
-﻿using SmartGarden.Actuators;
+﻿using SmartGarden.Modules.Actuators;
 
 namespace SmartGarden.API.Services;
 

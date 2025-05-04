@@ -7,9 +7,11 @@ public class AutomationRule : BaseEntityWithOrder
     [ForeignKey(nameof(Bed))] 
     public Guid BedId { get; set; }
     public virtual Bed Bed { get; set; }
-    
+
     public string Name { get; set; }
-    public string Expression { get; set; }
+
+    public string ExpressionJson { get; set; }
+
 
     public bool IsEnabled { get; set; } = true;
 

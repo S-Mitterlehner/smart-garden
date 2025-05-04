@@ -24,14 +24,3 @@ public class ActionExecutor(IActuatorManager actuatorManager, ILogger<ActionExec
         logger.LogInformation("Action {actionKey} sent to Connector {connector} with value {value}", action.ActionKey, connector.Key, action.Value);
     }
 }
-
-public static class ActionExecutorExtensions
-{
-    public static async Task ExecuteActionsAsync(this ActionExecutor executor, IEnumerable<AutomationRuleAction> actions)
-    {
-        foreach (var action in actions)
-        {
-            await executor.ExecuteActionAsync(action);
-        }
-    }
-}

@@ -112,8 +112,16 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Name = "Watering",
             Order = 1,
             BedId = bed.Id,
-            Expression = $"{s1.ConnectorKey.Replace("-", "_")}.Temperature < 30",
+            ExpressionJson = $$"""
+                              {
+                                 "<": [
+                                    { "var": "{{s1.ConnectorKey.Replace("-", "_")}}.Temperature" },
+                                    30
+                                 ]
+                              }
+                              """,
             IsEnabled = false,
+            CoolDown = new TimeSpan(0, 5, 0) /*5 min*/,
             Actions =
             [
                 new AutomationRuleAction
@@ -131,8 +139,16 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Name = "Watering 2",
             Order = 1,
             BedId = bed.Id,
-            Expression = $"CurrentTime > 19:00:00 and CurrentTime < 19:30:00",
+            ExpressionJson = $$"""
+                              {
+                                "and": [
+                                    { ">": [{ "var": "CurrentTime" }, "19:00:00"] },
+                                    { "<": [{ "var": "CurrentTime" }, "23:30:00"] }
+                                ]
+                              }
+                              """,
             IsEnabled = false,
+            CoolDown = new TimeSpan(0, 5, 0) /*5 min*/,
             Actions =
             [
                 new AutomationRuleAction

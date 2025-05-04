@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+using Json.Logic;
+using Json.More;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using SmartGarden.Automation.RulesEngine;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Actuators;
@@ -20,52 +22,102 @@ public class AutomationService(
     IServiceProvider sp) 
     : IJob
 {
+    private const string CURRENT_TIME = "CurrentTime";
+
+    private static readonly Regex TimeRegex = new(@"""(?<hour>\d{1,2}):(?<minute>\d{1,2}):(?<second>\d{1,2})""");
+
     public async Task Execute(IJobExecutionContext context)
     {
         logger.LogInformation("AutomationService - Execute");
         await using var scope = sp.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
         
-        var rules = await db.Get<AutomationRule>().Where(x => x.IsEnabled).ToListAsync();
+        var rules = await db.Get<AutomationRule>()
+                            .Where(x => x.IsEnabled && DateTime.UtcNow - (x.LastActionRunAt ?? DateTime.MinValue) > x.CoolDown)
+                            .ToListAsync();
 
         if (!rules.Any())
             return;
-        
-        var parameters = new List<RuleParameter>();
-        parameters.Add(new RuleParameter("CurrentTime", DateTime.Now.TimeOfDay));
 
-        var sensors = await db.Get<SensorRef>().ToListAsync();
+        var parameters = new JsonObject {{CURRENT_TIME, DateTime.UtcNow.TimeOfDay.Ticks}};
+        var sensors = await db.Get<SensorRef>().GroupBy(x => x.ConnectorKey).ToListAsync();
+
         foreach (var sensor in sensors)
         {
-            var connector = await sensorManager.GetConnectorAsync(sensor);
-            var sensorData = await connector.GetDataAsync();
-        
-            parameters.Add(new RuleParameter($"{sensor.ConnectorKey.Replace("-", "_")}.{sensor.Type}", sensorData.CurrentValue));
+            if (!(parameters.TryGetPropertyValue(sensor.Key, out var node) && node is JsonObject sensorObj))
+            {
+                sensorObj = new JsonObject();
+                parameters.Add(sensor.Key, sensorObj);
+            }
+
+            foreach (var reference in sensor.ToList())
+            {
+                var connector = await sensorManager.GetConnectorAsync(reference);
+                var sensorData = await connector.GetDataAsync();
+
+                sensorObj.Add(reference.Type.ToString(), sensorData.CurrentValue);
+            }
         }
 
-        var actuators = await db.Get<ActuatorRef>().ToListAsync();
+        var actuators = await db.Get<ActuatorRef>().GroupBy(x => x.ConnectorKey).ToListAsync();
         foreach (var actuator in actuators)
         {
-            var connector = await actuatorManager.GetConnectorAsync(actuator);
-            var state = await connector.GetStateAsync();
+            if (!(parameters.TryGetPropertyValue(actuator.Key, out var node) && node is JsonObject actuatorObj))
+            {
+                actuatorObj = new JsonObject();
+                parameters.Add(actuator.Key, actuatorObj);
+            }
 
-            parameters.Add(new RuleParameter($"{actuator.ConnectorKey.Replace("-", "_")}.{actuator.Type}", state.StateType == StateType.Discrete ? state.State : state.CurrentValue));
+            foreach (var reference in actuator.ToList())
+            {
+                var connector = await actuatorManager.GetConnectorAsync(reference);
+                var state = await connector.GetStateAsync();
+                actuatorObj.Add(reference.Type.ToString(), state.StateType == StateType.Discrete ? state.State : state.CurrentValue);
+            }
         }
 
-        var lastRunParam = new RuleParameter("ElapsedTimeSinceLastRun", DateTime.Now);
-        parameters.Add(lastRunParam);
         foreach (var rule in rules)
         {
-            lastRunParam.Value = DateTime.Now - (rule.LastActionRunAt ?? DateTime.Now);
-            var evaluator = RulesEngine.RulesEngine.Parse(rule.Expression);
-            var ruleResult = evaluator.Evaluate(parameters);
+            try
+            {
+                var json = ReplaceTime(rule.ExpressionJson);
+                var expression = JsonNode.Parse(json);
 
-            logger.LogInformation("RuleCheck - {expression}: {IsSuccess} ({parameters})", 
-                                  ruleResult.Rule, 
-                                  ruleResult.IsSuccess,
-                                  JsonConvert.SerializeObject(parameters));
+                var result = JsonLogic.Apply(expression, parameters)?.GetValue<bool>() ?? false;
 
-            await executor.ExecuteActionsAsync(rule.Actions);
+                logger.LogInformation("RuleCheck - {expression}: {IsSuccess} ({parameters})",
+                                      rule.ExpressionJson,
+                                      result,
+                                      parameters.AsJsonString());
+
+                if (result)
+                {
+                    await executor.ExecuteActionsAsync(rule.Actions);
+
+                    rule.LastActionRunAt = DateTime.UtcNow;
+                    await db.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error executing rule {ruleId}: {message}", rule.Id, ex.Message);
+            }
         }
+    }
+
+    private static string ReplaceTime(string json)
+    {
+        var matches = TimeRegex.Matches(json);
+
+        foreach (Match match in matches)
+        {
+            var hour = match.Groups["hour"].Value;
+            var minute = match.Groups["minute"].Value;
+            var second = match.Groups["second"].Value;
+            var time = new TimeSpan(int.Parse(hour), int.Parse(minute), int.Parse(second));
+            json = json.Replace(match.Value, time.Ticks.ToString());
+        }
+
+        return json;
     }
 }

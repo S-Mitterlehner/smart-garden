@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { ActionIcon, Drawer, Loader } from "@mantine/core";
 import SensorSection from "../components/sensors/SensorSection";
 import ActuatorSection from "../components/actuators/ActuatorSection";
-import { IconAutomaticGearbox, IconMenu3 } from "@tabler/icons-react";
+import { IconAutomaticGearbox } from "@tabler/icons-react";
 import { useState } from "react";
 import RuleEditor from "../components/automation/RuleEditor";
 
@@ -57,6 +57,9 @@ export function BedPageContent() {
 
       <Drawer
         opened={showRulesDrawer}
+        position="right"
+        size="xl"
+        radius={15}
         onClose={() => setShowRulesDrawer(false)}
       >
         <RuleEditor />

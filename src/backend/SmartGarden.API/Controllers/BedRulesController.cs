@@ -53,7 +53,7 @@ public class BedRulesController(ApplicationContext db, IActuatorManager actuator
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] AutomationRuleDto dto)
+    public async Task<IActionResult> Save([FromBody] AutomationRuleDto dto)
     {
         // TODO
 

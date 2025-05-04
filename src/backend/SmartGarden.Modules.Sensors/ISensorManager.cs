@@ -1,5 +1,4 @@
 ﻿using SmartGarden.EntityFramework.Models;
-using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.Modules.Sensors;
 

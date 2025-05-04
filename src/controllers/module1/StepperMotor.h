@@ -14,20 +14,20 @@ private:
   const String stepperMotorTopic;
 
   AccelStepper stepper;
-  int motorState = 0;  // 0-100%
+  int hatchState = 0;  // 0-100%
 
   unsigned int targetPosition = 0;
 
-  unsigned long lastMotorStatusTime = 0;
+  unsigned long lastHatchStatusTime = 0;
   const unsigned long interval = 10000;
 
 public:
   StepperMotor(int pin1, int pin2, int pin3, int pin4, String deviceId)
     : id(deviceId),
       stepper(AccelStepper::FULL4WIRE, pin1, pin2, pin3, pin4),
-      stepperMotorTopic("smart-garden/" + deviceId + "/stepper-motor") {
+      stepperMotorTopic("smart-garden/" + deviceId + "/hatch") {
 
-    Serial.print("Stepper Motor Topic: ");
+    Serial.print("Hatch Topic: ");
     Serial.println(stepperMotorTopic);
   }
 
@@ -39,40 +39,40 @@ public:
   void update() override {
     stepper.run();
     int position = stepper.currentPosition();
-    motorState = map(position, 0, STEPS_PER_REV, 0, 100);
+    hatchState = map(position, 0, STEPS_PER_REV, 0, 100);
 
     unsigned long now = millis();
-    if (now - lastMotorStatusTime >= interval) {
-      lastMotorStatusTime = now;
+    if (now - lastHatchStatusTime >= interval) {
+      lastHatchStatusTime = now;
       sendMotorStatus();
     }
   }
 
   void appendTopicsTo(JsonObject& parent) override {
-    parent["stepperMotor"] = stepperMotorTopic;
+    parent["hatch"] = stepperMotorTopic;
   }
 
   void onActionMessage(JsonDocument& doc) override {
     String actuatorType = doc["actuatorType"] | "";
-    if (actuatorType != "StepperMotor") return;
+    if (actuatorType != "Hatch") return;
 
     String actionKey = doc["actionKey"] | "";
     String actionType = doc["actionType"] | "";
     String value = doc["value"] | "-1.0";
 
-    if ((actionKey == "motor.open" || actionKey == "motor.close") && actionType == "Command") {
-      targetPosition = (actionKey == "motor.open") ? STEPS_PER_REV : 0;
+    if ((actionKey == "hatch.open" || actionKey == "hatch.close") && actionType == "Command") {
+      targetPosition = (actionKey == "hatch.open") ? STEPS_PER_REV : 0;
       stepper.moveTo(targetPosition);
-    } else if (actionKey == "motor.set" && actionType == "Value") {
+    } else if (actionKey == "hatch.set" && actionType == "Value") {
       float percent = value.toFloat();
       if (percent >= 0.0f && percent <= 100.0f) {
         targetPosition = map(percent, 0.0, 100.0, 0, STEPS_PER_REV);
         stepper.moveTo(targetPosition);
       } else {
-        Serial.println("Invalid value for motor.set (expect 0-100)");
+        Serial.println("Invalid value for hatch.set (expect 0-100)");
       }
     } else {
-      Serial.println("Unknown action key for StepperMotor");
+      Serial.println("Unknown action key for Hatch");
     }
   }
 
@@ -83,15 +83,17 @@ private:
     JsonDocument doc;
     doc["messageType"] = "State";
     doc["actuatorKey"] = id;
-    doc["actuatorType"] = "StepperMotor";
-    doc["stateType"] = "Discrete";
-    doc["state"] = motorState;
+    doc["actuatorType"] = "Hatch";
+    doc["stateType"] = "Continuous";
+    doc["min"] = 0;
+    doc["max"] = 100;
+    doc["currentValue"] = hatchState;
 
     char buffer[512];
     serializeJson(doc, buffer);
     sendToMQTTRetained(stepperMotorTopic, buffer);
 
-    Serial.print("Stepper Motor Status: ");
+    Serial.print("Hatch Status: ");
     Serial.println(buffer);
   }
 };

@@ -12,7 +12,8 @@ public partial class ActuatorManager
         {
             ActuatorType.Pump => ActivatorUtilities.CreateInstance<PumpActuatorConnector>(sp, key, topic),
             // TODO: activate real connector
-            ActuatorType.Hatch => ActivatorUtilities.CreateInstance<DummyHatchActuatorConnector>(sp, key, topic), // HatchActuatorConnector.Create(key, sp)
+            ActuatorType.Hatch => ActivatorUtilities.CreateInstance<HatchActuatorConnector>(sp, key, topic),
+            // HatchActuatorConnector.Create(key, sp)
             // TODO add more
             _ => throw new ActuatorTypeNotFoundException(type)
         };

@@ -1,4 +1,4 @@
-import { IconEngine, IconInfoCircle } from "@tabler/icons-react";
+import { IconCircuitSwitchOpen, IconEngine, IconInfoCircle } from "@tabler/icons-react";
 import { ActuatorType } from "../../models/actuator";
 
 export const getTypeIcon = (actuatorType: ActuatorType, iconClass?: string) => {
@@ -6,6 +6,8 @@ export const getTypeIcon = (actuatorType: ActuatorType, iconClass?: string) => {
   switch (actuatorType) {
     case ActuatorType.Pump:
       return <IconEngine className={iconClass} />;
+    case ActuatorType.Hatch:
+      return <IconCircuitSwitchOpen className={iconClass} />;
     default:
       return <IconInfoCircle className={iconClass} />;
   }

@@ -1,4 +1,4 @@
-import { IconInfoCircle, IconTemperature, IconWind } from "@tabler/icons-react";
+import { IconDropletsFilled, IconInfoCircle, IconTemperature, IconWind } from "@tabler/icons-react";
 import { SensorType } from "../../models/sensor";
 
 export const getTypeIcon = (sensorType: SensorType, iconClass?: string) => {
@@ -8,6 +8,8 @@ export const getTypeIcon = (sensorType: SensorType, iconClass?: string) => {
       return <IconTemperature className={iconClass} />;
     case SensorType.Humidity:
       return <IconWind className={iconClass} />;
+    case SensorType.Moisture:
+      return <IconDropletsFilled className={iconClass} />;
     default:
       return <IconInfoCircle className={iconClass} />;
   }

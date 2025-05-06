@@ -22,6 +22,14 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             RangeTo = 70,
             SensorType = SensorType.Humidity
         });
+        
+        var psc3 = await CreateOrUpdateAsync(new PlantSensorConfig
+        {
+            Id = new Guid("f549b5df-ca9c-49a6-9cb4-26ebd90ff88a"),
+            RangeFrom = 40,
+            RangeTo = 70,
+            SensorType = SensorType.Moisture
+        });
 
         var p = await CreateOrUpdateAsync(new Plant
         {
@@ -29,7 +37,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , Name = "Tomato"
             , Description = "Tomato is a fruit that is often used as a vegetable in cooking. It is rich in vitamins and antioxidants."
             , ImageUrl = "/plants/tomato.svg"
-            , SensorConfigs = [psc1, psc2]
+            , SensorConfigs = [psc1, psc2, psc3]
         });
 
         await CreateOrUpdateAsync(new Plant

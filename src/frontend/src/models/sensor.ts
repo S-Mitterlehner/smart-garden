@@ -4,6 +4,7 @@ export enum SensorType {
   Temperature = "Temperature",
   Humidity = "Humidity",
   Light = "Light",
+  Moisture = "Moisture"
 }
 
 export type SensorRef = {

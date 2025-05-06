@@ -19,7 +19,7 @@ private:
   unsigned int targetPosition = 0;
 
   unsigned long lastHatchStatusTime = 0;
-  const unsigned long interval = 10000;
+  const unsigned long interval = 5000;
 
 public:
   StepperMotor(int pin1, int pin2, int pin3, int pin4, String deviceId)
@@ -58,15 +58,14 @@ public:
 
     String actionKey = doc["actionKey"] | "";
     String actionType = doc["actionType"] | "";
-    String value = doc["value"] | "-1.0";
+    float value = doc["value"] | -1.0;  // value in %
 
     if ((actionKey == "hatch.open" || actionKey == "hatch.close") && actionType == "Command") {
       targetPosition = (actionKey == "hatch.open") ? STEPS_PER_REV : 0;
       stepper.moveTo(targetPosition);
     } else if (actionKey == "hatch.set" && actionType == "Value") {
-      float percent = value.toFloat();
-      if (percent >= 0.0f && percent <= 100.0f) {
-        targetPosition = map(percent, 0.0, 100.0, 0, STEPS_PER_REV);
+      if (value >= 0.0f && value <= 100.0f) {
+        targetPosition = map(value, 0.0, 100.0, 0, STEPS_PER_REV);
         stepper.moveTo(targetPosition);
       } else {
         Serial.println("Invalid value for hatch.set (expect 0-100)");

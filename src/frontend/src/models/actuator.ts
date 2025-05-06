@@ -2,6 +2,7 @@ import { ConnectionState } from "./general";
 
 export enum ActuatorType {
   Pump = "Pump",
+  Hatch = "Hatch"
 }
 
 export enum ActuatorStateStrings {

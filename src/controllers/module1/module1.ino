@@ -6,6 +6,7 @@
 #include "SensorManager.h"
 #include "ActuatorManager.h"
 #include "DHTSensor.h"
+#include "MoistureSensor.h"
 #include "Pump.h"
 #include "StepperMotor.h"
 
@@ -17,6 +18,7 @@ const int PIN_MOTOR_IN4 = 5;
 const int PIN_pumpBI = 9;
 const int PIN_pumpFI = 10;
 const int PIN_DHT = 11;
+const int PIN_MOISTURE = A0;
 
 // References
 extern WiFiClient network;
@@ -63,6 +65,7 @@ void loop() {
 
 void setupSensors() {
   sensorManager.addSensor(new DHTSensor(PIN_DHT, deviceId));
+  sensorManager.addSensor(new MoistureSensor(PIN_MOISTURE, deviceId));
   // sensorManager.addSensor(new ...);
   sensorManager.initializeSensors();
 }

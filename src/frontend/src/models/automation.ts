@@ -18,9 +18,10 @@ export type ParameterSelectValues = {
 };
 
 export type AutomationRule = {
+  id: string;
   bedId: string;
   name: string;
-  expression: string;
+  expressionJson: string;
   actions: AutomationRuleAction[];
 };
 
@@ -32,4 +33,8 @@ export type AutomationRuleAction = {
   actionKey: string;
   value: number | null;
   order: number;
+};
+
+export type RuleElement = {
+  [key: string]: RuleElement[] | string | number | boolean;
 };

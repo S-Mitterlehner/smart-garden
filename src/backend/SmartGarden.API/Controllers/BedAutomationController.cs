@@ -1,29 +1,18 @@
-using System.Reflection.Emit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos.Automation;
 using SmartGarden.EntityFramework;
 using SmartGarden.Modules.Actuators;
-using SmartGarden.Modules.Actuators.Enums;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.Controllers;
 
-[Route("Beds/{id}/Rules")]
-public class BedRulesController(ApplicationContext db, IActuatorManager actuatorManager, ISensorManager sensorManager) 
+[Route("Beds/{id}/Automation")]
+public class BedAutomationController(ApplicationContext db, IActuatorManager actuatorManager, ISensorManager sensorManager) 
     : BaseBedController(db)
 {
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var bed = await GetBedAsync();
-        
-        if (bed == null) return NotFound();
-
-        return Ok(bed.Rules.AsQueryable().Select(AutomationRuleDto.FromEntity).ToList());
-    }
-
     [HttpGet("config")]
     public async Task<IActionResult> GetConfig()
     {
@@ -50,6 +39,27 @@ public class BedRulesController(ApplicationContext db, IActuatorManager actuator
         {
             Fields = fields
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var bed = await GetBedAsync();
+        
+        if (bed == null) return NotFound();
+
+        return Ok(await bed.Rules.AsQueryable().Select(AutomationRuleDto.FromEntity).ToListAsync());
+    }
+    
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(Guid ruleId)
+    {
+        var bed = await GetBedAsync();
+        
+        if (bed == null) return NotFound();
+
+        return Ok(await bed.Rules.AsQueryable().Select(AutomationRuleDto.FromEntity).FirstOrDefaultAsync(x => x.Id == ruleId));
     }
 
     [HttpPost]

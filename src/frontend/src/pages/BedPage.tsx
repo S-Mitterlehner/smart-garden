@@ -6,7 +6,8 @@ import SensorSection from "../components/sensors/SensorSection";
 import ActuatorSection from "../components/actuators/ActuatorSection";
 import { IconAutomaticGearbox } from "@tabler/icons-react";
 import { useState } from "react";
-import RuleEditor from "../components/automation/RuleEditor";
+import { RuleList } from "../components/automation/RuleEditor";
+import { AutomationProvider } from "../hooks/useAutomation";
 
 export default function BedPage() {
   const bedId = useParams().bedId as string;
@@ -62,7 +63,9 @@ export function BedPageContent() {
         radius={15}
         onClose={() => setShowRulesDrawer(false)}
       >
-        <RuleEditor />
+        <AutomationProvider>
+          <RuleList />
+        </AutomationProvider>
       </Drawer>
     </>
   );

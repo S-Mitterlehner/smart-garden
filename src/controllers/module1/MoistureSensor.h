@@ -5,14 +5,11 @@
 #include "SensorManager.h"
 #include "utils.h"
 
-class MoistureSensor : public ISensor {
+class MoistureSensor : public Sensor {
 private:
   const String id;
   const String moistureTopic;
   const int analogPin;
-  
-  unsigned long lastSent = 0;
-  const unsigned long interval = 5000;
 
 public:
   MoistureSensor(int pin, String deviceId)
@@ -24,14 +21,14 @@ public:
     Serial.println(moistureTopic);
   }
 
-  void initialize() override { }
+  unsigned long getInterval() const override {
+    return 5000;
+  }
+
+  void initialize() override {}
 
   void update() override {
-    if (millis() - lastSent < interval) return;
-
     measureMoisture();
-
-    lastSent = millis();
   }
 
   void appendTopicsTo(JsonObject& parent) override {
@@ -47,27 +44,7 @@ private:
     int percent = 100 * (max - moistVal) / (max - min);  // maps moistVal to 0-100%
     Serial.print("Moisture (%): ");
     Serial.println(percent);
-    publishSensorReading(moistureTopic, "Moisture", percent, 0, 100, "%");
-  }
-
-  void publishSensorReading(const String& topic, const String& type, float value, float min, float max, const String& unit) {
-    if (isnan(value)) {
-      Serial.print("Invalid reading for ");
-      Serial.println(type);
-      return;
-    }
-
-    StaticJsonDocument<200> message;
-    message["sensorKey"] = id;
-    message["sensorType"] = type;
-    message["min"] = min;
-    message["max"] = max;
-    message["unit"] = unit;
-    message["currentValue"] = value;
-
-    char buffer[512];
-    serializeJson(message, buffer);
-    sendToMQTT(topic, buffer);
+    publishSensorReading(id, moistureTopic, "Moisture", percent, 0, 100, "%");
   }
 };
 

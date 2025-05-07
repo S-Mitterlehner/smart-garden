@@ -4,27 +4,19 @@
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
 #include "utils.h"
+#include "Component.h"
 
 #define MAX_ACTUATORS 10
 #define ACTUATOR_REGISTER_TOPIC "smart-garden/register/actuator"
 #define ACTION_MESSAGE_TYPE "Action"
 
-class IActuator {
-public:
-  virtual void initialize() = 0;
-  virtual void update() = 0;
-  virtual void appendTopicsTo(JsonObject& parent) = 0;
-  virtual void onActionMessage(JsonDocument& doc) = 0;
-  virtual ~IActuator() = default;
-};
-
 class ActuatorManager {
 private:
-  IActuator* actuators[MAX_ACTUATORS];
+  Actuator* actuators[MAX_ACTUATORS];
   int actuatorCount = 0;
 
 public:
-  void addActuator(IActuator* actuator) {
+  void addActuator(Actuator* actuator) {
     if (actuator && actuatorCount < MAX_ACTUATORS) {
       actuators[actuatorCount++] = actuator;
     } else {
@@ -59,7 +51,13 @@ public:
 
   void updateAll() {
     for (int i = 0; i < actuatorCount; ++i) {
-      actuators[i]->update();
+      if (actuators[i]) {
+        actuators[i]->updateFast();
+        if (actuators[i]->shouldUpdate()) {
+          actuators[i]->update();
+          actuators[i]->markUpdated();
+        }
+      }
     }
   }
 

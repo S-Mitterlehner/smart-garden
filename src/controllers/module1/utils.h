@@ -145,4 +145,26 @@ void sendToMQTTRetained(const String topic, const String json) {
   }
 }
 
+void publishSensorReading(const String& id, const String& topic, const String& type,
+  float value, float min, float max, const String& unit) {
+
+  if (isnan(value)) {
+    Serial.print("Invalid reading for ");
+    Serial.println(type);
+    return;
+  }
+
+  StaticJsonDocument<200> message;
+  message["sensorKey"] = id;
+  message["sensorType"] = type;
+  message["min"] = min;
+  message["max"] = max;
+  message["unit"] = unit;
+  message["currentValue"] = value;
+
+  char buffer[512];
+  serializeJson(message, buffer);
+  sendToMQTT(topic, buffer);
+}
+
 #endif

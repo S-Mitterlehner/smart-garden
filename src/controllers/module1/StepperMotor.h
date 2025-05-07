@@ -8,18 +8,14 @@
 
 #define STEPS_PER_REV 2038  // Define the number of steps per revolution for the motor
 
-class StepperMotor : public IActuator {
+class StepperMotor : public Actuator {
 private:
   const String id;
   const String stepperMotorTopic;
 
   AccelStepper stepper;
-  int hatchState = 0;  // 0-100%
-
-  unsigned int targetPosition = 0;
-
-  unsigned long lastHatchStatusTime = 0;
-  const unsigned long interval = 5000;
+  unsigned int hatchPosition = 0;   // 0-100%
+  unsigned int targetPosition = 0;  // 0-100%
 
 public:
   StepperMotor(int pin1, int pin2, int pin3, int pin4, String deviceId)
@@ -31,21 +27,23 @@ public:
     Serial.println(stepperMotorTopic);
   }
 
+  unsigned long getInterval() const override {
+    return 5000;
+  }
+
   void initialize() override {
     stepper.setMaxSpeed(1000);      // Steps per second
     stepper.setAcceleration(1000);  // Maximum acceleration
   }
 
   void update() override {
-    stepper.run();
     int position = stepper.currentPosition();
-    hatchState = map(position, 0, STEPS_PER_REV, 0, 100);
+    hatchPosition = map(position, 0, STEPS_PER_REV, 0, 100);
+    sendMotorStatus();
+  }
 
-    unsigned long now = millis();
-    if (now - lastHatchStatusTime >= interval) {
-      lastHatchStatusTime = now;
-      sendMotorStatus();
-    }
+  void updateFast() override {
+    stepper.run();
   }
 
   void appendTopicsTo(JsonObject& parent) override {
@@ -86,7 +84,7 @@ private:
     doc["stateType"] = "Continuous";
     doc["min"] = 0;
     doc["max"] = 100;
-    doc["currentValue"] = hatchState;
+    doc["currentValue"] = hatchPosition;
 
     char buffer[512];
     serializeJson(doc, buffer);

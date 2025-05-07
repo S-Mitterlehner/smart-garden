@@ -5,21 +5,16 @@
 #include "ActuatorManager.h"
 #include "utils.h"
 
-class Pump : public IActuator {
+class Pump : public Actuator {
 private:
   const String id;
   const int pinBI;
   const int pinFI;
   const String pumpTopic;
 
-  unsigned long lastSent = 0;
-  const unsigned long interval = 10000;
-
   String pumpState = "Stopped";
-  unsigned long lastPumpStatusTime = 0;
   unsigned long pumpStopTime = 0;
   bool pumpRunningForDuration = false;
-
 
 public:
   Pump(int pinBI, int pinFI, String deviceId)
@@ -32,26 +27,25 @@ public:
     Serial.println(pumpTopic);
   }
 
+  unsigned long getInterval() const override {
+    return 5000;
+  }
+
   void initialize() override {
     pinMode(pinBI, OUTPUT);
     pinMode(pinFI, OUTPUT);
   }
 
   void update() override {
+    sendPumpStatus();
+  }
+
+  void updateFast() override {
     unsigned long now = millis();
-    if ((now - lastSent < interval) && !pumpRunningForDuration) return;
-
-    if (now - lastPumpStatusTime >= interval) {
-      lastPumpStatusTime = now;
-      sendPumpStatus();
-    }
-
     if (pumpRunningForDuration && now >= pumpStopTime) {
       setPump(false);
       pumpRunningForDuration = false;
     }
-
-    lastSent = now;
   }
 
   void appendTopicsTo(JsonObject& parent) override {

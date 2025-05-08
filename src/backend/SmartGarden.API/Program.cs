@@ -1,10 +1,13 @@
 using Quartz;
 using Quartz.AspNetCore;
+using SmartGarden.API;
+using SmartGarden.API.Dtos;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Models;
 using SmartGarden.EntityFramework.Seeder;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Sensors;
@@ -17,7 +20,12 @@ builder.Services.RegisterDbContext(builder.Configuration);
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
-builder.Services.AddSingleton<IActuatorListener, SignalRActuatorListener>();
+
+builder.Services.AddSingleton<SignalRActuatorListener>();
+builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposition>(s => 
+    new ActuatorListenerComposition(
+    s.GetRequiredService<SignalRActuatorListener>()));
+
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
 builder.Services.AddSingleton<ActionExecutor>();
@@ -26,6 +34,14 @@ builder.Services.AddScoped<ISeeder, DevSeeder>();
 
 builder.Services.AddMqttClient();
 builder.Services.AddSignalR();
+
+// GraphQL
+builder.Services.AddGraphQLServer()
+    .AddQueryType<GraphQLQuery>()
+    .AddFiltering()
+    .AddSorting();
+
+// Automation
 builder.Services.AddQuartz(o =>
 {
     var jobKey = new JobKey("Automation");
@@ -68,6 +84,7 @@ builder.Services.AddCors();
 builder.Logging.AddConsole();
 
 var app = builder.Build();
+app.MapGraphQL();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

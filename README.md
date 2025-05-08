@@ -18,14 +18,6 @@ After that you can run vite via
 npm run dev
 ```
 
-#### Mock-Api
-
-When you're working with the frontend alone, you can also start the mock api in order to get data. Run the following script from a second shell:
-
-```sh
-npm run api-mock
-```
-
 ### Backend
 
 In order to run the Backend, all you need to do is to open the sln with Visual Studio or Rider. After that you can run the docker-compose project in VS or the `Docker Compose [Windows/Unix/Linux]` Configuration in Rider.

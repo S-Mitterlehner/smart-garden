@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate": "graphql-codegen"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@mantine/carousel": "^7.17.4",
     "@mantine/charts": "^7.17.4",
     "@mantine/core": "^7.17.4",
@@ -32,6 +34,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@graphql-codegen/cli": "^5.0.6",
+    "@graphql-codegen/client-preset": "^4.8.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
@@ -39,6 +44,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "graphql": "^16.11.0",
     "json-server": "^1.0.0-beta.3",
     "nswag": "^14.3.0",
     "postcss": "^8.5.3",

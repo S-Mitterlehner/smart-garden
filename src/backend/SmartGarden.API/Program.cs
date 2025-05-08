@@ -2,6 +2,7 @@ using Quartz;
 using Quartz.AspNetCore;
 using SmartGarden.API;
 using SmartGarden.API.Dtos;
+using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
@@ -37,9 +38,14 @@ builder.Services.AddSignalR();
 
 // GraphQL
 builder.Services.AddGraphQLServer()
-    .AddQueryType<GraphQLQuery>()
+    .AddQueryType<Query>()
+    //.AddMutationType<Mutation>()  // TODO add mutations
+    .AddTypeExtension<BedQueries>()
+    .AddTypeExtension<SensorQueries>()
+    .AddTypeExtension<BedSensorMutations>()
     .AddFiltering()
     .AddSorting();
+    //.AddProjections() // direct DB requests
 
 // Automation
 builder.Services.AddQuartz(o =>

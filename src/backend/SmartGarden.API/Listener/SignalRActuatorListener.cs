@@ -6,24 +6,13 @@ using SmartGarden.Modules.Actuators.Models;
 
 namespace SmartGarden.API.Listener;
 
-public class ActuatorListenerComposition(params IActuatorListener[] listeners) : IActuatorListener
-{
-    public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
-    {
-        foreach (var l in listeners)
-        {
-            await l.PublishStateChangeAsync(data, actions);
-        }
-    }
-}
-
 public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<SignalRSensorListener> logger) : IActuatorListener
 {
     public const string STATE_CHANGED = "Actuator_State";
 
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
-        logger.LogDebug("ActuatorState Published: {data}", data);
+        logger.LogDebug("SignalR ActuatorState Published: {data}", data);
         var dto = new ActuatorStateDto()
         {
             Unit = data.Unit

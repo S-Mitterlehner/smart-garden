@@ -21,14 +21,21 @@ builder.Services.RegisterDbContext(builder.Configuration);
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
-
 builder.Services.AddSingleton<SignalRActuatorListener>();
-builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposition>(s => 
-    new ActuatorListenerComposition(
-    s.GetRequiredService<SignalRActuatorListener>()));
+builder.Services.AddSingleton<GraphQlActuatorListener>();
+builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
+    new ActuatorListenerComposite(
+    s.GetRequiredService<SignalRActuatorListener>(),
+    s.GetRequiredService<GraphQlActuatorListener>()));
 
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
-builder.Services.AddSingleton<ISensorListener, SignalRSensorListener>();
+builder.Services.AddSingleton<SignalRSensorListener>();
+builder.Services.AddSingleton<GraphQlSensorListener>();
+builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s => 
+    new SensorListenerComposite(
+        s.GetRequiredService<SignalRSensorListener>(),
+        s.GetRequiredService<GraphQlSensorListener>()));
+
 builder.Services.AddSingleton<ActionExecutor>();
 builder.Services.AddSingleton<AutomationService>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
@@ -39,12 +46,12 @@ builder.Services.AddSignalR();
 // GraphQL
 builder.Services.AddGraphQLServer()
     .AddQueryType<Query>()
-    //.AddMutationType<Mutation>()  // TODO add mutations
-    .AddTypeExtension<BedQueries>()
-    .AddTypeExtension<SensorQueries>()
-    .AddTypeExtension<BedSensorMutations>()
+    .AddMutationType<Mutation>()
+    .AddSubscriptionType<Subscription>()
+    .AddMutationConventions(applyToAllMutations: true)
     .AddFiltering()
-    .AddSorting();
+    .AddSorting()
+    .AddInMemorySubscriptions();
     //.AddProjections() // direct DB requests
 
 // Automation

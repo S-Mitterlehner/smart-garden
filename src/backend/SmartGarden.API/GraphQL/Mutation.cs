@@ -51,9 +51,7 @@ public class Mutation
     public async Task<ActuatorRef> AddActuatorToBed([ID] Guid bedId, [ID] Guid actuatorId,
         [Service] ApplicationContext db)
     {
-        var bed = await db.Get<Bed>()
-            .Include(b => b.Actuators)
-            .FirstOrDefaultAsync(b => b.Id == bedId);
+        var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
     
         if (bed == null)
             throw new GraphQLException($"Bed with id {bedId} not found");
@@ -74,9 +72,7 @@ public class Mutation
     public async Task<bool> RemoveActuatorFromBed([ID] Guid bedId, [ID] Guid actuatorId,
         [Service] ApplicationContext db)
     {
-        var bed = await db.Get<Bed>()
-            .Include(b => b.Actuators)
-            .FirstOrDefaultAsync(b => b.Id == bedId);
+        var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
     
         if (bed == null)
             throw new GraphQLException($"Bed with id {bedId} not found");
@@ -94,9 +90,7 @@ public class Mutation
     public async Task<SensorRef> AddSensorToBed([ID] Guid bedId, [ID] Guid sensorId,
         [Service] ApplicationContext db)
     {
-        var bed = await db.Get<Bed>()
-            .Include(b => b.Sensors)
-            .FirstOrDefaultAsync(b => b.Id == bedId);
+        var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
     
         if (bed == null)
             throw new GraphQLException($"Bed with id {bedId} not found");
@@ -117,9 +111,7 @@ public class Mutation
     public async Task<bool> RemoveSensorFromBed([ID] Guid bedId, [ID] Guid sensorId,
         [Service] ApplicationContext db)
     {
-        var bed = await db.Get<Bed>()
-            .Include(b => b.Sensors)
-            .FirstOrDefaultAsync(b => b.Id == bedId);
+        var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
     
         if (bed == null)
             throw new GraphQLException($"Bed with id {bedId} not found");

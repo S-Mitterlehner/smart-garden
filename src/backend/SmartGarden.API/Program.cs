@@ -97,6 +97,7 @@ builder.Services.AddCors();
 builder.Logging.AddConsole();
 
 var app = builder.Build();
+app.UseWebSockets();
 app.MapGraphQL();
 
 // Configure the HTTP request pipeline.

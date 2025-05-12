@@ -1,12 +1,13 @@
-// import { useQuery } from "@tanstack/react-query";
-import { useQuery } from "@apollo/client";
-import { Sensor, SensorData, SensorType } from "../models/sensor";
+import { useQuery } from "@tanstack/react-query";
+// import { useQuery } from "@apollo/client";
+import { Sensor, SensorData, SensorRef, SensorType } from "../models/sensor";
 import { API_URL } from "../environment";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { ConnectionState } from "../models/general";
 import { notifications } from "@mantine/notifications";
-import { gql } from "../__generated__";
+// import { gql } from "../__generated__";
+// import { SENSOR_BY_ID_QUERY } from "../queries/sensor-query";
 
 export type SensorValue = {
   isFetched: boolean;
@@ -40,43 +41,46 @@ export function useSensorContext(): SensorValue {
   return context;
 }
 
-const GET_SENSOR_QUERY_KEY = gql(/* GraphQL */ `
-  query {
-    sensors {
-      id
-      name
-      currentValue
-      maxValue
-      minValue
-      unit
-    }
-  }
-`);
+// const GET_SENSOR_QUERY_KEY = gql(/* GraphQL */ `
+//   query {
+//     sensors {
+//       id
+//       name
+//       currentValue
+//       maxValue
+//       minValue
+//       unit
+//     }
+//   }
+// `);
 
 export function useSensor(sensorId: string): SensorValue {
   const [currentState, setCurrentState] = useState<SensorData | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(
     ConnectionState.NotConnected
   );
-  // const {
-  //   data: sensor,
-  //   isFetched,
-  //   refetch,
-  // } = useQuery<Sensor | null>({
-  //   queryKey: ["sensor", sensorId],
-  //   enabled: !!sensorId,
-  //   refetchOnMount: "always",
-  //   initialData: null,
-  //   queryFn: async () => {
-  //     const response = await fetch(`${API_URL}/sensors/${sensorId}`);
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  //     return response.json();
-  //   },
-  // });
+  const {
+    data: sensor,
+    isFetched,
+    refetch,
+  } = useQuery<Sensor | null>({
+    queryKey: ["sensor", sensorId],
+    enabled: !!sensorId,
+    refetchOnMount: "always",
+    initialData: null,
+    queryFn: async () => {
+      const response = await fetch(`${API_URL}/sensors/${sensorId}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    },
+  });
 
-  const { data: sensors, refetch } = useQuery(GET_SENSOR_QUERY_KEY);
+  // const { data: sensors, refetch } = useQuery<SensorRef>(
+  //   SENSOR_BY_ID_QUERY,
+  //   {}
+  // );
 
   useEffect(() => {
     if (sensor?.key === null || sensor?.type === null) return;

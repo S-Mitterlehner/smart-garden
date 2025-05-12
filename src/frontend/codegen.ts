@@ -1,19 +1,24 @@
-import { CodegenConfig } from "@graphql-codegen/cli";
+import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
+  overwrite: true,
   schema: "http://localhost:5001/graphql",
-  // this assumes that all your source files are in a top-level `src/` directory - you might need to adjust this to your file structure
-  documents: ["src/**/*.{ts,tsx}"],
+  documents: "src/**/*.graphql",
   generates: {
-    "./src/__generated__/": {
+    "src/__generated__/": {
       preset: "client",
-      plugins: [],
-      presetConfig: {
-        gqlTagName: "gql",
+      plugins: [
+        "typescript",
+        "typescript-operations",
+        "typescript-react-apollo",
+      ],
+      config: {
+        withHooks: true,
+        withHOC: false,
+        withComponent: false,
       },
     },
   },
-  ignoreNoDocuments: true,
 };
 
 export default config;

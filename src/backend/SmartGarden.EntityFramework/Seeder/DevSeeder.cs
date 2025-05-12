@@ -91,11 +91,12 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
 
         var s2 = await CreateOrUpdateAsync(new SensorRef
         {
-            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166"), Name = "Humidity",
-            Description =
-                "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations.",
-            Type = SensorType.Humidity, ConnectorKey = "sg-48ca435508f0",
-            Topic = "smart-garden/sg-48ca435508f0/humidity", Order = 2
+            Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
+            , Name = "Humidity"
+            , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
+            , Type = SensorType.Humidity, ConnectorKey = "sg-48ca435508f0"
+            , Topic = "smart-garden/sg-48ca435508f0/humidity"
+            , Order = 2
         });
 
         await context.SaveChangesAsync();

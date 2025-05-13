@@ -1,25 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  ActionType,
-  Actuator,
-  ActuatorAction,
-  ActuatorState,
-  ActuatorType,
-} from "../models/actuator";
-import { API_URL } from "../environment";
-import { ConnectionState } from "../models/general";
-import { createContext, useContext, useEffect, useState } from "react";
-import * as signalR from "@microsoft/signalr";
 import { notifications } from "@mantine/notifications";
+import * as signalR from "@microsoft/signalr";
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+  ActuatorActionDto,
+  ActuatorDto,
+  ActuatorStateDto,
+  useExecuteActionMutation,
+  useGetActuatorByIdQuery,
+  useUpdateActuatorMutation,
+} from "../__generated__/graphql";
+import { API_URL } from "../environment";
+import { ActuatorState, ActuatorType } from "../models/actuator";
+import { ConnectionState } from "../models/general";
 
 export type ActuatorValue = {
-  actuator: Actuator;
-  state: ActuatorState | null;
+  actuator: ActuatorDto;
+  state: ActuatorStateDto | null;
   connectionState: ConnectionState;
-  actions: ActuatorAction[];
+  actions: ActuatorActionDto[];
   canDoAction: boolean;
-  startAction: (action: ActuatorAction, value?: number) => Promise<void>;
-  updateRef: (id: string, changes: Actuator) => Promise<void>;
+  startAction: (action: ActuatorActionDto, value?: number) => Promise<void>;
+  updateRef: (id: string, changes: ActuatorDto) => Promise<void>;
 };
 
 const ActuatorContext = createContext<ActuatorValue | null>(null);
@@ -49,29 +50,23 @@ export function useActuatorContext(): ActuatorValue {
 }
 
 export function useActuator(actuatorId: string): ActuatorValue {
-  const [currentState, setCurrentState] = useState<ActuatorState | null>(null);
+  const [currentState, setCurrentState] = useState<ActuatorStateDto | null>(
+    null,
+  );
   const [connectionState, setConnectionState] = useState<ConnectionState>(
-    ConnectionState.NotConnected
+    ConnectionState.NotConnected,
   );
   const [loading, setLoading] = useState(false);
   const {
-    data: actuator,
-    isFetched,
+    data: { actuator } = {},
     refetch,
-  } = useQuery<Actuator | null>({
-    queryKey: ["actuator", actuatorId],
-    enabled: !!actuatorId,
-    refetchOnMount: "always",
-    initialData: null,
-    queryFn: async () => {
-      const response = await fetch(`${API_URL}/actuators/${actuatorId}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      return response.json();
-    },
+    loading: actuatorLoading,
+  } = useGetActuatorByIdQuery({
+    variables: { id: actuatorId },
   });
+
+  const [execute] = useExecuteActionMutation();
+  const [update] = useUpdateActuatorMutation();
 
   useEffect(() => {
     if (actuator?.key === null || actuator?.type === null) return;
@@ -84,10 +79,10 @@ export function useActuator(actuatorId: string): ActuatorValue {
 
     connection.onclose(() => setConnectionState(ConnectionState.NotConnected));
     connection.onreconnecting(() =>
-      setConnectionState(ConnectionState.NotConnected)
+      setConnectionState(ConnectionState.NotConnected),
     );
     connection.onreconnected(() =>
-      setConnectionState(ConnectionState.Connected)
+      setConnectionState(ConnectionState.Connected),
     );
 
     connection.on(
@@ -97,7 +92,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
           data.lastUpdate = new Date(data.lastUpdate);
           setCurrentState(data);
         }
-      }
+      },
     );
 
     connection
@@ -136,51 +131,56 @@ export function useActuator(actuatorId: string): ActuatorValue {
   }, [actuator]);
 
   return {
-    actuator: actuator ?? ({} as Actuator),
+    actuator: actuator ?? ({} as ActuatorDto),
     state: currentState ?? actuator?.state ?? null,
     actions: currentState?.actions ?? [],
     connectionState,
     canDoAction:
-      isFetched && connectionState === ConnectionState.Connected && !loading,
-    startAction: async (action: ActuatorAction, value?: number) => {
+      !actuatorLoading &&
+      connectionState === ConnectionState.Connected &&
+      !loading,
+    startAction: async (action: ActuatorActionDto, value?: number) => {
       setLoading(true);
-      const r = await fetch(
-        `${API_URL}/actuators/${actuatorId}/action/${action.key}${
-          action.type === ActionType.Value ? `?value=${value}` : ""
-        }`,
-        {
-          method: "HEAD",
-        }
-      );
-      if (r.ok) {
-        notifications.show({
-          message: `Action "${action.name}" requested. This may take a few moments.`,
-          color: "green",
-        });
-        setLoading(false);
-      }
-    },
-    updateRef: async (id: string, changes: Actuator) => {
-      const resp = await fetch(`${API_URL}/actuators/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify(changes),
-        headers: {
-          "Content-Type": "application/json",
+
+      const r = await execute({
+        variables: {
+          id: actuatorId,
+          actionKey: action.key,
+          value,
         },
       });
-      if (resp.status === 200) {
+
+      setLoading(false);
+      if (r.data?.executeActuatorAction.boolean) {
         notifications.show({
-          title: "Actuator updated",
-          message: `Actuator ${changes.name} updated`,
-          color: "oklch(69.6% 0.17 162.48)",
+          message: `Action "${action.name}" executed successfully.`,
+          color: "green",
         });
-      } else {
+      }
+    },
+    updateRef: async (id: string, changes: ActuatorDto) => {
+      const r = await update({
+        variables: {
+          ...changes,
+          id,
+        },
+      });
+
+      if ((r.errors?.length ?? 0) > 0) {
         notifications.show({
           title: "Error",
           message: `Failed to update actuator ${changes.name}`,
           color: "red",
         });
+        return;
       }
+
+      notifications.show({
+        title: "Actuator updated",
+        message: `Actuator ${changes.name} updated`,
+        color: "oklch(69.6% 0.17 162.48)",
+      });
+
       await refetch();
     },
   };

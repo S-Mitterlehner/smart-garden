@@ -97,8 +97,6 @@ builder.Services.AddCors();
 builder.Logging.AddConsole();
 
 var app = builder.Build();
-app.UseWebSockets();
-app.MapGraphQL();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -107,6 +105,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseWebSockets();
+app.MapGraphQL();
 
 // app.UseHttpsRedirection();
 app.UseCors(o => o.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials());

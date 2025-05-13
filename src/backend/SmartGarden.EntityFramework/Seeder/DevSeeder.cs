@@ -74,8 +74,8 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Description = "Hatch is a device that opens and closes to allow access to a space. It is often used in greenhouses.",
             Type = ActuatorType.Hatch,
             Order = 2,
-            ConnectorKey = "dummy",
-            Topic = "dummy"
+            ConnectorKey = "sg-48ca435508f0",
+            Topic = "smart-garden/sg-48ca435508f0/hatch"
         });
 
         var s1 = await CreateOrUpdateAsync(new SensorRef
@@ -94,8 +94,21 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
             , Name = "Humidity"
             , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
-            , Type = SensorType.Humidity, ConnectorKey = "sg-48ca435508f0"
+            , Type = SensorType.Humidity
+            , ConnectorKey = "sg-48ca435508f0"
             , Topic = "smart-garden/sg-48ca435508f0/humidity"
+            , Order = 2
+        });
+        
+        
+        var s3 = await CreateOrUpdateAsync(new SensorRef
+        {
+            Id = new Guid("bea18347-3611-4cd7-a257-c9518c85cad7")
+            , Name = "Moisture"
+            , Description = "Soil moisture sensor is a device that measures the water content in the soil.\nIt is commonly used in gardening to monitor soil conditions."
+            , Type = SensorType.Moisture
+            , ConnectorKey = "sg-48ca435508f0"
+            , Topic = "smart-garden/sg-48ca435508f0/moisture"
             , Order = 2
         });
 
@@ -111,7 +124,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
         };
 
         bed.Actuators.AddRange(c, c2);
-        bed.Sensors.AddRange(s1, s2);
+        bed.Sensors.AddRange(s1, s2, s3);
         await CreateOrUpdateAsync(bed);
 
         

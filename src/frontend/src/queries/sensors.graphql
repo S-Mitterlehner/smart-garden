@@ -1,0 +1,38 @@
+query getSensors {
+  sensors {
+    id
+    name
+    description
+    key
+    type
+  }
+}
+
+query getSensorById($id: UUID!) {
+  sensor(id: $id) {
+    id
+    key
+    name
+    type
+    description
+    currentValue
+    maxValue
+    minValue
+    unit
+  }
+}
+
+mutation updateSensor($id: ID!, $name: String, $description: String) {
+  updateSensorRef(input: { description: $description, id: $id, name: $name }) {
+    sensorRef {
+      connectorKey
+      description
+      id
+      isDeleted
+      name
+      order
+      topic
+      type
+    }
+  }
+}

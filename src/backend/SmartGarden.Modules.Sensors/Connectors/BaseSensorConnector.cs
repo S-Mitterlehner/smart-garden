@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using MQTTnet;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
@@ -6,7 +7,7 @@ using SmartGarden.Mqtt;
 
 namespace SmartGarden.Modules.Sensors.Connectors;
 
-public abstract class BaseSensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient)
+public abstract class BaseSensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient, ILogger logger)
     : ISensorConnector
 {
     private SensorData _lastData = null!;
@@ -32,7 +33,7 @@ public abstract class BaseSensorConnector(string key, string topic, ISensorListe
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error parsing MQTT message: " + ex.Message);
+            logger.LogError(ex, "Error parsing MQTT message: {message}", ex.Message);
         }
     }
     

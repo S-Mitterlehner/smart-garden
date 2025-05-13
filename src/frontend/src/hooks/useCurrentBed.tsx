@@ -1,28 +1,36 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bed } from "../models/bed";
-import usePlants from "./usePlants";
-import { Plant } from "../models/plant";
-import { createContext, useContext, useMemo } from "react";
-import { SensorRef } from "../models/sensor";
-import { ActuatorRef } from "../models/actuator";
-import { API_URL } from "../environment";
 import { notifications } from "@mantine/notifications";
-import { AutomationRule } from "../models/automation";
+import { createContext, useContext, useMemo } from "react";
+import {
+  ActuatorRefDto,
+  AutomationRuleDto,
+  BedDto,
+  PlantDto,
+  SensorRefDto,
+  useAddActuatorToBedMutation,
+  useAddSensorToBedMutation,
+  useGetBedByIdQuery,
+  useRemoveActuatorFromBedMutation,
+  useRemoveSensorFromBedMutation,
+  useSetCurrentPlantMutation,
+} from "../__generated__/graphql";
+import { ActuatorRef } from "../models/actuator";
+import { SensorRef } from "../models/sensor";
+import usePlants from "./usePlants";
 
 export type BedValue = {
-  bed: Bed;
+  bed: BedDto;
   isFetched: boolean;
   currentPlant: {
-    value: Plant | null;
-    set: (plant: Plant) => void;
+    value: PlantDto | null;
+    set: (plant: PlantDto) => void;
   };
-  sensors: SensorRef[];
-  actuators: ActuatorRef[];
-  rules: AutomationRule[];
-  addSensor: (sensor: SensorRef) => void;
-  removeSensor: (sensor: SensorRef) => void;
-  addActuator: (actuator: ActuatorRef) => void;
-  removeActuator: (actuator: ActuatorRef) => void;
+  sensors: SensorRefDto[];
+  actuators: ActuatorRefDto[];
+  rules: AutomationRuleDto[];
+  addSensor: (sensor: SensorRefDto) => void;
+  removeSensor: (sensor: SensorRefDto) => void;
+  addActuator: (actuator: ActuatorRefDto) => void;
+  removeActuator: (actuator: ActuatorRefDto) => void;
 };
 
 const BedContext = createContext<BedValue | null>(null);
@@ -48,53 +56,39 @@ export function useBedContext(): BedValue {
 }
 
 export function useBed(id: string) {
-  const queryClient = useQueryClient();
-
   const {
-    data: bed,
-    isFetched: bedFetched,
+    data: { bed } = {},
+    loading,
     refetch,
-  } = useQuery<Bed | null>({
-    queryKey: ["bed", id],
-    enabled: !!id,
-    refetchOnMount: "always",
-    queryFn: async () => {
-      const response = await fetch(`${API_URL}/beds/${id}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    },
+  } = useGetBedByIdQuery({
+    variables: { id },
   });
 
-  const { data: plants = [], isFetched: plantFetched } = usePlants();
+  const [setCurrentPlant] = useSetCurrentPlantMutation();
+  const [addSensorMutation] = useAddSensorToBedMutation();
+  const [removeSensorMutation] = useRemoveSensorFromBedMutation();
+  const [addActuatorMutation] = useAddActuatorToBedMutation();
+  const [removeActuatorMutation] = useRemoveActuatorFromBedMutation();
 
-  const currentPlant: Plant | null = useMemo(() => {
+  const { plants = [], isFetched: plantFetched } = usePlants();
+
+  const currentPlant: PlantDto | null = useMemo(() => {
     if (!bed) return null;
     return plants.find((p) => p.id === bed.plant.id) ?? null;
   }, [bed, plants]);
 
-  const setCurrentPlant = (plant: Plant) => {
-    if (!bed) return;
-    const updatedbed: Bed = {
-      ...bed,
-      plant: { ...bed.plant, id: plant.id },
-    };
-    queryClient.setQueryData(["bed", id], updatedbed);
-  };
-
   const addSensor = (sensor: SensorRef) => {
     if (!bed) return;
 
-    fetch(`${API_URL}/beds/${id}/sensors/${sensor.id}`, {
-      method: "PATCH",
+    addSensorMutation({
+      variables: { bedId: id, sensorId: sensor.id },
     })
       .then((r) => {
-        if (r.status === 200) {
+        if (r.data?.addSensorToBed) {
           refetch();
           notifications.show({
             title: "Sensor added",
-            message: `Sensor ${sensor.name} added to bed ${bed.name}`,
+            message: `Sensor ${sensor.name} added to bed ${bed?.name}`,
             color: "green",
           });
         }
@@ -103,7 +97,7 @@ export function useBed(id: string) {
         console.error(err);
         notifications.show({
           title: "Error",
-          message: `Failed to add sensor ${sensor.name} to bed ${bed.name}`,
+          message: `Failed to add sensor ${sensor.name} to bed ${bed?.name}`,
           color: "red",
         });
       });
@@ -114,11 +108,11 @@ export function useBed(id: string) {
 
     if (!confirm("are you sure?")) return;
 
-    fetch(`${API_URL}/beds/${id}/sensors/${sensor.id}`, {
-      method: "DELETE",
+    removeSensorMutation({
+      variables: { bedId: id, sensorId: sensor.id },
     })
       .then((r) => {
-        if (r.status === 200) {
+        if (r.data?.removeSensorFromBed) {
           refetch();
           notifications.show({
             title: "Sensor removed",
@@ -140,11 +134,11 @@ export function useBed(id: string) {
   const addActuator = (actuator: ActuatorRef) => {
     if (!bed) return;
 
-    fetch(`${API_URL}/beds/${id}/Actuators/${actuator.id}`, {
-      method: "PATCH",
+    addActuatorMutation({
+      variables: { bedId: id, actuatorId: actuator.id },
     })
       .then((r) => {
-        if (r.status === 200) {
+        if (r.data?.addActuatorToBed) {
           refetch();
           notifications.show({
             title: "Actuator added",
@@ -157,7 +151,7 @@ export function useBed(id: string) {
         console.error(err);
         notifications.show({
           title: "Error",
-          message: `Failed to add Actuator ${actuator.name} to bed ${bed.name}`,
+          message: `Failed to add actuator ${actuator.name} to bed ${bed.name}`,
           color: "red",
         });
       });
@@ -168,11 +162,11 @@ export function useBed(id: string) {
 
     if (!confirm("are you sure?")) return;
 
-    fetch(`${API_URL}/beds/${id}/actuators/${actuator.id}`, {
-      method: "DELETE",
+    removeActuatorMutation({
+      variables: { bedId: id, actuatorId: actuator.id },
     })
       .then((r) => {
-        if (r.status === 200) {
+        if (r.data?.removeActuatorFromBed) {
           refetch();
           notifications.show({
             title: "Actuator removed",
@@ -193,10 +187,14 @@ export function useBed(id: string) {
 
   return {
     bed,
-    isFetched: bedFetched && plantFetched,
+    isFetched: !loading && !!bed && plantFetched,
     currentPlant: {
       value: currentPlant,
-      set: setCurrentPlant,
+      set: (p) => {
+        setCurrentPlant({
+          variables: { bedId: bed!.id, plantId: p.id },
+        });
+      },
     },
     sensors: bed?.sensors ?? [],
     actuators: bed?.actuators ?? [],

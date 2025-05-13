@@ -1,17 +1,17 @@
 import { ActionIcon, Drawer } from "@mantine/core";
-import SectionTitle from "../../components/SectionTitle";
-import useActuators from "../../hooks/useActuators";
-import { useState } from "react";
-import { ActuatorRef } from "../../models/actuator";
-import { useBedContext } from "../../hooks/useCurrentBed";
 import { IconEngine, IconPlus } from "@tabler/icons-react";
-import ActuatorList from "../../components/actuators/ActuatorList";
+import { useState } from "react";
 import ActuatorCard from "../../components/actuators/ActuatorCard";
+import ActuatorList from "../../components/actuators/ActuatorList";
+import SectionTitle from "../../components/SectionTitle";
 import { ActuatorProvider } from "../../hooks/useActuator";
+import useActuators from "../../hooks/useActuators";
+import { useBedContext } from "../../hooks/useCurrentBed";
+import { ActuatorRef } from "../../models/actuator";
 
 export default function ActuatorSection() {
   const { addActuator, removeActuator, actuators } = useBedContext();
-  const { data: availableActuators } = useActuators();
+  const { actuators: availableActuators } = useActuators();
   const [showActuatorDrawer, setShowActuatorDrawer] = useState(false);
   const handleActuatorAction = (actuator: ActuatorRef, action: string) => {
     switch (action) {
@@ -32,7 +32,7 @@ export default function ActuatorSection() {
       color="oklch(76.5% 0.177 163.223)"
       onClick={() => setShowActuatorDrawer(!showActuatorDrawer)}
     >
-      <IconPlus className="w-6 h-6" />
+      <IconPlus className="h-6 w-6" />
     </ActionIcon>
   );
   return (
@@ -57,10 +57,10 @@ export default function ActuatorSection() {
           title="Actuators"
           actionComponent={actuatorActionComponent}
           description="Click on an actuator to see actions and options."
-          icon={<IconEngine className="w-8 h-8 text-emerald-400" />}
+          icon={<IconEngine className="h-8 w-8 text-emerald-400" />}
         ></SectionTitle>
 
-        <div className="flex flex-row gap-4 flex-wrap">
+        <div className="flex flex-row flex-wrap gap-4">
           {actuators.map((actuator) => (
             <ActuatorProvider key={actuator.id} actuatorId={actuator.id}>
               <ActuatorCard onMenuAction={handleActuatorAction} />
@@ -68,11 +68,11 @@ export default function ActuatorSection() {
           ))}
           <button
             onClick={() => setShowActuatorDrawer(true)}
-            className="w-full phone:w-64 min-h-32 relative border-4 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-4 hover:bg-gray-200 cursor-pointer"
+            className="relative flex min-h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-4 border-dashed border-gray-300 p-4 hover:bg-gray-200 phone:w-64"
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 items-center justify-center">
-              <IconPlus className="w-12 h-12 text-gray-400 " />
-              <span className="text-gray-400 text-sm">Add Actuator</span>
+            <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4">
+              <IconPlus className="h-12 w-12 text-gray-400" />
+              <span className="text-sm text-gray-400">Add Actuator</span>
             </div>
           </button>
         </div>

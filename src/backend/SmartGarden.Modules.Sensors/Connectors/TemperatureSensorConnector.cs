@@ -1,12 +1,13 @@
-﻿using MQTTnet;
+﻿using Microsoft.Extensions.Logging;
+using MQTTnet;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Sensors.Models;
 using ConnectionState = SmartGarden.Modules.Enums.ConnectionState;
 
 namespace SmartGarden.Modules.Sensors.Connectors;
 
-public class TemperatureSensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient)
-    : BaseSensorConnector(key, topic, listener, mqttClient)
+public class TemperatureSensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient, ILogger<TemperatureSensorConnector> logger)
+    : BaseSensorConnector(key, topic, listener, mqttClient, logger)
 {
     public override SensorType Type => SensorType.Temperature;
     public override string Name => "Temperature";

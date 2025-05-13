@@ -1,7 +1,11 @@
 import { notifications } from "@mantine/notifications";
 import * as signalR from "@microsoft/signalr";
 import { createContext, useContext, useEffect, useState } from "react";
-import { SensorDto, useGetSensorByIdQuery } from "../__generated__/graphql";
+import {
+  SensorDto,
+  useGetSensorByIdQuery,
+  useUpdateSensorMutation,
+} from "../__generated__/graphql";
 import { API_URL } from "../environment";
 import { ConnectionState } from "../models/general";
 import { Sensor, SensorData, SensorType } from "../models/sensor";
@@ -51,6 +55,8 @@ export function useSensor(sensorId: string): SensorValue {
   } = useGetSensorByIdQuery({
     variables: { id: sensorId },
   });
+
+  const [mutate] = useUpdateSensorMutation();
 
   useEffect(() => {
     if (sensor?.key === null || sensor?.type === null) return;
@@ -117,27 +123,20 @@ export function useSensor(sensorId: string): SensorValue {
     currentState: currentState ?? null,
     connectionState,
     updateRef: async (id: string, changes: Sensor) => {
-      const resp = await fetch(`${API_URL}/sensors/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(changes),
-      });
+      const r = await mutate({ variables: { ...changes, id } });
 
-      if (resp.status === 200) {
-        notifications.show({
-          title: "Sensor updated",
-          message: `Sensor ${changes.name} updated`,
-          color: "oklch(69.6% 0.17 162.48)",
-        });
-      } else {
+      if ((r.errors?.length ?? 0) > 0)
         notifications.show({
           title: "Error",
           message: `Failed to update sensor ${changes.name}`,
           color: "red",
         });
-      }
+      else
+        notifications.show({
+          title: "Sensor updated",
+          message: `Sensor ${changes.name} updated`,
+          color: "oklch(69.6% 0.17 162.48)",
+        });
 
       await refetch();
     },

@@ -1,0 +1,27 @@
+query getPlants {
+  plants {
+    id
+    name
+    description
+    imageUrl
+    sensorConfigs {
+      sensorType
+      rangeFrom
+      rangeTo
+    }
+  }
+}
+
+query getPlantById($id: UUID!) {
+  plant(id: $id) {
+    id
+    name
+    description
+    imageUrl
+    sensorConfigs {
+      sensorType
+      rangeFrom
+      rangeTo
+    }
+  }
+}

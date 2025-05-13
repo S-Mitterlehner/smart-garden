@@ -37,37 +37,44 @@ public partial class ActuatorManager(IServiceProvider sp, ILogger<ActuatorManage
 
         foreach (var topic in data.Topics)
         {
-            if (!Enum.TryParse<ActuatorType>(topic.Key, true, out var actuatorType))
+            try
             {
-                logger.LogWarning("Actuator type {ActuatorType} not found -> skipped", topic.Key);
-                continue;
+                if (!Enum.TryParse<ActuatorType>(topic.Key, true, out var actuatorType))
+                {
+                    logger.LogWarning("Actuator type {ActuatorType} not found -> skipped", topic.Key);
+                    continue;
+                }
+
+                var connector = GetConnectorFromList(key, actuatorType);
+
+                if (connector is not null) continue;
+
+                await using var scope = sp.CreateAsyncScope();
+                await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+                connector = CreateConnectorInstance(key, actuatorType, topic.Value);
+                _connectors.TryAdd(GetDictKey(key, actuatorType), connector);
+
+                var reference = await db.Get<ActuatorRef>()
+                                        .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == actuatorType);
+
+                if (reference is null)
+                {
+                    reference = db.New<ActuatorRef>();
+                    reference.Name = connector.Name;
+                    reference.Description = connector.Description;
+                    reference.ConnectorKey = connector.Key;
+                    reference.Type = connector.Type;
+                }
+
+                reference.Topic = topic.Value;
+
+                await db.SaveChangesAsync();
             }
-                
-            var connector = GetConnectorFromList(key, actuatorType);
-
-            if (connector is not null) return;
-                
-            await using var scope = sp.CreateAsyncScope();
-            await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-            connector = CreateConnectorInstance(key, actuatorType, topic.Value);
-            _connectors.TryAdd(GetDictKey(key, actuatorType), connector);
-
-            var reference = await db.Get<ActuatorRef>()
-                                    .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == actuatorType);
-
-            if (reference is null)
+            catch (Exception ex)
             {
-                reference = db.New<ActuatorRef>();
-                reference.Name = connector.Name;
-                reference.Description = connector.Description;
-                reference.ConnectorKey = connector.Key;
-                reference.Type = connector.Type;
+                logger.LogError(ex, "Failed to register actuator {ActuatorKey} with topic {Topic}", key, topic.Value);
             }
-
-            reference.Topic = topic.Value;
-
-            await db.SaveChangesAsync();
         }
     }
 

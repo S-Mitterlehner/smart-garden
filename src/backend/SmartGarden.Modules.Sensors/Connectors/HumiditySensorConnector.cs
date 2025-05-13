@@ -1,12 +1,13 @@
-﻿using MQTTnet;
+﻿using Microsoft.Extensions.Logging;
+using MQTTnet;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Sensors.Models;
 using ConnectionState = SmartGarden.Modules.Enums.ConnectionState;
 
 namespace SmartGarden.Modules.Sensors.Connectors;
 
-public class HumiditySensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient)
-    : BaseSensorConnector(key, topic, listener, mqttClient)
+public class HumiditySensorConnector(string key, string topic, ISensorListener listener, IMqttClient mqttClient, ILogger<HumiditySensorConnector> logger)
+    : BaseSensorConnector(key, topic, listener, mqttClient, logger)
 {
     public override SensorType Type => SensorType.Humidity;
     public override string Name => "Humidity";

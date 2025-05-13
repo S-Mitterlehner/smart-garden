@@ -1,0 +1,75 @@
+query getBedById($id: UUID!) {
+  bed(id: $id) {
+    id
+    name
+    description
+    plant {
+      id
+    }
+    sensors {
+      id
+      name
+      description
+      key
+      type
+    }
+    actuators {
+      id
+      name
+      description
+      key
+      type
+    }
+    rules {
+      id
+      name
+      expressionJson
+      actions {
+        id
+        ruleId
+        actuatorId
+        actuatorKey
+        actuatorType
+        actionKey
+        value
+        order
+      }
+    }
+  }
+}
+
+mutation setCurrentPlant($bedId: ID!, $plantId: ID!) {
+  setPlantToBed(input: { bedId: $bedId, plantId: $plantId }) {
+    bedDto {
+      id
+    }
+  }
+}
+
+mutation addSensorToBed($bedId: ID!, $sensorId: ID!) {
+  addSensorToBed(input: { bedId: $bedId, sensorId: $sensorId }) {
+    sensorRef {
+      id
+    }
+  }
+}
+
+mutation removeSensorFromBed($bedId: ID!, $sensorId: ID!) {
+  removeSensorFromBed(input: { bedId: $bedId, sensorId: $sensorId }) {
+    boolean
+  }
+}
+
+mutation addActuatorToBed($bedId: ID!, $actuatorId: ID!) {
+  addActuatorToBed(input: { bedId: $bedId, actuatorId: $actuatorId }) {
+    actuatorRef {
+      id
+    }
+  }
+}
+
+mutation removeActuatorFromBed($bedId: ID!, $actuatorId: ID!) {
+  removeActuatorFromBed(input: { bedId: $bedId, actuatorId: $actuatorId }) {
+    boolean
+  }
+}

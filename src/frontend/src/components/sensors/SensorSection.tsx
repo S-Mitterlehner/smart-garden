@@ -1,19 +1,19 @@
-import useSensors from "../../hooks/useSensors";
-import { SensorRef, SensorType } from "../../models/sensor";
-import { PlantSensorConfig } from "../../models/plant";
-import { useState } from "react";
 import { ActionIcon, Drawer } from "@mantine/core";
-import SensorList from "../../components/sensors/SensorList";
-import SectionTitle from "../../components/SectionTitle";
 import { IconBinoculars, IconPlus } from "@tabler/icons-react";
-import { useBedContext } from "../../hooks/useCurrentBed";
+import { useState } from "react";
+import SectionTitle from "../../components/SectionTitle";
 import SensorCard from "../../components/sensors/SensorCard";
+import SensorList from "../../components/sensors/SensorList";
+import { useBedContext } from "../../hooks/useCurrentBed";
 import { SensorProvider } from "../../hooks/useSensor";
+import useSensors from "../../hooks/useSensors";
+import { PlantSensorConfig } from "../../models/plant";
+import { SensorRef, SensorType } from "../../models/sensor";
 
 export default function SensorSection() {
   const { addSensor, removeSensor, sensors, currentPlant } = useBedContext();
   const [showSensorDrawer, setShowSensorDrawer] = useState(false);
-  const { data: availableSensors } = useSensors();
+  const { sensors: availableSensors } = useSensors();
   const handleSensorAction = (sensor: SensorRef, action: string) => {
     switch (action) {
       case "remove":
@@ -35,7 +35,7 @@ export default function SensorSection() {
     };
 
     const sensorConfig = currentPlant?.value?.sensorConfigs?.find(
-      (config) => config.sensorType === sensorType
+      (config) => config.sensorType === sensorType,
     );
 
     if (!sensorConfig) return defaultConfig;
@@ -49,7 +49,7 @@ export default function SensorSection() {
       color="oklch(76.5% 0.177 163.223)"
       onClick={() => setShowSensorDrawer(!showSensorDrawer)}
     >
-      <IconPlus className="w-6 h-6" />
+      <IconPlus className="h-6 w-6" />
     </ActionIcon>
   );
 
@@ -74,10 +74,10 @@ export default function SensorSection() {
           title="Sensors"
           actionComponent={sensorActionComponent}
           description="Click on a sensor to see options."
-          icon={<IconBinoculars className="w-8 h-8 text-emerald-400" />}
+          icon={<IconBinoculars className="h-8 w-8 text-emerald-400" />}
         ></SectionTitle>
 
-        <div className="flex flex-row gap-4 flex-wrap">
+        <div className="flex flex-row flex-wrap gap-4">
           {sensors.map((sensor) => (
             <SensorProvider key={sensor.id} sensorId={sensor.id}>
               <SensorCard
@@ -89,11 +89,11 @@ export default function SensorSection() {
 
           <button
             onClick={() => setShowSensorDrawer(true)}
-            className="w-full phone:w-64 min-h-32 relative border-4 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-4 hover:bg-gray-200 cursor-pointer"
+            className="relative flex min-h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-4 border-dashed border-gray-300 p-4 hover:bg-gray-200 phone:w-64"
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 items-center justify-center">
-              <IconPlus className="w-12 h-12 text-gray-400 " />
-              <span className="text-gray-400 text-sm">Add Sensor</span>
+            <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4">
+              <IconPlus className="h-12 w-12 text-gray-400" />
+              <span className="text-sm text-gray-400">Add Sensor</span>
             </div>
           </button>
         </div>

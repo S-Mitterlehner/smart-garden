@@ -1,17 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { Sensor } from "../models/sensor";
-import { API_URL } from "../environment";
+import { useGetSensorsQuery } from "../__generated__/graphql";
 
 export default function useSensors() {
-  return useQuery<Sensor[]>({
-    queryKey: ["sensors"],
-    initialData: [],
-    queryFn: async () => {
-      const response = await fetch(`${API_URL}/sensors`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    },
-  });
+  const { data, loading } = useGetSensorsQuery();
+
+  return {
+    sensors: data?.sensors ?? [],
+    isFetched: !loading && !!data?.sensors.length,
+  };
 }

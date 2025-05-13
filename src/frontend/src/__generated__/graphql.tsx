@@ -335,6 +335,7 @@ export type Mutation = {
   executeActuatorAction: ExecuteActuatorActionPayload;
   removeActuatorFromBed: RemoveActuatorFromBedPayload;
   removeSensorFromBed: RemoveSensorFromBedPayload;
+  setPlantToBed: SetPlantToBedPayload;
   updateActuatorRef: UpdateActuatorRefPayload;
   updateSensorRef: UpdateSensorRefPayload;
 };
@@ -362,6 +363,11 @@ export type MutationRemoveActuatorFromBedArgs = {
 
 export type MutationRemoveSensorFromBedArgs = {
   input: RemoveSensorFromBedInput;
+};
+
+
+export type MutationSetPlantToBedArgs = {
+  input: SetPlantToBedInput;
 };
 
 
@@ -571,6 +577,16 @@ export enum SensorType {
   Temperature = 'TEMPERATURE'
 }
 
+export type SetPlantToBedInput = {
+  bedId: Scalars['ID']['input'];
+  plantId: Scalars['ID']['input'];
+};
+
+export type SetPlantToBedPayload = {
+  __typename?: 'SetPlantToBedPayload';
+  bedDto?: Maybe<BedDto>;
+};
+
 export type StringOperationFilterInput = {
   and?: InputMaybe<Array<StringOperationFilterInput>>;
   contains?: InputMaybe<Scalars['String']['input']>;
@@ -629,6 +645,95 @@ export type UuidOperationFilterInput = {
   nlte?: InputMaybe<Scalars['UUID']['input']>;
 };
 
+export type GetActuatorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActuatorsQuery = { __typename?: 'Query', actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: string }> };
+
+export type GetActuatorByIdQueryVariables = Exact<{
+  id: Scalars['UUID']['input'];
+}>;
+
+
+export type GetActuatorByIdQuery = { __typename?: 'Query', actuator?: { __typename?: 'ActuatorDto', id: any, key: string, name: string, description: string, type: string, state: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: string, connectionState: string, stateType: string, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ActuatorActionDto', key: string, name: string, description: string, type: string, isAllowed: boolean, icon: string, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
+
+export type UpdateActuatorMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateActuatorMutation = { __typename?: 'Mutation', updateActuatorRef: { __typename?: 'UpdateActuatorRefPayload', actuatorRef?: { __typename?: 'ActuatorRef', id: any, name: string, description?: string | null, connectorKey?: string | null, type: ActuatorType } | null } };
+
+export type ExecuteActionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  actionKey: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['Float']['input']>;
+}>;
+
+
+export type ExecuteActionMutation = { __typename?: 'Mutation', executeActuatorAction: { __typename?: 'ExecuteActuatorActionPayload', boolean?: boolean | null } };
+
+export type GetBedByIdQueryVariables = Exact<{
+  id: Scalars['UUID']['input'];
+}>;
+
+
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, sensors: Array<{ __typename?: 'SensorRefDto', id: any, name: string, description: string, key?: string | null, type: string }>, actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: string }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: string, actionKey: string, value?: number | null, order: number }> }> } | null };
+
+export type SetCurrentPlantMutationVariables = Exact<{
+  bedId: Scalars['ID']['input'];
+  plantId: Scalars['ID']['input'];
+}>;
+
+
+export type SetCurrentPlantMutation = { __typename?: 'Mutation', setPlantToBed: { __typename?: 'SetPlantToBedPayload', bedDto?: { __typename?: 'BedDto', id: any } | null } };
+
+export type AddSensorToBedMutationVariables = Exact<{
+  bedId: Scalars['ID']['input'];
+  sensorId: Scalars['ID']['input'];
+}>;
+
+
+export type AddSensorToBedMutation = { __typename?: 'Mutation', addSensorToBed: { __typename?: 'AddSensorToBedPayload', sensorRef?: { __typename?: 'SensorRef', id: any } | null } };
+
+export type RemoveSensorFromBedMutationVariables = Exact<{
+  bedId: Scalars['ID']['input'];
+  sensorId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveSensorFromBedMutation = { __typename?: 'Mutation', removeSensorFromBed: { __typename?: 'RemoveSensorFromBedPayload', boolean?: boolean | null } };
+
+export type AddActuatorToBedMutationVariables = Exact<{
+  bedId: Scalars['ID']['input'];
+  actuatorId: Scalars['ID']['input'];
+}>;
+
+
+export type AddActuatorToBedMutation = { __typename?: 'Mutation', addActuatorToBed: { __typename?: 'AddActuatorToBedPayload', actuatorRef?: { __typename?: 'ActuatorRef', id: any } | null } };
+
+export type RemoveActuatorFromBedMutationVariables = Exact<{
+  bedId: Scalars['ID']['input'];
+  actuatorId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveActuatorFromBedMutation = { __typename?: 'Mutation', removeActuatorFromBed: { __typename?: 'RemoveActuatorFromBedPayload', boolean?: boolean | null } };
+
+export type GetPlantsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPlantsQuery = { __typename?: 'Query', plants: Array<{ __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: string, rangeFrom: number, rangeTo: number }> }> };
+
+export type GetPlantByIdQueryVariables = Exact<{
+  id: Scalars['UUID']['input'];
+}>;
+
+
+export type GetPlantByIdQuery = { __typename?: 'Query', plant?: { __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: string, rangeFrom: number, rangeTo: number }> } | null };
+
 export type GetSensorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -641,7 +746,549 @@ export type GetSensorByIdQueryVariables = Exact<{
 
 export type GetSensorByIdQuery = { __typename?: 'Query', sensor?: { __typename?: 'SensorDto', id: any, key?: string | null, name: string, type: string, description: string, currentValue: number, maxValue: number, minValue: number, unit: string } | null };
 
+export type UpdateSensorMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+}>;
 
+
+export type UpdateSensorMutation = { __typename?: 'Mutation', updateSensorRef: { __typename?: 'UpdateSensorRefPayload', sensorRef?: { __typename?: 'SensorRef', connectorKey?: string | null, description?: string | null, id: any, isDeleted: boolean, name: string, order: number, topic?: string | null, type: SensorType } | null } };
+
+
+export const GetActuatorsDocument = gql`
+    query getActuators {
+  actuators {
+    id
+    name
+    description
+    key
+    type
+  }
+}
+    `;
+
+/**
+ * __useGetActuatorsQuery__
+ *
+ * To run a query within a React component, call `useGetActuatorsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActuatorsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActuatorsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetActuatorsQuery(baseOptions?: Apollo.QueryHookOptions<GetActuatorsQuery, GetActuatorsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetActuatorsQuery, GetActuatorsQueryVariables>(GetActuatorsDocument, options);
+      }
+export function useGetActuatorsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActuatorsQuery, GetActuatorsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetActuatorsQuery, GetActuatorsQueryVariables>(GetActuatorsDocument, options);
+        }
+export function useGetActuatorsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetActuatorsQuery, GetActuatorsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetActuatorsQuery, GetActuatorsQueryVariables>(GetActuatorsDocument, options);
+        }
+export type GetActuatorsQueryHookResult = ReturnType<typeof useGetActuatorsQuery>;
+export type GetActuatorsLazyQueryHookResult = ReturnType<typeof useGetActuatorsLazyQuery>;
+export type GetActuatorsSuspenseQueryHookResult = ReturnType<typeof useGetActuatorsSuspenseQuery>;
+export type GetActuatorsQueryResult = Apollo.QueryResult<GetActuatorsQuery, GetActuatorsQueryVariables>;
+export const GetActuatorByIdDocument = gql`
+    query getActuatorById($id: UUID!) {
+  actuator(id: $id) {
+    id
+    key
+    name
+    description
+    type
+    state {
+      actuatorKey
+      actuatorType
+      connectionState
+      stateType
+      state
+      value
+      min
+      max
+      unit
+      lastUpdate
+      actions {
+        key
+        name
+        description
+        type
+        isAllowed
+        icon
+        currentValue
+        min
+        max
+        increment
+        unit
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetActuatorByIdQuery__
+ *
+ * To run a query within a React component, call `useGetActuatorByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetActuatorByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetActuatorByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetActuatorByIdQuery(baseOptions: Apollo.QueryHookOptions<GetActuatorByIdQuery, GetActuatorByIdQueryVariables> & ({ variables: GetActuatorByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetActuatorByIdQuery, GetActuatorByIdQueryVariables>(GetActuatorByIdDocument, options);
+      }
+export function useGetActuatorByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetActuatorByIdQuery, GetActuatorByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetActuatorByIdQuery, GetActuatorByIdQueryVariables>(GetActuatorByIdDocument, options);
+        }
+export function useGetActuatorByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetActuatorByIdQuery, GetActuatorByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetActuatorByIdQuery, GetActuatorByIdQueryVariables>(GetActuatorByIdDocument, options);
+        }
+export type GetActuatorByIdQueryHookResult = ReturnType<typeof useGetActuatorByIdQuery>;
+export type GetActuatorByIdLazyQueryHookResult = ReturnType<typeof useGetActuatorByIdLazyQuery>;
+export type GetActuatorByIdSuspenseQueryHookResult = ReturnType<typeof useGetActuatorByIdSuspenseQuery>;
+export type GetActuatorByIdQueryResult = Apollo.QueryResult<GetActuatorByIdQuery, GetActuatorByIdQueryVariables>;
+export const UpdateActuatorDocument = gql`
+    mutation updateActuator($id: ID!, $name: String, $description: String) {
+  updateActuatorRef(input: {id: $id, name: $name, description: $description}) {
+    actuatorRef {
+      id
+      name
+      description
+      connectorKey
+      type
+    }
+  }
+}
+    `;
+export type UpdateActuatorMutationFn = Apollo.MutationFunction<UpdateActuatorMutation, UpdateActuatorMutationVariables>;
+
+/**
+ * __useUpdateActuatorMutation__
+ *
+ * To run a mutation, you first call `useUpdateActuatorMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateActuatorMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateActuatorMutation, { data, loading, error }] = useUpdateActuatorMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *   },
+ * });
+ */
+export function useUpdateActuatorMutation(baseOptions?: Apollo.MutationHookOptions<UpdateActuatorMutation, UpdateActuatorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateActuatorMutation, UpdateActuatorMutationVariables>(UpdateActuatorDocument, options);
+      }
+export type UpdateActuatorMutationHookResult = ReturnType<typeof useUpdateActuatorMutation>;
+export type UpdateActuatorMutationResult = Apollo.MutationResult<UpdateActuatorMutation>;
+export type UpdateActuatorMutationOptions = Apollo.BaseMutationOptions<UpdateActuatorMutation, UpdateActuatorMutationVariables>;
+export const ExecuteActionDocument = gql`
+    mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
+  executeActuatorAction(input: {id: $id, actionKey: $actionKey, value: $value}) {
+    boolean
+  }
+}
+    `;
+export type ExecuteActionMutationFn = Apollo.MutationFunction<ExecuteActionMutation, ExecuteActionMutationVariables>;
+
+/**
+ * __useExecuteActionMutation__
+ *
+ * To run a mutation, you first call `useExecuteActionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useExecuteActionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [executeActionMutation, { data, loading, error }] = useExecuteActionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      actionKey: // value for 'actionKey'
+ *      value: // value for 'value'
+ *   },
+ * });
+ */
+export function useExecuteActionMutation(baseOptions?: Apollo.MutationHookOptions<ExecuteActionMutation, ExecuteActionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ExecuteActionMutation, ExecuteActionMutationVariables>(ExecuteActionDocument, options);
+      }
+export type ExecuteActionMutationHookResult = ReturnType<typeof useExecuteActionMutation>;
+export type ExecuteActionMutationResult = Apollo.MutationResult<ExecuteActionMutation>;
+export type ExecuteActionMutationOptions = Apollo.BaseMutationOptions<ExecuteActionMutation, ExecuteActionMutationVariables>;
+export const GetBedByIdDocument = gql`
+    query getBedById($id: UUID!) {
+  bed(id: $id) {
+    id
+    name
+    description
+    plant {
+      id
+    }
+    sensors {
+      id
+      name
+      description
+      key
+      type
+    }
+    actuators {
+      id
+      name
+      description
+      key
+      type
+    }
+    rules {
+      id
+      name
+      expressionJson
+      actions {
+        id
+        ruleId
+        actuatorId
+        actuatorKey
+        actuatorType
+        actionKey
+        value
+        order
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetBedByIdQuery__
+ *
+ * To run a query within a React component, call `useGetBedByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBedByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBedByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetBedByIdQuery(baseOptions: Apollo.QueryHookOptions<GetBedByIdQuery, GetBedByIdQueryVariables> & ({ variables: GetBedByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBedByIdQuery, GetBedByIdQueryVariables>(GetBedByIdDocument, options);
+      }
+export function useGetBedByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBedByIdQuery, GetBedByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBedByIdQuery, GetBedByIdQueryVariables>(GetBedByIdDocument, options);
+        }
+export function useGetBedByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetBedByIdQuery, GetBedByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetBedByIdQuery, GetBedByIdQueryVariables>(GetBedByIdDocument, options);
+        }
+export type GetBedByIdQueryHookResult = ReturnType<typeof useGetBedByIdQuery>;
+export type GetBedByIdLazyQueryHookResult = ReturnType<typeof useGetBedByIdLazyQuery>;
+export type GetBedByIdSuspenseQueryHookResult = ReturnType<typeof useGetBedByIdSuspenseQuery>;
+export type GetBedByIdQueryResult = Apollo.QueryResult<GetBedByIdQuery, GetBedByIdQueryVariables>;
+export const SetCurrentPlantDocument = gql`
+    mutation setCurrentPlant($bedId: ID!, $plantId: ID!) {
+  setPlantToBed(input: {bedId: $bedId, plantId: $plantId}) {
+    bedDto {
+      id
+    }
+  }
+}
+    `;
+export type SetCurrentPlantMutationFn = Apollo.MutationFunction<SetCurrentPlantMutation, SetCurrentPlantMutationVariables>;
+
+/**
+ * __useSetCurrentPlantMutation__
+ *
+ * To run a mutation, you first call `useSetCurrentPlantMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetCurrentPlantMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setCurrentPlantMutation, { data, loading, error }] = useSetCurrentPlantMutation({
+ *   variables: {
+ *      bedId: // value for 'bedId'
+ *      plantId: // value for 'plantId'
+ *   },
+ * });
+ */
+export function useSetCurrentPlantMutation(baseOptions?: Apollo.MutationHookOptions<SetCurrentPlantMutation, SetCurrentPlantMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetCurrentPlantMutation, SetCurrentPlantMutationVariables>(SetCurrentPlantDocument, options);
+      }
+export type SetCurrentPlantMutationHookResult = ReturnType<typeof useSetCurrentPlantMutation>;
+export type SetCurrentPlantMutationResult = Apollo.MutationResult<SetCurrentPlantMutation>;
+export type SetCurrentPlantMutationOptions = Apollo.BaseMutationOptions<SetCurrentPlantMutation, SetCurrentPlantMutationVariables>;
+export const AddSensorToBedDocument = gql`
+    mutation addSensorToBed($bedId: ID!, $sensorId: ID!) {
+  addSensorToBed(input: {bedId: $bedId, sensorId: $sensorId}) {
+    sensorRef {
+      id
+    }
+  }
+}
+    `;
+export type AddSensorToBedMutationFn = Apollo.MutationFunction<AddSensorToBedMutation, AddSensorToBedMutationVariables>;
+
+/**
+ * __useAddSensorToBedMutation__
+ *
+ * To run a mutation, you first call `useAddSensorToBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddSensorToBedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addSensorToBedMutation, { data, loading, error }] = useAddSensorToBedMutation({
+ *   variables: {
+ *      bedId: // value for 'bedId'
+ *      sensorId: // value for 'sensorId'
+ *   },
+ * });
+ */
+export function useAddSensorToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddSensorToBedMutation, AddSensorToBedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddSensorToBedMutation, AddSensorToBedMutationVariables>(AddSensorToBedDocument, options);
+      }
+export type AddSensorToBedMutationHookResult = ReturnType<typeof useAddSensorToBedMutation>;
+export type AddSensorToBedMutationResult = Apollo.MutationResult<AddSensorToBedMutation>;
+export type AddSensorToBedMutationOptions = Apollo.BaseMutationOptions<AddSensorToBedMutation, AddSensorToBedMutationVariables>;
+export const RemoveSensorFromBedDocument = gql`
+    mutation removeSensorFromBed($bedId: ID!, $sensorId: ID!) {
+  removeSensorFromBed(input: {bedId: $bedId, sensorId: $sensorId}) {
+    boolean
+  }
+}
+    `;
+export type RemoveSensorFromBedMutationFn = Apollo.MutationFunction<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>;
+
+/**
+ * __useRemoveSensorFromBedMutation__
+ *
+ * To run a mutation, you first call `useRemoveSensorFromBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveSensorFromBedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeSensorFromBedMutation, { data, loading, error }] = useRemoveSensorFromBedMutation({
+ *   variables: {
+ *      bedId: // value for 'bedId'
+ *      sensorId: // value for 'sensorId'
+ *   },
+ * });
+ */
+export function useRemoveSensorFromBedMutation(baseOptions?: Apollo.MutationHookOptions<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>(RemoveSensorFromBedDocument, options);
+      }
+export type RemoveSensorFromBedMutationHookResult = ReturnType<typeof useRemoveSensorFromBedMutation>;
+export type RemoveSensorFromBedMutationResult = Apollo.MutationResult<RemoveSensorFromBedMutation>;
+export type RemoveSensorFromBedMutationOptions = Apollo.BaseMutationOptions<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>;
+export const AddActuatorToBedDocument = gql`
+    mutation addActuatorToBed($bedId: ID!, $actuatorId: ID!) {
+  addActuatorToBed(input: {bedId: $bedId, actuatorId: $actuatorId}) {
+    actuatorRef {
+      id
+    }
+  }
+}
+    `;
+export type AddActuatorToBedMutationFn = Apollo.MutationFunction<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>;
+
+/**
+ * __useAddActuatorToBedMutation__
+ *
+ * To run a mutation, you first call `useAddActuatorToBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddActuatorToBedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addActuatorToBedMutation, { data, loading, error }] = useAddActuatorToBedMutation({
+ *   variables: {
+ *      bedId: // value for 'bedId'
+ *      actuatorId: // value for 'actuatorId'
+ *   },
+ * });
+ */
+export function useAddActuatorToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>(AddActuatorToBedDocument, options);
+      }
+export type AddActuatorToBedMutationHookResult = ReturnType<typeof useAddActuatorToBedMutation>;
+export type AddActuatorToBedMutationResult = Apollo.MutationResult<AddActuatorToBedMutation>;
+export type AddActuatorToBedMutationOptions = Apollo.BaseMutationOptions<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>;
+export const RemoveActuatorFromBedDocument = gql`
+    mutation removeActuatorFromBed($bedId: ID!, $actuatorId: ID!) {
+  removeActuatorFromBed(input: {bedId: $bedId, actuatorId: $actuatorId}) {
+    boolean
+  }
+}
+    `;
+export type RemoveActuatorFromBedMutationFn = Apollo.MutationFunction<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>;
+
+/**
+ * __useRemoveActuatorFromBedMutation__
+ *
+ * To run a mutation, you first call `useRemoveActuatorFromBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveActuatorFromBedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeActuatorFromBedMutation, { data, loading, error }] = useRemoveActuatorFromBedMutation({
+ *   variables: {
+ *      bedId: // value for 'bedId'
+ *      actuatorId: // value for 'actuatorId'
+ *   },
+ * });
+ */
+export function useRemoveActuatorFromBedMutation(baseOptions?: Apollo.MutationHookOptions<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>(RemoveActuatorFromBedDocument, options);
+      }
+export type RemoveActuatorFromBedMutationHookResult = ReturnType<typeof useRemoveActuatorFromBedMutation>;
+export type RemoveActuatorFromBedMutationResult = Apollo.MutationResult<RemoveActuatorFromBedMutation>;
+export type RemoveActuatorFromBedMutationOptions = Apollo.BaseMutationOptions<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>;
+export const GetPlantsDocument = gql`
+    query getPlants {
+  plants {
+    id
+    name
+    description
+    imageUrl
+    sensorConfigs {
+      sensorType
+      rangeFrom
+      rangeTo
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetPlantsQuery__
+ *
+ * To run a query within a React component, call `useGetPlantsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlantsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPlantsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPlantsQuery(baseOptions?: Apollo.QueryHookOptions<GetPlantsQuery, GetPlantsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPlantsQuery, GetPlantsQueryVariables>(GetPlantsDocument, options);
+      }
+export function useGetPlantsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPlantsQuery, GetPlantsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPlantsQuery, GetPlantsQueryVariables>(GetPlantsDocument, options);
+        }
+export function useGetPlantsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPlantsQuery, GetPlantsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPlantsQuery, GetPlantsQueryVariables>(GetPlantsDocument, options);
+        }
+export type GetPlantsQueryHookResult = ReturnType<typeof useGetPlantsQuery>;
+export type GetPlantsLazyQueryHookResult = ReturnType<typeof useGetPlantsLazyQuery>;
+export type GetPlantsSuspenseQueryHookResult = ReturnType<typeof useGetPlantsSuspenseQuery>;
+export type GetPlantsQueryResult = Apollo.QueryResult<GetPlantsQuery, GetPlantsQueryVariables>;
+export const GetPlantByIdDocument = gql`
+    query getPlantById($id: UUID!) {
+  plant(id: $id) {
+    id
+    name
+    description
+    imageUrl
+    sensorConfigs {
+      sensorType
+      rangeFrom
+      rangeTo
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetPlantByIdQuery__
+ *
+ * To run a query within a React component, call `useGetPlantByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlantByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPlantByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetPlantByIdQuery(baseOptions: Apollo.QueryHookOptions<GetPlantByIdQuery, GetPlantByIdQueryVariables> & ({ variables: GetPlantByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPlantByIdQuery, GetPlantByIdQueryVariables>(GetPlantByIdDocument, options);
+      }
+export function useGetPlantByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPlantByIdQuery, GetPlantByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPlantByIdQuery, GetPlantByIdQueryVariables>(GetPlantByIdDocument, options);
+        }
+export function useGetPlantByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPlantByIdQuery, GetPlantByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPlantByIdQuery, GetPlantByIdQueryVariables>(GetPlantByIdDocument, options);
+        }
+export type GetPlantByIdQueryHookResult = ReturnType<typeof useGetPlantByIdQuery>;
+export type GetPlantByIdLazyQueryHookResult = ReturnType<typeof useGetPlantByIdLazyQuery>;
+export type GetPlantByIdSuspenseQueryHookResult = ReturnType<typeof useGetPlantByIdSuspenseQuery>;
+export type GetPlantByIdQueryResult = Apollo.QueryResult<GetPlantByIdQuery, GetPlantByIdQueryVariables>;
 export const GetSensorsDocument = gql`
     query getSensors {
   sensors {
@@ -733,3 +1380,47 @@ export type GetSensorByIdQueryHookResult = ReturnType<typeof useGetSensorByIdQue
 export type GetSensorByIdLazyQueryHookResult = ReturnType<typeof useGetSensorByIdLazyQuery>;
 export type GetSensorByIdSuspenseQueryHookResult = ReturnType<typeof useGetSensorByIdSuspenseQuery>;
 export type GetSensorByIdQueryResult = Apollo.QueryResult<GetSensorByIdQuery, GetSensorByIdQueryVariables>;
+export const UpdateSensorDocument = gql`
+    mutation updateSensor($id: ID!, $name: String, $description: String) {
+  updateSensorRef(input: {description: $description, id: $id, name: $name}) {
+    sensorRef {
+      connectorKey
+      description
+      id
+      isDeleted
+      name
+      order
+      topic
+      type
+    }
+  }
+}
+    `;
+export type UpdateSensorMutationFn = Apollo.MutationFunction<UpdateSensorMutation, UpdateSensorMutationVariables>;
+
+/**
+ * __useUpdateSensorMutation__
+ *
+ * To run a mutation, you first call `useUpdateSensorMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSensorMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSensorMutation, { data, loading, error }] = useUpdateSensorMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *   },
+ * });
+ */
+export function useUpdateSensorMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSensorMutation, UpdateSensorMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSensorMutation, UpdateSensorMutationVariables>(UpdateSensorDocument, options);
+      }
+export type UpdateSensorMutationHookResult = ReturnType<typeof useUpdateSensorMutation>;
+export type UpdateSensorMutationResult = Apollo.MutationResult<UpdateSensorMutation>;
+export type UpdateSensorMutationOptions = Apollo.BaseMutationOptions<UpdateSensorMutation, UpdateSensorMutationVariables>;

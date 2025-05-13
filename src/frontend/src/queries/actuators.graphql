@@ -1,0 +1,66 @@
+query getActuators {
+  actuators {
+    id
+    name
+    description
+    key
+    type
+  }
+}
+
+query getActuatorById($id: UUID!) {
+  actuator(id: $id) {
+    id
+    key
+    name
+    description
+    type
+    state {
+      actuatorKey
+      actuatorType
+      connectionState
+      stateType
+      state
+      value
+      min
+      max
+      unit
+      lastUpdate
+      actions {
+        key
+        name
+        description
+        type
+        isAllowed
+        icon
+        currentValue
+        min
+        max
+        increment
+        unit
+      }
+    }
+  }
+}
+
+mutation updateActuator($id: ID!, $name: String, $description: String) {
+  updateActuatorRef(
+    input: { id: $id, name: $name, description: $description }
+  ) {
+    actuatorRef {
+      id
+      name
+      description
+      connectorKey
+      type
+    }
+  }
+}
+
+mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
+  executeActuatorAction(
+    input: { id: $id, actionKey: $actionKey, value: $value }
+  ) {
+    boolean
+  }
+}

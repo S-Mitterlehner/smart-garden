@@ -37,37 +37,44 @@ public partial class SensorManager(IServiceProvider sp, ILogger<SensorManager> l
 
         foreach (var topic in data.Topics)
         {
-            if (!Enum.TryParse<SensorType>(topic.Key, true, out var sensorType))
+            try
             {
-                logger.LogWarning("Sensor type {SensorType} not found -> skipped", topic.Key);
-                continue;
+                if (!Enum.TryParse<SensorType>(topic.Key, true, out var sensorType))
+                {
+                    logger.LogWarning("Sensor type {SensorType} not found -> skipped", topic.Key);
+                    continue;
+                }
+
+                var connector = GetConnectorFromList(key, sensorType);
+
+                if (connector is not null) continue;
+
+                await using var scope = sp.CreateAsyncScope();
+                await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+
+                connector = CreateConnectorInstance(key, sensorType, topic.Value);
+                _connectors.TryAdd(GetDictKey(key, sensorType), connector);
+
+                var reference = await db.Get<SensorRef>()
+                                        .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == sensorType);
+
+                if (reference is null)
+                {
+                    reference = db.New<SensorRef>();
+                    reference.Name = connector.Name;
+                    reference.Description = connector.Description;
+                    reference.ConnectorKey = connector.Key;
+                    reference.Type = connector.Type;
+                }
+
+                reference.Topic = topic.Value;
+
+                await db.SaveChangesAsync();
             }
-                
-            var connector = GetConnectorFromList(key, sensorType);
-
-            if (connector is not null) return;
-                
-            await using var scope = sp.CreateAsyncScope();
-            await using var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-            connector = CreateConnectorInstance(key, sensorType, topic.Value);
-            _connectors.TryAdd(GetDictKey(key, sensorType), connector);
-
-            var reference = await db.Get<SensorRef>()
-                .FirstOrDefaultAsync(x => x.ConnectorKey == key && x.Type == sensorType);
-
-            if (reference is null)
+            catch (Exception ex)
             {
-                reference = db.New<SensorRef>();
-                reference.Name = connector.Name;
-                reference.Description = connector.Description;
-                reference.ConnectorKey = connector.Key;
-                reference.Type = connector.Type;
+                logger.LogError(ex, "Failed to register Sensor {SensorKey} with topic {Topic}", key, topic.Value);
             }
-
-            reference.Topic = topic.Value;
-
-            await db.SaveChangesAsync();
         }
     }
 

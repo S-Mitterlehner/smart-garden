@@ -1,13 +1,13 @@
-import PlantSelector from "../components/PlantSelector";
-import { BedProvider, useBedContext } from "../hooks/useCurrentBed";
-import { useParams } from "react-router";
 import { ActionIcon, Drawer, Loader } from "@mantine/core";
-import SensorSection from "../components/sensors/SensorSection";
-import ActuatorSection from "../components/actuators/ActuatorSection";
 import { IconAutomaticGearbox } from "@tabler/icons-react";
 import { useState } from "react";
+import { useParams } from "react-router";
+import ActuatorSection from "../components/actuators/ActuatorSection";
 import { RuleList } from "../components/automation/RuleEditor";
+import PlantSelector from "../components/PlantSelector";
+import SensorSection from "../components/sensors/SensorSection";
 import { AutomationProvider } from "../hooks/useAutomation";
+import { BedProvider, useBedContext } from "../hooks/useCurrentBed";
 
 export default function BedPage() {
   const bedId = useParams().bedId as string;
@@ -24,7 +24,7 @@ export function BedPageContent() {
 
   if (!isFetched) {
     return (
-      <div className="mx-auto mt-20 flex flex-col gap-4 items-center justify-center">
+      <div className="mx-auto mt-20 flex flex-col items-center justify-center gap-4">
         <Loader size="xl" type="dots" color="oklch(69.6% 0.17 162.48)" />
         <span className="text-2xl font-thin">Loading...</span>
       </div>
@@ -47,7 +47,7 @@ export function BedPageContent() {
               color="oklch(76.5% 0.177 163.223)"
               onClick={() => setShowRulesDrawer(!showRulesDrawer)}
             >
-              <IconAutomaticGearbox className="w-6 h-6" />
+              <IconAutomaticGearbox className="h-6 w-6" />
             </ActionIcon>
           </div>
         </div>

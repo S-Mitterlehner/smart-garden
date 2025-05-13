@@ -1,17 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
-// import { useQuery } from "@apollo/client";
-import { Sensor, SensorData, SensorRef, SensorType } from "../models/sensor";
-import { API_URL } from "../environment";
-import { createContext, useContext, useEffect, useState } from "react";
-import * as signalR from "@microsoft/signalr";
-import { ConnectionState } from "../models/general";
 import { notifications } from "@mantine/notifications";
-// import { gql } from "../__generated__";
-// import { SENSOR_BY_ID_QUERY } from "../queries/sensor-query";
+import * as signalR from "@microsoft/signalr";
+import { createContext, useContext, useEffect, useState } from "react";
+import { SensorDto, useGetSensorByIdQuery } from "../__generated__/graphql";
+import { API_URL } from "../environment";
+import { ConnectionState } from "../models/general";
+import { Sensor, SensorData, SensorType } from "../models/sensor";
 
 export type SensorValue = {
   isFetched: boolean;
-  sensor: Sensor;
+  sensor: SensorDto;
   currentState: SensorData | null;
   connectionState: ConnectionState;
   updateRef: (id: string, changes: Sensor) => Promise<void>;
@@ -41,46 +38,19 @@ export function useSensorContext(): SensorValue {
   return context;
 }
 
-// const GET_SENSOR_QUERY_KEY = gql(/* GraphQL */ `
-//   query {
-//     sensors {
-//       id
-//       name
-//       currentValue
-//       maxValue
-//       minValue
-//       unit
-//     }
-//   }
-// `);
-
 export function useSensor(sensorId: string): SensorValue {
   const [currentState, setCurrentState] = useState<SensorData | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(
-    ConnectionState.NotConnected
+    ConnectionState.NotConnected,
   );
-  const {
-    data: sensor,
-    isFetched,
-    refetch,
-  } = useQuery<Sensor | null>({
-    queryKey: ["sensor", sensorId],
-    enabled: !!sensorId,
-    refetchOnMount: "always",
-    initialData: null,
-    queryFn: async () => {
-      const response = await fetch(`${API_URL}/sensors/${sensorId}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    },
-  });
 
-  // const { data: sensors, refetch } = useQuery<SensorRef>(
-  //   SENSOR_BY_ID_QUERY,
-  //   {}
-  // );
+  const {
+    data: { sensor } = {},
+    refetch,
+    loading,
+  } = useGetSensorByIdQuery({
+    variables: { id: sensorId },
+  });
 
   useEffect(() => {
     if (sensor?.key === null || sensor?.type === null) return;
@@ -93,10 +63,10 @@ export function useSensor(sensorId: string): SensorValue {
 
     connection.onclose(() => setConnectionState(ConnectionState.NotConnected));
     connection.onreconnecting(() =>
-      setConnectionState(ConnectionState.NotConnected)
+      setConnectionState(ConnectionState.NotConnected),
     );
     connection.onreconnected(() =>
-      setConnectionState(ConnectionState.Connected)
+      setConnectionState(ConnectionState.Connected),
     );
 
     connection.on(
@@ -106,7 +76,7 @@ export function useSensor(sensorId: string): SensorValue {
           data.lastUpdate = new Date(data.lastUpdate);
           setCurrentState(data);
         }
-      }
+      },
     );
 
     connection
@@ -142,7 +112,7 @@ export function useSensor(sensorId: string): SensorValue {
   }, [sensor]);
 
   return {
-    isFetched,
+    isFetched: !loading && !!sensor,
     sensor: sensor ?? ({} as Sensor),
     currentState: currentState ?? null,
     connectionState,

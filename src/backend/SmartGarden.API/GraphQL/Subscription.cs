@@ -8,11 +8,15 @@ namespace SmartGarden.API.GraphQL;
 
 public class Subscription
 {
-    [Subscribe]
-    [Topic(GraphQlSensorListener.MEASUREMENT_MADE)]
+    public ValueTask<ISourceStream<SensorDataDto>> SubscribeToSensorData(string key, string type, ITopicEventReceiver receiver) 
+        => receiver.SubscribeAsync<SensorDataDto>(GraphQlSensorListener.GetTopic(key, type));
+
+    [Subscribe(With = nameof(SubscribeToSensorData))]
     public SensorDataDto OnSensorMeasurement([EventMessage] SensorDataDto dto) => dto;
     
-    [Subscribe]
-    [Topic(GraphQlActuatorListener.STATE_CHANGED)]
+    public ValueTask<ISourceStream<ActuatorStateDto>> SubscribeToActuatorState(string key, string type, ITopicEventReceiver receiver) 
+        => receiver.SubscribeAsync<ActuatorStateDto>(GraphQlActuatorListener.GetTopic(key, type));
+
+    [Subscribe(With = nameof(SubscribeToActuatorState))]
     public ActuatorStateDto OnActuatorStateChanged([EventMessage] ActuatorStateDto data) => data;
 }

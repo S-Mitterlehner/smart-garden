@@ -14,7 +14,8 @@ int status = WL_IDLE_STATUS;  // the WiFi radio's status
 String macAddress;
 
 // char mqttServerAddress[] = "broker.mqttdashboard.com";
-char mqttServerAddress[] = "test.mosquitto.org";
+// char mqttServerAddress[] = "test.mosquitto.org";
+char mqttServerAddress[] = "broker.emqx.io";
 int mqttServerPort = 1883;
 
 WiFiClient network;

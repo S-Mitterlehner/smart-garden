@@ -7,8 +7,8 @@ namespace SmartGarden.API.Listener;
 
 public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<GraphQlActuatorListener> logger) : IActuatorListener
 {
-    public const string STATE_CHANGED = "Actuator_State";
-    
+    public static string GetTopic(string key, string type) => $"Actuator_State_{key}_{type}";
+
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
         logger.LogDebug("GraphQL ActuatorState Published: {data}", data);
@@ -27,6 +27,6 @@ public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<Grap
             Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
         };
 
-        await eventSender.SendAsync(STATE_CHANGED, dto);
+        await eventSender.SendAsync(GetTopic(dto.ActuatorKey, dto.ActuatorType), dto);
     }
 }

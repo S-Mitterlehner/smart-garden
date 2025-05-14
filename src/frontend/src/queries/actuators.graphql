@@ -64,3 +64,31 @@ mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
     boolean
   }
 }
+
+subscription listenStateChange($key: String!, $type: String!) {
+  onActuatorStateChanged(key: $key, type: $type) {
+    actuatorKey
+    actuatorType
+    connectionState
+    lastUpdate
+    max
+    min
+    state
+    stateType
+    unit
+    value
+    actions {
+      currentValue
+      description
+      icon
+      increment
+      isAllowed
+      key
+      max
+      min
+      name
+      type
+      unit
+    }
+  }
+}

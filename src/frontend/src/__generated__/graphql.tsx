@@ -608,6 +608,18 @@ export type Subscription = {
   onSensorMeasurement: SensorDataDto;
 };
 
+
+export type SubscriptionOnActuatorStateChangedArgs = {
+  key: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+};
+
+
+export type SubscriptionOnSensorMeasurementArgs = {
+  key: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+};
+
 export type UpdateActuatorRefInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -674,6 +686,14 @@ export type ExecuteActionMutationVariables = Exact<{
 
 
 export type ExecuteActionMutation = { __typename?: 'Mutation', executeActuatorAction: { __typename?: 'ExecuteActuatorActionPayload', boolean?: boolean | null } };
+
+export type ListenStateChangeSubscriptionVariables = Exact<{
+  key: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+}>;
+
+
+export type ListenStateChangeSubscription = { __typename?: 'Subscription', onActuatorStateChanged: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: string, connectionState: string, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: string, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ActuatorActionDto', currentValue?: number | null, description: string, icon: string, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: string, unit?: string | null }> } };
 
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
@@ -754,6 +774,14 @@ export type UpdateSensorMutationVariables = Exact<{
 
 
 export type UpdateSensorMutation = { __typename?: 'Mutation', updateSensorRef: { __typename?: 'UpdateSensorRefPayload', sensorRef?: { __typename?: 'SensorRef', connectorKey?: string | null, description?: string | null, id: any, isDeleted: boolean, name: string, order: number, topic?: string | null, type: SensorType } | null } };
+
+export type ListenMeasurementSubscriptionVariables = Exact<{
+  key: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+}>;
+
+
+export type ListenMeasurementSubscription = { __typename?: 'Subscription', onSensorMeasurement: { __typename?: 'SensorDataDto', sensorKey: string, sensorType: string, connectionState: string, currentValue: number, min: number, max: number, unit: string, lastUpdate: any } };
 
 
 export const GetActuatorsDocument = gql`
@@ -944,6 +972,59 @@ export function useExecuteActionMutation(baseOptions?: Apollo.MutationHookOption
 export type ExecuteActionMutationHookResult = ReturnType<typeof useExecuteActionMutation>;
 export type ExecuteActionMutationResult = Apollo.MutationResult<ExecuteActionMutation>;
 export type ExecuteActionMutationOptions = Apollo.BaseMutationOptions<ExecuteActionMutation, ExecuteActionMutationVariables>;
+export const ListenStateChangeDocument = gql`
+    subscription listenStateChange($key: String!, $type: String!) {
+  onActuatorStateChanged(key: $key, type: $type) {
+    actuatorKey
+    actuatorType
+    connectionState
+    lastUpdate
+    max
+    min
+    state
+    stateType
+    unit
+    value
+    actions {
+      currentValue
+      description
+      icon
+      increment
+      isAllowed
+      key
+      max
+      min
+      name
+      type
+      unit
+    }
+  }
+}
+    `;
+
+/**
+ * __useListenStateChangeSubscription__
+ *
+ * To run a query within a React component, call `useListenStateChangeSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useListenStateChangeSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListenStateChangeSubscription({
+ *   variables: {
+ *      key: // value for 'key'
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useListenStateChangeSubscription(baseOptions: Apollo.SubscriptionHookOptions<ListenStateChangeSubscription, ListenStateChangeSubscriptionVariables> & ({ variables: ListenStateChangeSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ListenStateChangeSubscription, ListenStateChangeSubscriptionVariables>(ListenStateChangeDocument, options);
+      }
+export type ListenStateChangeSubscriptionHookResult = ReturnType<typeof useListenStateChangeSubscription>;
+export type ListenStateChangeSubscriptionResult = Apollo.SubscriptionResult<ListenStateChangeSubscription>;
 export const GetBedByIdDocument = gql`
     query getBedById($id: UUID!) {
   bed(id: $id) {
@@ -1424,3 +1505,41 @@ export function useUpdateSensorMutation(baseOptions?: Apollo.MutationHookOptions
 export type UpdateSensorMutationHookResult = ReturnType<typeof useUpdateSensorMutation>;
 export type UpdateSensorMutationResult = Apollo.MutationResult<UpdateSensorMutation>;
 export type UpdateSensorMutationOptions = Apollo.BaseMutationOptions<UpdateSensorMutation, UpdateSensorMutationVariables>;
+export const ListenMeasurementDocument = gql`
+    subscription listenMeasurement($key: String!, $type: String!) {
+  onSensorMeasurement(key: $key, type: $type) {
+    sensorKey
+    sensorType
+    connectionState
+    currentValue
+    min
+    max
+    unit
+    lastUpdate
+  }
+}
+    `;
+
+/**
+ * __useListenMeasurementSubscription__
+ *
+ * To run a query within a React component, call `useListenMeasurementSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useListenMeasurementSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListenMeasurementSubscription({
+ *   variables: {
+ *      key: // value for 'key'
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useListenMeasurementSubscription(baseOptions: Apollo.SubscriptionHookOptions<ListenMeasurementSubscription, ListenMeasurementSubscriptionVariables> & ({ variables: ListenMeasurementSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ListenMeasurementSubscription, ListenMeasurementSubscriptionVariables>(ListenMeasurementDocument, options);
+      }
+export type ListenMeasurementSubscriptionHookResult = ReturnType<typeof useListenMeasurementSubscription>;
+export type ListenMeasurementSubscriptionResult = Apollo.SubscriptionResult<ListenMeasurementSubscription>;

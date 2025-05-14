@@ -7,8 +7,8 @@ namespace SmartGarden.API.Listener;
 
 public class GraphQlSensorListener(ITopicEventSender eventSender, ILogger<GraphQlSensorListener> logger) : ISensorListener
 {
-    public const string MEASUREMENT_MADE = "Sensor_Measurement";
-    
+    public static string GetTopic(string key, string type) => $"Sensor_Measurement_{key}_{type}";
+
     public async Task PublishMeasurementAsync(SensorData data)
     {
         logger.LogDebug("GraphQL PublishMeasurement: {data}", data);
@@ -24,6 +24,6 @@ public class GraphQlSensorListener(ITopicEventSender eventSender, ILogger<GraphQ
             LastUpdate = data.LastUpdate
         };
         
-        await eventSender.SendAsync(MEASUREMENT_MADE, dto);
+        await eventSender.SendAsync(GetTopic(dto.SensorKey, dto.SensorType), dto);
     }
 }

@@ -7,11 +7,13 @@ import {
   ActuatorStateDto,
   useExecuteActionMutation,
   useGetActuatorByIdQuery,
+  useListenStateChangeSubscription,
   useUpdateActuatorMutation,
 } from "../__generated__/graphql";
 import { API_URL } from "../environment";
 import { ActuatorState, ActuatorType } from "../models/actuator";
 import { ConnectionState } from "../models/general";
+import { SocketType, useAppSettingsContext } from "./useAppSettings";
 
 export type ActuatorValue = {
   actuator: ActuatorDto;
@@ -50,6 +52,7 @@ export function useActuatorContext(): ActuatorValue {
 }
 
 export function useActuator(actuatorId: string): ActuatorValue {
+  const { socketType } = useAppSettingsContext();
   const [currentState, setCurrentState] = useState<ActuatorStateDto | null>(
     null,
   );
@@ -68,10 +71,43 @@ export function useActuator(actuatorId: string): ActuatorValue {
   const [execute] = useExecuteActionMutation();
   const [update] = useUpdateActuatorMutation();
 
-  useEffect(() => {
-    if (actuator?.key === null || actuator?.type === null) return;
+  const { data: { onActuatorStateChanged: state } = {} } =
+    useListenStateChangeSubscription({
+      variables: {
+        key: actuator?.key ?? "",
+        type: actuator?.type ?? "",
+      },
+      skip: !actuator || socketType.get !== SocketType.GraphQLSubs,
+    });
 
-    const connection = new signalR.HubConnectionBuilder()
+  useEffect(() => {
+    setCurrentState(state!);
+    setConnectionState(ConnectionState.Connected);
+  }, [state]);
+
+  useEffect(() => {
+    let connection: signalR.HubConnection | null = null;
+    if (
+      socketType.get !== SocketType.SignalR ||
+      actuator?.key === null ||
+      actuator?.type === null
+    ) {
+      // console.log(`${actuator?.key}/${actuator?.type} GraphQL is used`);
+
+      try {
+        if (connection) {
+          (connection as signalR.HubConnection).stop();
+        }
+      } catch {
+        // just ignore it
+      }
+
+      setConnectionState(ConnectionState.NotConnected);
+      return;
+    }
+    // console.log(`${actuator?.key}/${actuator?.type} SignalR is used`);
+
+    connection = new signalR.HubConnectionBuilder()
       .withUrl(`${API_URL}/sockets/actuator`)
       .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
@@ -110,7 +146,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
       // console.log(`actuator ${actuator?.key}/${actuator?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
-  }, [actuator?.key, actuator?.type]);
+  }, [actuator?.key, actuator?.type, socketType]);
 
   useEffect(() => {
     if (actuator?.state !== undefined) {

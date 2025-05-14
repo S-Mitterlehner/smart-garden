@@ -2,18 +2,22 @@ import { notifications } from "@mantine/notifications";
 import * as signalR from "@microsoft/signalr";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
+  SensorDataDto,
   SensorDto,
+  SensorType,
   useGetSensorByIdQuery,
+  useListenMeasurementSubscription,
   useUpdateSensorMutation,
 } from "../__generated__/graphql";
 import { API_URL } from "../environment";
 import { ConnectionState } from "../models/general";
-import { Sensor, SensorData, SensorType } from "../models/sensor";
+import { Sensor } from "../models/sensor";
+import { SocketType, useAppSettingsContext } from "./useAppSettings";
 
 export type SensorValue = {
   isFetched: boolean;
   sensor: SensorDto;
-  currentState: SensorData | null;
+  currentState: SensorDataDto | null;
   connectionState: ConnectionState;
   updateRef: (id: string, changes: Sensor) => Promise<void>;
 };
@@ -43,7 +47,8 @@ export function useSensorContext(): SensorValue {
 }
 
 export function useSensor(sensorId: string): SensorValue {
-  const [currentState, setCurrentState] = useState<SensorData | null>(null);
+  const { socketType } = useAppSettingsContext();
+  const [currentState, setCurrentState] = useState<SensorDataDto | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(
     ConnectionState.NotConnected,
   );
@@ -58,10 +63,45 @@ export function useSensor(sensorId: string): SensorValue {
 
   const [mutate] = useUpdateSensorMutation();
 
-  useEffect(() => {
-    if (sensor?.key === null || sensor?.type === null) return;
+  const { data: { onSensorMeasurement: state } = {} } =
+    useListenMeasurementSubscription({
+      variables: {
+        key: sensor?.key ?? "",
+        type: sensor?.type ?? "",
+      },
+      skip: !sensor || socketType.get !== SocketType.GraphQLSubs,
+    });
 
-    const connection = new signalR.HubConnectionBuilder()
+  useEffect(() => {
+    setCurrentState(state!);
+    setConnectionState(ConnectionState.Connected);
+  }, [state]);
+
+  useEffect(() => {
+    let connection: signalR.HubConnection | null = null;
+
+    if (
+      socketType.get !== SocketType.SignalR ||
+      sensor?.key === null ||
+      sensor?.type === null
+    ) {
+      // console.log(`${sensor?.key}/${sensor?.type} GraphQL is used`);
+
+      try {
+        if (connection) {
+          (connection as signalR.HubConnection).stop();
+        }
+      } catch {
+        // just ignore it
+      }
+
+      setConnectionState(ConnectionState.NotConnected);
+      return;
+    }
+
+    // console.log(`${sensor?.key}/${sensor?.type} SignalR is used`);
+
+    connection = new signalR.HubConnectionBuilder()
       .withUrl(`${API_URL}/sockets/sensor`)
       .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
@@ -77,7 +117,7 @@ export function useSensor(sensorId: string): SensorValue {
 
     connection.on(
       "Sensor_Measurement",
-      (key: string, type: SensorType, data: SensorData) => {
+      (key: string, type: SensorType, data: SensorDataDto) => {
         if (key === sensor?.key && type === sensor.type) {
           data.lastUpdate = new Date(data.lastUpdate);
           setCurrentState(data);
@@ -100,7 +140,7 @@ export function useSensor(sensorId: string): SensorValue {
       // console.log(`sensor ${sensor?.key}/${sensor?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
-  }, [sensor?.key, sensor?.type]);
+  }, [sensor?.key, sensor?.type, socketType]);
 
   // Sync initial data
   useEffect(() => {
@@ -113,6 +153,7 @@ export function useSensor(sensorId: string): SensorValue {
         max: sensor.maxValue,
         unit: sensor.unit,
         lastUpdate: new Date(),
+        sensorType: sensor.type,
       });
     }
   }, [sensor]);

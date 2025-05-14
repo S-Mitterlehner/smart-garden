@@ -36,3 +36,16 @@ mutation updateSensor($id: ID!, $name: String, $description: String) {
     }
   }
 }
+
+subscription listenMeasurement($key: String!, $type: String!) {
+  onSensorMeasurement(key: $key, type: $type) {
+    sensorKey
+    sensorType
+    connectionState
+    currentValue
+    min
+    max
+    unit
+    lastUpdate
+  }
+}

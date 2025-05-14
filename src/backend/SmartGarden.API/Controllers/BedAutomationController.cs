@@ -52,8 +52,8 @@ public class BedAutomationController(ApplicationContext db, IActuatorManager act
     }
     
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll(Guid ruleId)
+    [HttpGet("{ruleId}")]
+    public async Task<IActionResult> GetRuleById(Guid ruleId)
     {
         var bed = await GetBedAsync();
         

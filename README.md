@@ -2,6 +2,12 @@
 
 This repo is a IoT project for an extensible gardening system.
 
+## Project Documentations
+
+- [SVE Ex 2 - Web-Services](./docs/SVE-2/README.md)
+
+---
+
 ## Getting Started
 
 ### Frontend
@@ -22,9 +28,9 @@ npm run dev
 
 In order to run the Backend, all you need to do is to open the sln with Visual Studio or Rider. After that you can run the docker-compose project in VS or the `Docker Compose [Windows/Unix/Linux]` Configuration in Rider.
 
-This will also start the postgresdb for the application.
+This will also start the postgresdb for the application, therefore a start without docker requires changes in the `appsettings.json`.
 
-#### Controller / Arduino
+### Controller / Arduino
 
 In order to compile the `ino`-files you need to create a `arduino_secrets.h` file in each module. The content of this file should look like this:
 
@@ -33,4 +39,4 @@ In order to compile the `ino`-files you need to create a `arduino_secrets.h` fil
 #define SECRET_PASS "yourwifipw"
 ```
 
-Please refer to the module descriptions in order to prepare the correct setup for each module.
+Please refer to the module descriptions and wiring plans to prepare the correct setup for each module.

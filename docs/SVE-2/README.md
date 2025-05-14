@@ -329,7 +329,59 @@ createRoot(document.getElementById("root")!).render(
 
 ### SignalR Websockets verwenden
 
-Im Backend können Messages mithilfe des
+Im Backend wird sowohl für die Verbindung, als auch die Versendung bzw. den Empfang von Nachrichten ein sog. `Hub` verwendet. Über diesen Hub kann mithilfe des `IHubContext` gezielt mit Clients kommuniziert werden. Nachrichten werden dabei mittels `SendAsync` an bestimmte Clients gesendet.
+
+```cs
+public class SignalRActuatorListener(IHubContext<ActuatorHub> context) : IActuatorListener
+{
+    public const string STATE_CHANGED = "Actuator_State";
+    public static string GetGroup(string key, string type) => $"{STATE_CHANGED}_{key}_{type}";
+
+    public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
+    {
+        // ...
+        await context.Clients.Group(GetGroup(dto.ActuatorKey, dto.ActuatorType)).SendAsync(STATE_CHANGED, dto.ActuatorKey, dto.ActuatorType, dto);
+    }
+}
+```
+
+Mithilfe der im Frontend erzeugten Connection kann dann mittels `on` auf die entsprechende Methode (in diesem Fall `Actuator_State`) gehört werden.
+
+```ts
+connection.on("Actuator_State", (key: string, type: ActuatorType, data: ActuatorState) => {
+  setCurrentState(data);
+});
+```
+
+Die Methoden des Hubs stellen die dem Client zur Verfügung gestellten Funktionalitäten dar. Diese werden in unserem Beispiel wie folgt implementiert:
+
+```cs
+public class ActuatorHub : Hub
+{
+    public async Task SubscribeToActuator(string key, string type)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, SignalRActuatorListener.GetGroup(key, type));
+    }
+
+    public async Task UnsubscribeFromActuator(string key, string type)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, SignalRActuatorListener.GetGroup(key, type));
+    }
+}
+```
+
+Diese Methoden können dann mittels der im Frontend erzeugten Connection, wie folgt ausgeführt werden:
+
+```ts
+connection
+  ?.invoke("SubscribeToActuator", actuator!.key, actuator!.type)
+  .then(() => {
+    console.log(`actuator ${actuator?.key}/${actuator?.type} subscribed`);
+  })
+  .catch((er) => {
+    console.error(er);
+  });
+```
 
 ### GraphQL Subscriptions verwenden
 

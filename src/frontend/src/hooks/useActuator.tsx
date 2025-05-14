@@ -124,16 +124,25 @@ export function useActuator(actuatorId: string): ActuatorValue {
     connection.on(
       "Actuator_State",
       (key: string, type: ActuatorType, data: ActuatorState) => {
-        if (key === actuator?.key && type === actuator.type) {
-          data.lastUpdate = new Date(data.lastUpdate);
-          setCurrentState(data);
-        }
+        data.lastUpdate = new Date(data.lastUpdate);
+        setCurrentState(data);
       },
     );
 
     connection
       .start()
       .then(() => {
+        connection
+          ?.invoke("SubscribeToActuator", actuator!.key, actuator!.type)
+          .then(() => {
+            console.log(
+              `actuator ${actuator?.key}/${actuator?.type} subscribed`,
+            );
+          })
+          .catch((er) => {
+            console.error(er);
+          });
+
         // console.log(`actuator ${actuator?.key}/${actuator?.type} ws connected`);
         setConnectionState(ConnectionState.Connected);
       })
@@ -146,7 +155,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
       // console.log(`actuator ${actuator?.key}/${actuator?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
-  }, [actuator?.key, actuator?.type, socketType]);
+  }, [actuator?.key, actuator?.type, socketType, actuator]);
 
   useEffect(() => {
     if (actuator?.state !== undefined) {

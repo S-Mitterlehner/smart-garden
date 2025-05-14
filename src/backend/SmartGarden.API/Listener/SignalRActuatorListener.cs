@@ -9,6 +9,7 @@ namespace SmartGarden.API.Listener;
 public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<SignalRSensorListener> logger) : IActuatorListener
 {
     public const string STATE_CHANGED = "Actuator_State";
+    public static string GetGroup(string key, string type) => $"{STATE_CHANGED}_{key}_{type}";
 
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
@@ -28,6 +29,6 @@ public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<S
             , Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
         };
         
-        await context.Clients.All.SendAsync(STATE_CHANGED, data.ActuatorKey, data.ActuatorType.ToString(), dto);
+        await context.Clients.Group(GetGroup(dto.ActuatorKey, dto.ActuatorType)).SendAsync(STATE_CHANGED, dto.ActuatorKey, dto.ActuatorType, dto);
     }
 }

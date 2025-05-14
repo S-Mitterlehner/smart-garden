@@ -118,16 +118,23 @@ export function useSensor(sensorId: string): SensorValue {
     connection.on(
       "Sensor_Measurement",
       (key: string, type: SensorType, data: SensorDataDto) => {
-        if (key === sensor?.key && type === sensor.type) {
-          data.lastUpdate = new Date(data.lastUpdate);
-          setCurrentState(data);
-        }
+        data.lastUpdate = new Date(data.lastUpdate);
+        setCurrentState(data);
       },
     );
 
     connection
       .start()
       .then(() => {
+        connection
+          ?.invoke("SubscribeToSensor", sensor!.key, sensor!.type)
+          .then(() => {
+            console.log(`sensor ${sensor?.key}/${sensor?.type} subscribed`);
+          })
+          .catch((er) => {
+            console.error(er);
+          });
+
         // console.log(`sensor ${sensor?.key}/${sensor?.type} ws connected`);
         setConnectionState(ConnectionState.Connected);
       })
@@ -140,7 +147,7 @@ export function useSensor(sensorId: string): SensorValue {
       // console.log(`sensor ${sensor?.key}/${sensor?.type} ws stopped`);
       setConnectionState(ConnectionState.NotConnected);
     };
-  }, [sensor?.key, sensor?.type, socketType]);
+  }, [sensor?.key, sensor?.type, socketType, sensor]);
 
   // Sync initial data
   useEffect(() => {

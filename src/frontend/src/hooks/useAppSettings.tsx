@@ -39,15 +39,17 @@ export function useAppSettingsContext(): AppSettings {
 }
 
 export function useAppSettings(): AppSettings {
-  const [socketType, setSocketType] = useState<SocketType>(
-    SocketType.GraphQLSubs,
-  );
+  const ls = localStorage.getItem("socketType");
+  const initialSocketType = ls ? (ls as SocketType) : SocketType.GraphQLSubs;
+
+  const [socketType, setSocketType] = useState<SocketType>(initialSocketType);
 
   return {
     socketType: {
       get: socketType,
       set: (value: SocketType) => {
         setSocketType(value);
+        localStorage.setItem("socketType", value);
       },
     },
   };

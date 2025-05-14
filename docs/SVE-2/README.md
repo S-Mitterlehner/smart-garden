@@ -6,21 +6,45 @@ Ein Ziel dieses Projekts war es, verschiedene Technologien zur Echtzeitkommunika
 
 ---
 
-### Architektur 
+### Architektur
 
 - Im Frontend können Nutzer Sensoren und Aktoren konfigurieren und den Systemstatus in Echtzeit überwachen.
 - Jeder Sensor im Frontend ist eine logische Einheit, kann aber physisch aus einem oder mehreren Hardware-Sensoren bestehen.
 - Aktoren verarbeiten Befehle aus dem Frontend (z. B. zum Ein-/Ausschalten von Geräten oder zum Steuern von Aktor-Parametern).
-- Die Kommunikation zwischen Frontend und Backend erfolgt in Echtzeit, z. B. über WebSockets (SignalR) oder GraphQL Subscriptions.
+- Die Kommunikation zwischen Frontend und Backend erfolgt in Echtzeit, z. B. über WebSockets (SignalR) oder GraphQL Subscriptio ns.
 
 ![](./img/frontend.png)
 
+### Frontend - GraphQL-Code Gen
+
+Da es sich bei GraphQL um einen Standard handelt, welcher mithilfe dem Schema Typen definiert, ist es möglich mithilfe von Code-Generatoren Clients und im Falle von React Hooks zu erstellen, die einen Aufruf und den Zugriff auf diese Daten vereinfachen.
+Dazu wurde für dieses Projekt das npm package `graphql-codegen` ausgewählt. Dieses package durchsucht alle in der Configuration definierten Files, um nach GraphQL-Queries zu suchen. Für jede gefundene Abfrage, wird dann sowohl das Datenobjekt (DTOs) als auch eine Hook für den Zugriff erzeugt.
+
+Konfiguration:
+
+```ts
+const config: CodegenConfig = {
+  overwrite: true,
+  schema: "http://localhost:5001/graphql",
+  documents: ["src/**/*.tsx", "src/**/*.ts", "src/**/*.graphql", "!src/__generated__/**"],
+  generates: {
+    "src/__generated__/graphql.tsx": {
+      plugins: ["typescript", "typescript-operations", "typescript-react-apollo"],
+      config: {
+        withHooks: true,
+        withHOC: false,
+        withComponent: false,
+      },
+    },
+  },
+};
+```
 
 ### SignalR – WebSocket-Kommunikation
 
-**SignalR** ermöglicht serverseitiges Pushen von Nachrichten an Clients über WebSockets oder Fallbacks wie Long Polling. Im Rahmen unseres Systems verwenden wir Gruppenmechanismen von SignalR, um Messdaten selektiv zu verteilen. Jeder Sensor oder Aktor ist einer eigenen Gruppe zugeordnet. Clients registrieren auf Gruppen und bekommen über definierte Topics die Daten die sie benötigen.
+**SignalR** ermöglicht ein bidirektionales Senden und Empfangen von Nachrichten an und von Clients über WebSockets oder Fallbacks wie Long Polling. Im Rahmen unseres Systems verwenden wir Gruppenmechanismen von SignalR, um Messdaten selektiv zu verteilen. Jeder Sensor oder Aktor ist einer eigenen Gruppe zugeordnet. Clients registrieren auf Gruppen und bekommen über definierte Topics die Daten die sie benötigen.
 
-Beispielhafte Nutzung:
+#### Backend
 
 ```csharp
 public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
@@ -30,20 +54,75 @@ public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<Action
 }
 ```
 
+#### Frontend
+
+```ts
+const [connectionState, setConnectionState] = useState(ConnectionState.NotConnected);
+
+useEffect(() => {
+  if (!!actuator) return;
+
+  // Configuration des Sockets
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl(`${API_URL}/sockets/actuator`)
+    .configureLogging(signalR.LogLevel.Error) // Nur interne Logging-Nachrichten vom Typ Error in der Console ausgeben
+    .withAutomaticReconnect()
+    .build();
+
+  // Listener für das setzen des Verbindungsstatus
+  connection.onclose(() => setConnectionState(ConnectionState.NotConnected));
+  connection.onreconnecting(() => setConnectionState(ConnectionState.NotConnected));
+  connection.onreconnected(() => setConnectionState(ConnectionState.Connected));
+
+  // Bei Empfang von Nachrichten aus dem Topic "Actuator_State"
+  connection.on("Actuator_State", (key: string, type: ActuatorType, data: ActuatorState) => {
+    data.lastUpdate = new Date(data.lastUpdate);
+    setCurrentState(data);
+  });
+
+  // Starten des Sockets
+  connection
+    .start()
+    .then(() => {
+      // Senden einer Nachricht an den Server
+      connection
+        ?.invoke("SubscribeToActuator", actuator!.key, actuator!.type)
+        .then(() => {
+          console.log(`actuator ${actuator?.key}/${actuator?.type} subscribed`);
+        })
+        .catch((er) => {
+          console.error(er);
+        });
+      setConnectionState(ConnectionState.Connected);
+    })
+    .catch(() => {
+      setConnectionState(ConnectionState.NotConnected);
+    });
+
+  return () => {
+    connection.stop();
+    setConnectionState(ConnectionState.NotConnected);
+  };
+}, [actuator]);
+```
+
+#### Fazit
+
 Vorteile:
 
-* Ideal für einfache Broadcast-Kommunikation
-* Direkter Zugriff auf verbundene Clients
-* Einfache Implementierung
-* Gute Performance aufgrund der Gruppierung
-* Einheitlicher Maintainer der Front- und Backendpackages (Microsoft)
-* SignalR unterstützt mehrere Kommunikationsstrategien z.B. Long Polling als Fallback für Browser die WebSockets nicht unterstützen.
-* Bidirektionale Kommunikation
+- Ideal für einfache Broadcast-Kommunikation
+- Direkter Zugriff auf verbundene Clients
+- Einfache Implementierung
+- Gute Performance aufgrund der Gruppierung
+- Einheitlicher Maintainer der Front- und Backendpackages (Microsoft)
+- SignalR unterstützt mehrere Kommunikationsstrategien z.B. Long Polling als Fallback für Browser die WebSockets nicht unterstützen.
+- Bidirektionale Kommunikation
 
 Nachteile:
-* Kein Standard
-* Kein Code-Generator für Datenklassen
-* Aufwendigere Konfiguration im Frontend
+
+- Kein Standard
+- Kein Code-Generator für Datenklassen
+- Aufwendigere Konfiguration im Frontend
 
 ---
 
@@ -51,10 +130,12 @@ Nachteile:
 
 GraphQL Subscriptions bieten eine deklarative Möglichkeit, auf Ereignisse zu reagieren – ähnlich wie Queries, aber reaktiv.
 
+#### Backend
+
 Einrichtung der Subscription:
 
 ```csharp
-public ValueTask<ISourceStream<ActuatorStateDto>> SubscribeToActuatorState(string key, string type, ITopicEventReceiver receiver) 
+public ValueTask<ISourceStream<ActuatorStateDto>> SubscribeToActuatorState(string key, string type, ITopicEventReceiver receiver)
     => receiver.SubscribeAsync<ActuatorStateDto>(GraphQlActuatorListener.GetTopic(key, type));
 
 [Subscribe(With = nameof(SubscribeToActuatorState))]
@@ -69,17 +150,67 @@ public static string GetTopic(string key, string type) => $"Actuator_State_{key}
 await eventSender.SendAsync(GetTopic(dto.ActuatorKey, dto.ActuatorType), dto);
 ```
 
+#### Frontend
+
+Über den Code-Generator wird eine React-Hook erstellt, die mittels folgenden Code konsumiert und gestartet werden kann.
+Dabei ist zu bemerken, dass der Start des Sockets über den `skip` Parameter deaktiviert werden kann.
+
+```ts
+const { data: { onActuatorStateChanged: state } = {} } = useListenStateChangeSubscription({
+  variables: {
+    key: actuator?.key ?? "",
+    type: actuator?.type ?? "",
+  },
+  skip: !actuator || socketType.get !== SocketType.GraphQLSubs,
+});
+```
+
+Dabei wird bei der Rückgabe das `data`-Objekt immer dann aktualisiert, wenn sich die Subscription updated.
+Die dazugehörige GraphQL-Abfrage sieht wie folgt aus:
+
+```ts
+subscription listenStateChange($key: String!, $type: String!) {
+  onActuatorStateChanged(key: $key, type: $type) {
+    actuatorKey
+    actuatorType
+    connectionState
+    lastUpdate
+    max
+    min
+    state
+    stateType
+    unit
+    value
+    actions {
+      currentValue
+      description
+      icon
+      increment
+      isAllowed
+      key
+      max
+      min
+      name
+      type
+      unit
+    }
+  }
+}
+```
+
+#### Fazit
+
 Vorteile:
 
-* Saubere Integration in das bestehende GraphQL-Schema
-* Filterung und Typsicherheit out-of-the-box
-* Responseschema kann selbst definiert werden
-* Codegenerator im Frontend für Datenklassen und React-Hooks
+- Saubere Integration in das bestehende GraphQL-Schema
+- Filterung und Typsicherheit out-of-the-box
+- Responseschema kann selbst definiert werden
+- Codegenerator im Frontend für Datenklassen und React-Hooks
 
 Nachteile:
 
-* Nur unidirektionale Kommunikation
-* Kein automatische Reconnect
+- Nur unidirektionale Kommunikation
+- Kein automatische Reconnect
 
 ---
 
@@ -90,12 +221,13 @@ Beide Systeme lassen sich problemlos kombinieren, indem man eine Composite-Klass
 ```csharp
 builder.Services.AddSingleton<SignalRActuatorListener>();
 builder.Services.AddSingleton<GraphQlActuatorListener>();
-builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
+builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s =>
     new ActuatorListenerComposite(
         s.GetRequiredService<SignalRActuatorListener>(),
         s.GetRequiredService<GraphQlActuatorListener>())
     );
 ```
+
 ```csharp
 public class ActuatorListenerComposite(params IActuatorListener[] listeners) : IActuatorListener
 {
@@ -111,11 +243,13 @@ public class ActuatorListenerComposite(params IActuatorListener[] listeners) : I
 
 Anwendungsfall:
 
-* Unterschiedliche Clients (z. B. Browser mit GraphQL vs. native Apps mit SignalR) können gleichzeitig bedient werden.
+- Unterschiedliche Clients (z. B. Browser mit GraphQL vs. native Apps mit SignalR) können gleichzeitig bedient werden.
 
 ---
 
-### SignalR Initialisierung im Backend
+### SignalR Initialisierung
+
+#### Backend
 
 Die Initialisierung des SignalR-Servers erfolgt in `Program.cs`:
 
@@ -126,8 +260,13 @@ app.MapHub<SensorHub>("/sockets/sensor");
 app.MapHub<ActuatorHub>("/sockets/actuator");
 ```
 
+#### Frontend
 
-### GraphQL Initialisierung im Backend
+Im Frontend ist zusätzlich keine weitere Initialisierung notwendig, da dies beim Aufruf selbst definiert wird.
+
+### GraphQL Initialisierung
+
+#### Backend
 
 Die Initialisierung des GraphQL-Servers erfolgt in `Program.cs`:
 
@@ -144,16 +283,53 @@ builder.Services.AddGraphQLServer()
 
 Erklärung:
 
-* `AddQueryType`, `AddMutationType`, `AddSubscriptionType` definieren die drei GraphQL-Grundtypen
-* `AddInMemorySubscriptions` aktiviert Subscriptions via WebSocket
-* `AddFiltering` und `AddSorting` ermöglichen dynamische Filter über die API
+- `AddQueryType`, `AddMutationType`, `AddSubscriptionType` definieren die drei GraphQL-Grundtypen
+- `AddInMemorySubscriptions` aktiviert Subscriptions via WebSocket
+- `AddFiltering` und `AddSorting` ermöglichen dynamische Filter über die API
+
+#### Frontend
+
+Die Initialisierung des `Apollo`-Packages erfolgt in der `main.tsx`, wobei ein Provider benötigt wird:
+
+```ts
+const httpLink = new HttpLink({
+  uri: "http://localhost:5001/graphql",
+  credentials: "include",
+});
+
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: "ws://localhost:5001/graphql",
+  })
+);
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+  },
+  wsLink,
+  httpLink
+);
+const apolloClient = new ApolloClient({
+  link: splitLink,
+  cache: new InMemoryCache(),
+});
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    // ...
+    <ApolloProvider client={apolloClient}>/* page content */</ApolloProvider>
+    // ...
+  </StrictMode>
+);
+```
 
 ---
 
 ### SignalR Websockets verwenden
 
 // TODO
-
 
 ### GraphQL Subscriptions verwenden
 
@@ -173,11 +349,12 @@ await eventSender.SendAsync(STATE_CHANGED, dto);
 
 Erklärung:
 
-* Die Subscription wird durch das Topic `"Actuator_State"` ausgelöst
-* Die Methode liefert automatisch die gepublishten Daten an alle verbundenen Subscriber
-* Spart Polling und reduziert Netzwerklast
+- Die Subscription wird durch das Topic `"Actuator_State"` ausgelöst
+- Die Methode liefert automatisch die gepublishten Daten an alle verbundenen Subscriber
+- Spart Polling und reduziert Netzwerklast
 
 Beispielaufruf:
+
 ```graphql
 subscription {
   onActuatorStateChanged {
@@ -194,7 +371,9 @@ subscription {
   }
 }
 ```
+
 Response:
+
 ```json
 {
   "data": {
@@ -231,11 +410,12 @@ public class Query
 
 Vorteile:
 
-* Durch `[UseFiltering]` können Clients dynamisch nach Eigenschaften filtern (z. B. `type == "digital"`).
-* Anfragen sind flexibel und effizient – der Client entscheidet, welche Felder er benötigt. Kein Overfetching wie bei REST.
-* Queries können durch weitere Attribute wie `[UseSorting]`, `[UsePaging]` und `[UseProjection]` erweitert werden.
+- Durch `[UseFiltering]` können Clients dynamisch nach Eigenschaften filtern (z. B. `type == "digital"`).
+- Anfragen sind flexibel und effizient – der Client entscheidet, welche Felder er benötigt. Kein Overfetching wie bei REST.
+- Queries können durch weitere Attribute wie `[UseSorting]`, `[UsePaging]` und `[UseProjection]` erweitert werden.
 
 Beispielaufruf:
+
 ```graphql
 query {
   actuators {
@@ -247,7 +427,9 @@ query {
   }
 }
 ```
+
 Response:
+
 ```json
 {
   "data": {
@@ -291,13 +473,16 @@ public class Mutation
 
 Erklärung:
 
-* Mutationen erlauben gezielte Änderungen an Datenmodellen
-* Durch optionale Parameter flexibel und fehlertolerant
+- Mutationen erlauben gezielte Änderungen an Datenmodellen
+- Durch optionale Parameter flexibel und fehlertolerant
 
 Beispielaufruf:
+
 ```graphql
 mutation {
-  updateActuatorRef(input: { description: "new description", id: "8d78b0f2-2879-4fe9-a18c-5dddcb5c002e", name: "NewActuator" }) {
+  updateActuatorRef(
+    input: { description: "new description", id: "8d78b0f2-2879-4fe9-a18c-5dddcb5c002e", name: "NewActuator" }
+  ) {
     actuatorRef {
       connectorKey
       description
@@ -311,7 +496,9 @@ mutation {
   }
 }
 ```
+
 Response:
+
 ```json
 {
   "data": {
@@ -335,9 +522,9 @@ Response:
 
 ### Lessons Learned
 
-* GraphQL Subscriptions bieten eine elegante und typisierte Alternative zu SignalR – ideal in Frontend-lastigen Projekten
-* Die Kombination beider Systeme ist mit minimalem Overhead möglich und sinnvoll bei heterogenen Client-Landschaften
-* Die Hot Chocolate Library bietet exzellente Developer Experience.
+- GraphQL Subscriptions bieten eine elegante und typisierte Alternative zu SignalR – ideal in Frontend-lastigen Projekten
+- Die Kombination beider Systeme ist mit minimalem Overhead möglich und sinnvoll bei heterogenen Client-Landschaften
+- Die Hot Chocolate Library bietet exzellente Developer Experience.
 
 ---
 
@@ -345,4 +532,3 @@ Response:
 
 Das Projekt zeigt, dass sich moderne Backend-Technologien wie GraphQL, Subscriptions und SignalR gut kombinieren lassen, um sowohl deklarative als auch imperative Kommunikationswege bereitzustellen.
 Die Implementierung ist modular, wartbar und testbar, und ermöglicht skalierbare, reaktive Schnittstellen – ein klares Upgrade zu klassischen REST-only APIs.
-

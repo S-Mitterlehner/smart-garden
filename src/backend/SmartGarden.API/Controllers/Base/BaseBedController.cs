@@ -13,6 +13,6 @@ public abstract class BaseBedController(ApplicationContext db) : BaseController
 
     protected async Task<Bed?> GetBedAsync()
     {
-        return await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync<Bed>(db.Get<Bed>(), x => x.Id == BedId);
+        return await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == BedId);
     }
 }

@@ -1,23 +1,32 @@
 # SVE - Übung 2 - Kommunikationsservices
 
-## ASP.NET Backend
-
 ### Einleitung
 
 Ein Ziel dieses Projekts war es, verschiedene Technologien zur Echtzeitkommunikation im Backend zu untersuchen und in einem praktischen Anwendungsfall zu kombinieren. Dazu wurden **SignalR** und **GraphQL Subscriptions mit Hot Chocolate** eingesetzt, jeweils als Alternativen zur klassischen REST-Architektur.
 
 ---
 
+### Architektur 
+
+- Im Frontend können Nutzer Sensoren und Aktoren konfigurieren und den Systemstatus in Echtzeit überwachen.
+- Jeder Sensor im Frontend ist eine logische Einheit, kann aber physisch aus einem oder mehreren Hardware-Sensoren bestehen.
+- Aktoren verarbeiten Befehle aus dem Frontend (z. B. zum Ein-/Ausschalten von Geräten oder zum Steuern von Aktor-Parametern).
+- Die Kommunikation zwischen Frontend und Backend erfolgt in Echtzeit, z. B. über WebSockets (SignalR) oder GraphQL Subscriptions.
+
+![](./img/frontend.png)
+
+
 ### SignalR – WebSocket-Kommunikation
 
-**SignalR** ermöglicht serverseitiges Pushen von Nachrichten an Clients über WebSockets oder Fallbacks wie Long Polling.
+**SignalR** ermöglicht serverseitiges Pushen von Nachrichten an Clients über WebSockets oder Fallbacks wie Long Polling. Im Rahmen unseres Systems verwenden wir Gruppenmechanismen von SignalR, um Messdaten selektiv zu verteilen. Jeder Sensor oder Aktor ist einer eigenen Gruppe zugeordnet. Clients registrieren auf Gruppen und bekommen über definierte Topics die Daten die sie benötigen.
 
 Beispielhafte Nutzung:
 
 ```csharp
 public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
 {
-    await context.Clients.All.SendAsync("Actuator_State", data.ActuatorKey, data.ActuatorType.ToString(), dto);
+    // ...
+    await context.Clients.Group(GetGroup(dto.ActuatorKey, dto.ActuatorType)).SendAsync(STATE_CHANGED, dto.ActuatorKey, dto.ActuatorType, dto);
 }
 ```
 
@@ -25,31 +34,52 @@ Vorteile:
 
 * Ideal für einfache Broadcast-Kommunikation
 * Direkter Zugriff auf verbundene Clients
+* Einfache Implementierung
+* Gute Performance aufgrund der Gruppierung
+* Einheitlicher Maintainer der Front- und Backendpackages (Microsoft)
+* SignalR unterstützt mehrere Kommunikationsstrategien z.B. Long Polling als Fallback für Browser die WebSockets nicht unterstützen.
+* Bidirektionale Kommunikation
+
+Nachteile:
+* Kein Standard
+* Kein Code-Generator für Datenklassen
+* Aufwendigere Konfiguration im Frontend
 
 ---
 
-### GraphQL Subscriptions mit Hot Chocolate
+### GraphQL Subscriptions mit Hot Chocolate und Apollo Client
 
 GraphQL Subscriptions bieten eine deklarative Möglichkeit, auf Ereignisse zu reagieren – ähnlich wie Queries, aber reaktiv.
 
 Einrichtung der Subscription:
 
 ```csharp
-[Subscribe]
-[Topic(GraphQlActuatorListener.STATE_CHANGED)]
+public ValueTask<ISourceStream<ActuatorStateDto>> SubscribeToActuatorState(string key, string type, ITopicEventReceiver receiver) 
+    => receiver.SubscribeAsync<ActuatorStateDto>(GraphQlActuatorListener.GetTopic(key, type));
+
+[Subscribe(With = nameof(SubscribeToActuatorState))]
 public ActuatorStateDto OnActuatorStateChanged([EventMessage] ActuatorStateDto data) => data;
 ```
 
 Senden des Events:
 
 ```csharp
-await eventSender.SendAsync(STATE_CHANGED, dto);
+public static string GetTopic(string key, string type) => $"Actuator_State_{key}_{type}";
+// ...
+await eventSender.SendAsync(GetTopic(dto.ActuatorKey, dto.ActuatorType), dto);
 ```
 
 Vorteile:
 
 * Saubere Integration in das bestehende GraphQL-Schema
 * Filterung und Typsicherheit out-of-the-box
+* Responseschema kann selbst definiert werden
+* Codegenerator im Frontend für Datenklassen und React-Hooks
+
+Nachteile:
+
+* Nur unidirektionale Kommunikation
+* Kein automatische Reconnect
 
 ---
 
@@ -57,6 +87,15 @@ Vorteile:
 
 Beide Systeme lassen sich problemlos kombinieren, indem man eine Composite-Klasse verwendet, die beide Listener gleichzeitig bedient:
 
+```csharp
+builder.Services.AddSingleton<SignalRActuatorListener>();
+builder.Services.AddSingleton<GraphQlActuatorListener>();
+builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
+    new ActuatorListenerComposite(
+        s.GetRequiredService<SignalRActuatorListener>(),
+        s.GetRequiredService<GraphQlActuatorListener>())
+    );
+```
 ```csharp
 public class ActuatorListenerComposite(params IActuatorListener[] listeners) : IActuatorListener
 {
@@ -75,6 +114,18 @@ Anwendungsfall:
 * Unterschiedliche Clients (z. B. Browser mit GraphQL vs. native Apps mit SignalR) können gleichzeitig bedient werden.
 
 ---
+
+### SignalR Initialisierung im Backend
+
+Die Initialisierung des SignalR-Servers erfolgt in `Program.cs`:
+
+```csharp
+builder.Services.AddSignalR();
+//...
+app.MapHub<SensorHub>("/sockets/sensor");
+app.MapHub<ActuatorHub>("/sockets/actuator");
+```
+
 
 ### GraphQL Initialisierung im Backend
 
@@ -98,6 +149,11 @@ Erklärung:
 * `AddFiltering` und `AddSorting` ermöglichen dynamische Filter über die API
 
 ---
+
+### SignalR Websockets verwenden
+
+// TODO
+
 
 ### GraphQL Subscriptions verwenden
 

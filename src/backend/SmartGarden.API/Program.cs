@@ -11,6 +11,7 @@ using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.EntityFramework.Seeder;
 using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Mqtt;
 
@@ -18,6 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // DB
 builder.Services.RegisterDbContext(builder.Configuration);
+
+// Config
+builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();

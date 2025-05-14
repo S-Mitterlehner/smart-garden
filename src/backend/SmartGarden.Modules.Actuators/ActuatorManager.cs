@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MQTTnet;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Actuators.Models;
 using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
 using SmartGarden.Mqtt;
 
 namespace SmartGarden.Modules.Actuators;
 
-public partial class ActuatorManager(IServiceProvider sp, ILogger<ActuatorManager> logger) : IActuatorManager
+public partial class ActuatorManager(IServiceProvider sp, ILogger<ActuatorManager> logger, IOptions<ModuleSettings> settings) 
+    : IActuatorManager
 {
     public const string RegisterTopic = "smart-garden/register/actuator";
     private readonly ConcurrentDictionary<string, IActuatorConnector> _connectors = new();

@@ -16,18 +16,10 @@ export type AppSettings = {
 
 const AppSettingsContext = createContext<AppSettings | null>(null);
 
-export function AppSettingsProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AppSettingsProvider({ children }: { children: React.ReactNode }) {
   const appSettings = useAppSettings();
 
-  return (
-    <AppSettingsContext.Provider value={appSettings}>
-      {children}
-    </AppSettingsContext.Provider>
-  );
+  return <AppSettingsContext.Provider value={appSettings}>{children}</AppSettingsContext.Provider>;
 }
 
 export function useAppSettingsContext(): AppSettings {

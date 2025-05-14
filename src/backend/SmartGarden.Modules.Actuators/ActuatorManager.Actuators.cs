@@ -7,14 +7,21 @@ namespace SmartGarden.Modules.Actuators;
 
 public partial class ActuatorManager
 {
-    private IActuatorConnector CreateConnectorInstance(string key, ActuatorType type, string topic) =>
-        type switch
+    private IActuatorConnector CreateConnectorInstance(string key, ActuatorType type, string topic)
+    {
+        if (settings.Value.UseDummies)
+            return type switch
+            {
+                ActuatorType.Pump => ActivatorUtilities.CreateInstance<DummyPumpActuatorConnector>(sp, key, topic),
+                ActuatorType.Hatch => ActivatorUtilities.CreateInstance<DummyHatchActuatorConnector>(sp, key, topic),
+                _ => throw new ActuatorTypeNotFoundException(type)
+            };
+        
+        return type switch
         {
             ActuatorType.Pump => ActivatorUtilities.CreateInstance<PumpActuatorConnector>(sp, key, topic),
-            // TODO: activate real connector
             ActuatorType.Hatch => ActivatorUtilities.CreateInstance<HatchActuatorConnector>(sp, key, topic),
-            // HatchActuatorConnector.Create(key, sp)
-            // TODO add more
             _ => throw new ActuatorTypeNotFoundException(type)
         };
+    }
 }

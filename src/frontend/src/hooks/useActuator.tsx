@@ -10,7 +10,6 @@ import {
   useListenStateChangeSubscription,
   useUpdateActuatorMutation,
 } from "../__generated__/graphql";
-import { API_URL } from "../environment";
 import { ActuatorState, ActuatorType } from "../models/actuator";
 import { ConnectionState } from "../models/general";
 import { SocketType, useAppSettingsContext } from "./useAppSettings";
@@ -27,20 +26,10 @@ export type ActuatorValue = {
 
 const ActuatorContext = createContext<ActuatorValue | null>(null);
 
-export function ActuatorProvider({
-  actuatorId,
-  children,
-}: {
-  actuatorId: string;
-  children: React.ReactNode;
-}) {
+export function ActuatorProvider({ actuatorId, children }: { actuatorId: string; children: React.ReactNode }) {
   const actuator = useActuator(actuatorId);
 
-  return (
-    <ActuatorContext.Provider value={actuator}>
-      {children}
-    </ActuatorContext.Provider>
-  );
+  return <ActuatorContext.Provider value={actuator}>{children}</ActuatorContext.Provider>;
 }
 
 export function useActuatorContext(): ActuatorValue {
@@ -53,12 +42,8 @@ export function useActuatorContext(): ActuatorValue {
 
 export function useActuator(actuatorId: string): ActuatorValue {
   const { socketType } = useAppSettingsContext();
-  const [currentState, setCurrentState] = useState<ActuatorStateDto | null>(
-    null,
-  );
-  const [connectionState, setConnectionState] = useState<ConnectionState>(
-    ConnectionState.NotConnected,
-  );
+  const [currentState, setCurrentState] = useState<ActuatorStateDto | null>(null);
+  const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.NotConnected);
   const [loading, setLoading] = useState(false);
   const {
     data: { actuator } = {},
@@ -71,14 +56,13 @@ export function useActuator(actuatorId: string): ActuatorValue {
   const [execute] = useExecuteActionMutation();
   const [update] = useUpdateActuatorMutation();
 
-  const { data: { onActuatorStateChanged: state } = {} } =
-    useListenStateChangeSubscription({
-      variables: {
-        key: actuator?.key ?? "",
-        type: actuator?.type ?? "",
-      },
-      skip: !actuator || socketType.get !== SocketType.GraphQLSubs,
-    });
+  const { data: { onActuatorStateChanged: state } = {} } = useListenStateChangeSubscription({
+    variables: {
+      key: actuator?.key ?? "",
+      type: actuator?.type ?? "",
+    },
+    skip: !actuator || socketType.get !== SocketType.GraphQLSubs,
+  });
 
   useEffect(() => {
     setCurrentState(state!);
@@ -87,11 +71,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
 
   useEffect(() => {
     let connection: signalR.HubConnection | null = null;
-    if (
-      socketType.get !== SocketType.SignalR ||
-      actuator?.key === null ||
-      actuator?.type === null
-    ) {
+    if (socketType.get !== SocketType.SignalR || actuator?.key === null || actuator?.type === null) {
       // console.log(`${actuator?.key}/${actuator?.type} GraphQL is used`);
 
       try {
@@ -108,26 +88,19 @@ export function useActuator(actuatorId: string): ActuatorValue {
     // console.log(`${actuator?.key}/${actuator?.type} SignalR is used`);
 
     connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${API_URL}/sockets/actuator`)
+      .withUrl(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/sockets/actuator`)
       .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();
 
     connection.onclose(() => setConnectionState(ConnectionState.NotConnected));
-    connection.onreconnecting(() =>
-      setConnectionState(ConnectionState.NotConnected),
-    );
-    connection.onreconnected(() =>
-      setConnectionState(ConnectionState.Connected),
-    );
+    connection.onreconnecting(() => setConnectionState(ConnectionState.NotConnected));
+    connection.onreconnected(() => setConnectionState(ConnectionState.Connected));
 
-    connection.on(
-      "Actuator_State",
-      (key: string, type: ActuatorType, data: ActuatorState) => {
-        data.lastUpdate = new Date(data.lastUpdate);
-        setCurrentState(data);
-      },
-    );
+    connection.on("Actuator_State", (key: string, type: ActuatorType, data: ActuatorState) => {
+      data.lastUpdate = new Date(data.lastUpdate);
+      setCurrentState(data);
+    });
 
     connection
       .start()
@@ -135,9 +108,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
         connection
           ?.invoke("SubscribeToActuator", actuator!.key, actuator!.type)
           .then(() => {
-            console.log(
-              `actuator ${actuator?.key}/${actuator?.type} subscribed`,
-            );
+            console.log(`actuator ${actuator?.key}/${actuator?.type} subscribed`);
           })
           .catch((er) => {
             console.error(er);
@@ -180,10 +151,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
     state: currentState ?? actuator?.state ?? null,
     actions: currentState?.actions ?? [],
     connectionState,
-    canDoAction:
-      !actuatorLoading &&
-      connectionState === ConnectionState.Connected &&
-      !loading,
+    canDoAction: !actuatorLoading && connectionState === ConnectionState.Connected && !loading,
     startAction: async (action: ActuatorActionDto, value?: number) => {
       setLoading(true);
 

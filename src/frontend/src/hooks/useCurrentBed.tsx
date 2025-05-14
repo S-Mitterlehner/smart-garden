@@ -35,13 +35,7 @@ export type BedValue = {
 
 const BedContext = createContext<BedValue | null>(null);
 
-export function BedProvider({
-  id,
-  children,
-}: {
-  id: string;
-  children: React.ReactNode;
-}) {
+export function BedProvider({ id, children }: { id: string; children: React.ReactNode }) {
   const bed = useBed(id);
 
   return <BedContext.Provider value={bed}>{children}</BedContext.Provider>;

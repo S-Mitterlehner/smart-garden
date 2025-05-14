@@ -9,7 +9,6 @@ import {
   useListenMeasurementSubscription,
   useUpdateSensorMutation,
 } from "../__generated__/graphql";
-import { API_URL } from "../environment";
 import { ConnectionState } from "../models/general";
 import { Sensor } from "../models/sensor";
 import { SocketType, useAppSettingsContext } from "./useAppSettings";
@@ -24,18 +23,10 @@ export type SensorValue = {
 
 const SensorContext = createContext<SensorValue | null>(null);
 
-export function SensorProvider({
-  sensorId,
-  children,
-}: {
-  sensorId: string;
-  children: React.ReactNode;
-}) {
+export function SensorProvider({ sensorId, children }: { sensorId: string; children: React.ReactNode }) {
   const sensor = useSensor(sensorId);
 
-  return (
-    <SensorContext.Provider value={sensor}>{children}</SensorContext.Provider>
-  );
+  return <SensorContext.Provider value={sensor}>{children}</SensorContext.Provider>;
 }
 
 export function useSensorContext(): SensorValue {
@@ -49,9 +40,7 @@ export function useSensorContext(): SensorValue {
 export function useSensor(sensorId: string): SensorValue {
   const { socketType } = useAppSettingsContext();
   const [currentState, setCurrentState] = useState<SensorDataDto | null>(null);
-  const [connectionState, setConnectionState] = useState<ConnectionState>(
-    ConnectionState.NotConnected,
-  );
+  const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.NotConnected);
 
   const {
     data: { sensor } = {},
@@ -63,14 +52,13 @@ export function useSensor(sensorId: string): SensorValue {
 
   const [mutate] = useUpdateSensorMutation();
 
-  const { data: { onSensorMeasurement: state } = {} } =
-    useListenMeasurementSubscription({
-      variables: {
-        key: sensor?.key ?? "",
-        type: sensor?.type ?? "",
-      },
-      skip: !sensor || socketType.get !== SocketType.GraphQLSubs,
-    });
+  const { data: { onSensorMeasurement: state } = {} } = useListenMeasurementSubscription({
+    variables: {
+      key: sensor?.key ?? "",
+      type: sensor?.type ?? "",
+    },
+    skip: !sensor || socketType.get !== SocketType.GraphQLSubs,
+  });
 
   useEffect(() => {
     setCurrentState(state!);
@@ -80,11 +68,7 @@ export function useSensor(sensorId: string): SensorValue {
   useEffect(() => {
     let connection: signalR.HubConnection | null = null;
 
-    if (
-      socketType.get !== SocketType.SignalR ||
-      sensor?.key === null ||
-      sensor?.type === null
-    ) {
+    if (socketType.get !== SocketType.SignalR || sensor?.key === null || sensor?.type === null) {
       // console.log(`${sensor?.key}/${sensor?.type} GraphQL is used`);
 
       try {
@@ -102,26 +86,19 @@ export function useSensor(sensorId: string): SensorValue {
     // console.log(`${sensor?.key}/${sensor?.type} SignalR is used`);
 
     connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${API_URL}/sockets/sensor`)
+      .withUrl(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/sockets/sensor`)
       .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();
 
     connection.onclose(() => setConnectionState(ConnectionState.NotConnected));
-    connection.onreconnecting(() =>
-      setConnectionState(ConnectionState.NotConnected),
-    );
-    connection.onreconnected(() =>
-      setConnectionState(ConnectionState.Connected),
-    );
+    connection.onreconnecting(() => setConnectionState(ConnectionState.NotConnected));
+    connection.onreconnected(() => setConnectionState(ConnectionState.Connected));
 
-    connection.on(
-      "Sensor_Measurement",
-      (key: string, type: SensorType, data: SensorDataDto) => {
-        data.lastUpdate = new Date(data.lastUpdate);
-        setCurrentState(data);
-      },
-    );
+    connection.on("Sensor_Measurement", (key: string, type: SensorType, data: SensorDataDto) => {
+      data.lastUpdate = new Date(data.lastUpdate);
+      setCurrentState(data);
+    });
 
     connection
       .start()

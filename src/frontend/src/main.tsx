@@ -25,13 +25,13 @@ import GardenPage from "./pages/GardenPage.tsx";
 const queryClient = new QueryClient();
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:5001/graphql",
+  uri: `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/graphql`,
   credentials: "include",
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:5001/graphql",
+    url: `ws://${import.meta.env.VITE_API_HOST}/graphql`,
   }),
 );
 

@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MQTTnet;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors.Models;
 using SmartGarden.Mqtt;
 
 namespace SmartGarden.Modules.Sensors;
 
-public partial class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger) : ISensorManager
+public partial class SensorManager(IServiceProvider sp, ILogger<SensorManager> logger, IOptions<ModuleSettings> settings) 
+    : ISensorManager
 {
     public const string RegisterTopic = "smart-garden/register/sensor";
 
@@ -83,12 +86,21 @@ public partial class SensorManager(IServiceProvider sp, ILogger<SensorManager> l
 
     private async Task<ISensorConnector> CreateConnectorAsync(SensorRef reference)
     {
-        var connector = CreateConnectorInstance(reference.ConnectorKey, reference.Type, reference.Topic);
+        try
+        {
 
-        _connectors.TryAdd(GetDictKey(reference.ConnectorKey, reference.Type), connector);
-        await connector.InitializeAsync();
 
-        return connector;
+            var connector = CreateConnectorInstance(reference.ConnectorKey, reference.Type, reference.Topic);
+
+            _connectors.TryAdd(GetDictKey(reference.ConnectorKey, reference.Type), connector);
+            await connector.InitializeAsync();
+
+            return connector;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     private string GetDictKey(string key, SensorType type) => $"{key}-{type}";

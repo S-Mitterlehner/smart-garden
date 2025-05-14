@@ -64,7 +64,7 @@ useEffect(() => {
 
   // Configuration des Sockets
   const connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${API_URL}/sockets/actuator`)
+    .withUrl(`http://${import.meta.env.VITE_API_HOST}/sockets/actuator`)
     .configureLogging(signalR.LogLevel.Error) // Nur interne Logging-Nachrichten vom Typ Error in der Console ausgeben
     .withAutomaticReconnect()
     .build();
@@ -293,13 +293,13 @@ Die Initialisierung des `Apollo`-Packages erfolgt in der `main.tsx`, wobei ein P
 
 ```ts
 const httpLink = new HttpLink({
-  uri: "http://localhost:5001/graphql",
+  uri: `http://${import.meta.env.VITE_API_HOST}/graphql`,
   credentials: "include",
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:5001/graphql",
+    url: `ws://${import.meta.env.VITE_API_HOST}/graphql`,
   })
 );
 
@@ -329,7 +329,7 @@ createRoot(document.getElementById("root")!).render(
 
 ### SignalR Websockets verwenden
 
-// TODO
+Im Backend können Messages mithilfe des
 
 ### GraphQL Subscriptions verwenden
 

@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useBedContext } from "./useCurrentBed";
-import { AutomationConfig, RuleElement } from "../models/automation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Bed } from "../models/bed";
+import { BedDto } from "../__generated__/graphql";
+import { AutomationConfig, RuleElement } from "../models/automation";
+import { useBedContext } from "./useCurrentBed";
 
 export type AutomationValue = {
-  bed: Bed;
+  bed: BedDto;
   config: AutomationConfig | null;
   rules: RuleElement[];
   fieldSelection: any;
@@ -13,18 +13,10 @@ export type AutomationValue = {
 
 const AutomationContext = createContext<AutomationValue | null>(null);
 
-export function AutomationProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AutomationProvider({ children }: { children: React.ReactNode }) {
   const automation = useAutomation();
 
-  return (
-    <AutomationContext.Provider value={automation}>
-      {children}
-    </AutomationContext.Provider>
-  );
+  return <AutomationContext.Provider value={automation}>{children}</AutomationContext.Provider>;
 }
 
 export function useAutomationContext(): AutomationValue {
@@ -44,9 +36,7 @@ export function useAutomation(): AutomationValue {
     queryKey: ["automation", bed.id],
     refetchOnMount: true,
     queryFn: async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/beds/${bed.id}/automation/config`
-      );
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/beds/${bed.id}/automation/config`);
       if (!response.ok) {
         throw new Error("Failed to fetch automation");
       }
@@ -59,7 +49,7 @@ export function useAutomation(): AutomationValue {
     setRuleExpressions(
       rules.map((rule) => {
         return JSON.parse(rule.expressionJson);
-      })
+      }),
     );
   }, [rules]);
 
@@ -72,7 +62,7 @@ export function useAutomation(): AutomationValue {
         }
         acc[connectorKey].push(type);
         return acc;
-      }, {} as any)
+      }, {} as any),
     );
   }, [config]);
 

@@ -576,7 +576,10 @@ Response:
 
 - GraphQL Subscriptions bieten eine elegante und typisierte Alternative zu SignalR – ideal in Frontend-lastigen Projekten
 - Die Kombination beider Systeme ist mit minimalem Overhead möglich und sinnvoll bei heterogenen Client-Landschaften
-- Die Hot Chocolate Library bietet exzellente Developer Experience.
+- Die HotChocolate Library bietet exzellente Developer Experience.
+- Mittels GraphQL ist es einfach möglich im Frontend Typen aus den Backend-DTOs zu generieren.
+- Der Funktionsumfang von SignalR ist erheblich größer als von GraphQL Subscriptions, da eine Bidirektionale Kommunikation möglich ist.
+- Der Apollo-Client bietet eine gute Möglichkeit zur implementierung von GraphQL in react.
 
 ---
 

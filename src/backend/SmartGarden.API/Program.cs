@@ -48,10 +48,12 @@ builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s =>
 builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<SignalRSensorListener>();
 builder.Services.AddSingleton<GraphQlSensorListener>();
+builder.Services.AddSingleton<RabbitMqSensorListener>();
 builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s => 
     new SensorListenerComposite(
         s.GetRequiredService<SignalRSensorListener>(),
-        s.GetRequiredService<GraphQlSensorListener>()));
+        s.GetRequiredService<GraphQlSensorListener>(),
+        s.GetRequiredService<RabbitMqSensorListener>()));
 
 builder.Services.AddSingleton<ActionExecutor>();
 builder.Services.AddSingleton<AutomationService>();
@@ -70,6 +72,9 @@ builder.Services.AddGraphQLServer()
     .AddSorting()
     .AddInMemorySubscriptions();
     //.AddProjections() // direct DB requests
+
+// RabbitMQ
+builder.AddRabbitMQClient(connectionName: "messaging");
 
 // Automation
 builder.Services.AddQuartz(o =>

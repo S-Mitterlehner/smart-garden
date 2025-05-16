@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Hosting;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -11,9 +10,18 @@ var db = builder
     // .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5050))
     .AddDatabase("smartgarden");
 
+var rabbitMqUsername = builder.AddParameter("usernameRabbit", secret: true, value: "rabbitmq");
+var rabbitMqPassword = builder.AddParameter("passwordRabbit", secret: true, value: "rabbitmq");
+
+var rabbitmq = builder
+    .AddRabbitMQ("messaging", rabbitMqUsername, rabbitMqPassword)
+    .WithManagementPlugin();
+
 var api = builder.AddProject<SmartGarden_API>("api")
     .WithReference(db)
     .WaitFor(db)
+    .WithReference(rabbitmq)
+    .WaitFor(rabbitmq)
     .WithHttpEndpoint(5001, 8080, name: "httpapi")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi");
 

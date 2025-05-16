@@ -7,12 +7,12 @@ namespace SmartGarden.EntityFramework;
 
 public class ApplicationContext(DbContextOptions options) : DbContext(options)
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        optionsBuilder.UseLazyLoadingProxies();
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     base.OnConfiguring(optionsBuilder);
+    //
+    //     optionsBuilder.UseLazyLoadingProxies();
+    // }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

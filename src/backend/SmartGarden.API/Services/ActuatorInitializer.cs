@@ -2,10 +2,17 @@
 
 namespace SmartGarden.API.Services;
 
-public class ActuatorInitializer(IActuatorManager actuatorManager) : BackgroundService
+public class ActuatorInitializer(IActuatorManager actuatorManager, ILogger<ActuatorInitializer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await actuatorManager.SetupRegisterListenerAsync();
+        try
+        {
+            await actuatorManager.SetupRegisterListenerAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error during actuator initialization");
+        }
     }
 }

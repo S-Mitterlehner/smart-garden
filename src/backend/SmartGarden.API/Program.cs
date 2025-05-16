@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.AspNetCore;
 using SmartGarden.API;
@@ -18,7 +19,11 @@ using SmartGarden.Mqtt;
 var builder = WebApplication.CreateBuilder(args);
 
 // DB
-builder.Services.RegisterDbContext(builder.Configuration);
+// builder.Services.RegisterDbContext(builder.Configuration);
+builder.AddNpgsqlDbContext<ApplicationContext>("smartgarden"
+    , s => {}
+    , b => b.UseLazyLoadingProxies()
+    );
 
 // Config
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));

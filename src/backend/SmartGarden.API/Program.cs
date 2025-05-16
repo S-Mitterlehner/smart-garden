@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.AspNetCore;
+using Serilog;
 using SmartGarden.API;
 using SmartGarden.API.Dtos;
 using SmartGarden.API.GraphQL;
@@ -16,7 +17,14 @@ using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Mqtt;
 
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.OpenTelemetry()
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // DB
 // builder.Services.RegisterDbContext(builder.Configuration);

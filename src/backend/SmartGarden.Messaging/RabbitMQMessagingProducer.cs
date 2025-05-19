@@ -7,13 +7,13 @@ namespace SmartGarden.Messaging;
 
 public class RabbitMQMessagingProducer(IConnection rabbitConnection) : IMessagingProducer 
 {
-    public async Task SendAsync(IMessage msg)
+    public async Task SendAsync<T>(T msg) where T : IMessage
     {
         await using var channel = await rabbitConnection.CreateChannelAsync();
 
-        await channel.ExchangeDeclareAsync(msg.Exchange, ExchangeType.Direct, durable: true);
-        await channel.QueueDeclareAsync(msg.Queue, durable: false, exclusive: false, autoDelete: false);
-        await channel.QueueBindAsync(msg.Queue, msg.Exchange, msg.RoutingKey);
+        await channel.ExchangeDeclareAsync(T.Exchange, ExchangeType.Topic, durable: true);
+        await channel.QueueDeclareAsync(T.Queue, durable: true, exclusive: false, autoDelete: false);
+        await channel.QueueBindAsync(T.Queue, T.Exchange, T.RoutingKey);
 
         var json = JsonSerializer.Serialize(msg.Body);
         var body = Encoding.UTF8.GetBytes(json);
@@ -22,10 +22,10 @@ public class RabbitMQMessagingProducer(IConnection rabbitConnection) : IMessagin
         {
             CorrelationId = msg.CorrelationId
             , DeliveryMode = DeliveryModes.Transient
-            , Expiration = "60000"
+            , Expiration = T.Expiration.ToString()
             , Priority = 5
         };
 
-        await channel.BasicPublishAsync(msg.Exchange, msg.RoutingKey, true, props, body);
+        await channel.BasicPublishAsync(T.Exchange, T.RoutingKey, true, props, body);
     }
 }

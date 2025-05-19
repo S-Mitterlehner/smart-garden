@@ -1,6 +1,6 @@
 ﻿namespace SmartGarden.Messaging.Messages;
 
-public class SensorDataMessageBody : BaseMessageBody
+public class SensorDataMessageBody
 {
     public string SensorKey { get; set; }
     public string SensorType { get; set; }

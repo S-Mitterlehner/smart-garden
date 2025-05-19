@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Messaging", "Sm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Messaging.Messages", "SmartGarden.Messaging.Messages\SmartGarden.Messaging.Messages.csproj", "{27B972F1-3101-4D9B-9671-73096BCBFA85}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExecutorService", "ExecutorService", "{99207866-0876-4AF9-88CA-2F81CFF81CF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.ExecutorService", "SmartGarden.ExecutorService\SmartGarden.ExecutorService.csproj", "{465E692B-768A-438E-B4AE-497FAC2B5933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +81,10 @@ Global
 		{27B972F1-3101-4D9B-9671-73096BCBFA85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27B972F1-3101-4D9B-9671-73096BCBFA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27B972F1-3101-4D9B-9671-73096BCBFA85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{465E692B-768A-438E-B4AE-497FAC2B5933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{465E692B-768A-438E-B4AE-497FAC2B5933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{465E692B-768A-438E-B4AE-497FAC2B5933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{465E692B-768A-438E-B4AE-497FAC2B5933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +93,7 @@ Global
 		{FBF74119-CA2A-42B3-89BD-D05A1AAAD722} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{FD082041-FF5C-4288-9411-60A5E3C6BF86} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{465E692B-768A-438E-B4AE-497FAC2B5933} = {99207866-0876-4AF9-88CA-2F81CFF81CF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E08F91EB-3EE9-4F99-BB83-C04E638752B7}

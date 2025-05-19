@@ -4,5 +4,5 @@ namespace SmartGarden.Messaging;
 
 public interface IMessagingProducer
 {
-    Task SendAsync(IMessage msg);
+    Task SendAsync<T>(T msg) where T : IMessage;
 }

@@ -2,9 +2,17 @@
 
 public interface IMessage
 {
-    string Exchange { get; }
-    string Queue { get; }
-    string RoutingKey { get; }
-    object Body { get; }
+    static abstract string Exchange { get; }
+    static abstract string Queue { get; }
+    static abstract string RoutingKey { get; }
+    static abstract ulong Expiration { get; }
+    
+    object? Body { get; }
     string? CorrelationId { get; }
+}
+
+public interface IMessage<out TBody> : IMessage
+{
+    object? IMessage.Body => Data;
+    TBody Data { get; }
 }

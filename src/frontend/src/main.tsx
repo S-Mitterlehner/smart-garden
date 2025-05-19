@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from "@apollo/client";
+import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, split } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { MantineProvider } from "@mantine/core";
@@ -25,23 +19,20 @@ import GardenPage from "./pages/GardenPage.tsx";
 const queryClient = new QueryClient();
 
 const httpLink = new HttpLink({
-  uri: `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/graphql`,
+  uri: `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/graphql/`,
   credentials: "include",
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: `ws://${import.meta.env.VITE_API_HOST}/graphql`,
+    url: `ws://${import.meta.env.VITE_API_HOST}/graphql/`,
   }),
 );
 
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
+    return definition.kind === "OperationDefinition" && definition.operation === "subscription";
   },
   wsLink,
   httpLink,

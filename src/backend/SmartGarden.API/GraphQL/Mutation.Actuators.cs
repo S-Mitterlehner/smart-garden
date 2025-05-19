@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
+using SmartGarden.Messaging;
+using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules.Actuators;
-using SmartGarden.Modules.Actuators.Enums;
 using SmartGarden.Modules.Actuators.Models;
+using ActionType = SmartGarden.Modules.Actuators.Enums.ActionType;
 
 namespace SmartGarden.API.GraphQL;
 
@@ -21,17 +23,29 @@ public partial class Mutation
     }
 
     public async Task<bool> ExecuteActuatorAction([ID] Guid id, string actionKey, double? value,
-                                                  [Service] ApplicationContext db, [Service] IActuatorManager actuatorManager)
+                                                  [Service] ApplicationContext db, 
+                                                  [Service] IActuatorManager actuatorManager,
+                                                  [Service] IMessagingProducer messaging)
     {
         var reference = await db.Get<ActuatorRef>().FirstOrDefaultAsync(x => x.Id == id);
         if (reference == null) return false;
+        
         var connector = await actuatorManager.GetConnectorAsync(reference);
         var action = await connector.GetActionDefinitionByKeyAsync(actionKey);
+        
         if (action == null) throw new GraphQLException("Action not found.");
         if (action.ActionType == ActionType.Value && value == null)
             throw new GraphQLException("This action requires a value.");
-        var execution = new ActionExecution {Key = actionKey, Type = action.ActionType, Value = value};
-        await connector.ExecuteAsync(execution);
+        
+        var execution = new ActuatorExecutionMessageBody
+        {
+            ActuatorKey = connector.Key, 
+            ActionKey = actionKey, 
+            Type = (Messaging.Messages.ActionType)action.ActionType, 
+            Value = value
+        };
+        await messaging.SendAsync(new ActuatorExecutionMessage(execution));
+        
         return true;
     }
 

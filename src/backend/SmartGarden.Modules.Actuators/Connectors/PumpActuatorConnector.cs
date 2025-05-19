@@ -19,7 +19,8 @@ public static class PumpActuatorConnectorStates
     public const string Stopped = "Stopped";
 }
 
-public class PumpActuatorConnector(string key, string topic, IMqttClient mqttClient, IActuatorListener listener) : BaseActuatorConnector(key, topic, mqttClient, listener)
+public class PumpActuatorConnector(string key, string topic, IMqttClient mqttClient, IActuatorListener listener) 
+    : BaseActuatorConnector(key, topic, mqttClient, listener)
 {
     public override ActuatorType Type => ActuatorType.Pump;
     public override string Name => "Water Pump";

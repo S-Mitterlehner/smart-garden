@@ -15,22 +15,28 @@ var rabbitMqPassword = builder.AddParameter("passwordRabbit", secret: true, valu
 
 var rabbitmq = builder
     .AddRabbitMQ("messaging", rabbitMqUsername, rabbitMqPassword)
-    .WithManagementPlugin();
+    .WithManagementPlugin()
+    .WithExternalHttpEndpoints();
+
+var frontend = builder.AddNpmApp(
+        "frontend",
+        "../../frontend",
+        "dev")
+    .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
+    .WithExternalHttpEndpoints();
 
 var api = builder.AddProject<SmartGarden_API>("api")
     .WithReference(db)
     .WithReference(rabbitmq)
+    .WithReference(frontend)
     .WaitFor(db)
     .WaitFor(rabbitmq)
     .WithHttpEndpoint(5001, 8080, name: "httpapi")
-    .WithHttpsEndpoint(5002, 8081, name: "httpsapi");
+    .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
+    .WithExternalHttpEndpoints();
 
-builder.AddNpmApp(
-    "frontend",
-    "../../frontend",
-    "dev")
-    .WaitFor(api)
-    .WithReference(api)
-    .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false);
+var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
+    .WithReference(rabbitmq)
+    .WaitFor(rabbitmq);
 
 builder.Build().Run();

@@ -18,7 +18,7 @@
     </envs>
     <option name="USE_PODMAN_RUNTIME" value="0" />
     <option name="TRACK_URL" value="1" />
-    <browser url="http://localhost:15268" start="true" />
+    <browser url="http://localhost:15268" />
     <method v="2">
       <option name="Build" />
     </method>

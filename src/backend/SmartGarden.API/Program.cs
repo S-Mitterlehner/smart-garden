@@ -126,11 +126,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(o =>
+{
+    o.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+    
+    o.AllowAnyHeader()
+     .AllowAnyMethod()
+     .AllowCredentials();
+});
+
 app.UseWebSockets();
 app.MapGraphQL();
 
 // app.UseHttpsRedirection();
-app.UseCors(o => o.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 
 app.UseAuthorization();
 

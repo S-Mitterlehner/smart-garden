@@ -11,7 +11,7 @@ public class RabbitMQMessagingProducer(IConnection rabbitConnection) : IMessagin
     {
         await using var channel = await rabbitConnection.CreateChannelAsync();
 
-        await channel.ExchangeDeclareAsync(T.Exchange, ExchangeType.Topic, durable: true);
+        await channel.ExchangeDeclareAsync(T.Exchange, ExchangeType.Direct, durable: true);
         await channel.QueueDeclareAsync(T.Queue, durable: true, exclusive: false, autoDelete: false);
         await channel.QueueBindAsync(T.Queue, T.Exchange, T.RoutingKey);
         

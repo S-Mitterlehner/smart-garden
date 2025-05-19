@@ -2,19 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.AspNetCore;
 using Serilog;
-using SmartGarden.API;
-using SmartGarden.API.Dtos;
 using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
-using SmartGarden.EntityFramework.Models;
 using SmartGarden.EntityFramework.Seeder;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
+using SmartGarden.Messaging;
 using SmartGarden.Mqtt;
 
 Log.Logger = new LoggerConfiguration()
@@ -75,6 +73,7 @@ builder.Services.AddGraphQLServer()
 
 // RabbitMQ
 builder.AddRabbitMQClient(connectionName: "messaging");
+builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
 
 // Automation
 builder.Services.AddQuartz(o =>

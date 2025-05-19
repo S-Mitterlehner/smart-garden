@@ -19,8 +19,8 @@ var rabbitmq = builder
 
 var api = builder.AddProject<SmartGarden_API>("api")
     .WithReference(db)
-    .WaitFor(db)
     .WithReference(rabbitmq)
+    .WaitFor(db)
     .WaitFor(rabbitmq)
     .WithHttpEndpoint(5001, 8080, name: "httpapi")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi");

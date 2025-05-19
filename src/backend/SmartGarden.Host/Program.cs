@@ -37,6 +37,7 @@ var api = builder.AddProject<SmartGarden_API>("api")
 
 var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
     .WithReference(rabbitmq)
+    .WithReference(db)
     .WaitFor(rabbitmq);
 
 builder.Build().Run();

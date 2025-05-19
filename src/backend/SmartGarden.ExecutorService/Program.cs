@@ -27,6 +27,9 @@ builder.AddNpgsqlDbContext<ApplicationContext>("smartgarden"
 );
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
 builder.Services.AddSingleton<IActuatorListener, NoOpActuatorListener>();
+
+// MQTT
+builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 builder.Services.AddMqttClient();
 
 builder.Services.AddSingleton<IMessageHandler<ActuatorExecutionMessageBody>, ActuatorExecutionMessageHandler>();

@@ -33,6 +33,7 @@ builder.AddNpgsqlDbContext<ApplicationContext>("smartgarden"
 
 // Config
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
+builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 
 // Services
 builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
@@ -103,9 +104,6 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddHostedService<DummyRegistrationService>();
     //builder.Services.AddHostedService<MQTTNeutralizer>();
 }
-
-// Options
-builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 
 // -----
 builder.Services.AddControllers();

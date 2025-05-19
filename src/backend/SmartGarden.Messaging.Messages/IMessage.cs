@@ -1,11 +1,14 @@
-﻿namespace SmartGarden.Messaging.Messages;
+﻿using RabbitMQ.Client;
+
+namespace SmartGarden.Messaging.Messages;
 
 public interface IMessage
 {
-    static abstract string Exchange { get; }
-    static abstract string Queue { get; }
-    static abstract string RoutingKey { get; }
-    static abstract ulong Expiration { get; }
+    abstract static string Exchange { get; }
+    abstract static string Queue { get; }
+    abstract static string RoutingKey { get; }
+    abstract static ulong? Expiration { get; }
+    abstract static DeliveryModes DeliveryMode { get; }
     
     object? Body { get; }
     string? CorrelationId { get; }

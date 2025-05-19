@@ -20,7 +20,7 @@ public class ActuatorExecutionMessageHandler(ApplicationContext db, IActuatorMan
         var connector = await manager.GetConnectorAsync(reference);
         await connector.ExecuteAsync(new ActionExecution
         {
-            Key = msg.ActuatorKey,
+            Key = msg.ActionKey,
             Type = (SmartGarden.Modules.Actuators.Enums.ActionType)msg.Type,
             Value = msg.Value
         });

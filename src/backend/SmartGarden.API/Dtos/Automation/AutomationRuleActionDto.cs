@@ -21,9 +21,9 @@ public class AutomationRuleActionDto : BaseDto
         {
             Id = a.Id,
             RuleId = a.RuleId,
-            ActuatorId = a.ActuatorId,
-            ActuatorKey = a.Actuator.ConnectorKey,
-            ActuatorType = a.Actuator.Type.ToString(),
+            ActuatorId = a.ModuleId,
+            ActuatorKey = a.Module.ModuleKey,
+            ActuatorType = a.Module.Type.ToString(),
             ActionKey = a.ActionKey,
             Value = a.Value,
             Order = a.Order

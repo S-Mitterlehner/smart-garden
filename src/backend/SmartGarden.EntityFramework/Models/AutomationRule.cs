@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartGarden.EntityFramework.Core.Models;
 
 namespace SmartGarden.EntityFramework.Models;
 

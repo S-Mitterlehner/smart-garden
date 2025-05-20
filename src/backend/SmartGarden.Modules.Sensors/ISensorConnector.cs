@@ -5,5 +5,5 @@ namespace SmartGarden.Modules.Sensors;
 
 public interface ISensorConnector : IModuleConnector<SensorType>
 {
-    Task<SensorData> GetDataAsync();
+    Task<SensorData> GetStateAsync();
 }

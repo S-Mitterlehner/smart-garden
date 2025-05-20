@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using SmartGarden.EntityFramework.Core.Models;
+using SmartGarden.Modules.Models;
 
 namespace SmartGarden.EntityFramework.Models;
 
@@ -8,9 +10,9 @@ public class AutomationRuleAction : BaseEntityWithOrder
     public Guid RuleId { get; set; }
     public virtual AutomationRule Rule { get; set; }
     
-    [ForeignKey(nameof(Actuator))]
-    public Guid ActuatorId { get; set; }
-    public virtual ActuatorRef Actuator { get; set; }
+    [ForeignKey(nameof(Module))]
+    public Guid ModuleId { get; set; }
+    public virtual ModuleRef Module { get; set; }
     
     public string ActionKey { get; set; }
     public double? Value { get; set; }

@@ -1,14 +1,15 @@
-﻿using SmartGarden.Modules.Actuators;
+﻿using SmartGarden.Modules;
+using SmartGarden.Modules.Actuators;
 
 namespace SmartGarden.API.Services;
 
-public class ActuatorInitializer(IActuatorManager actuatorManager, ILogger<ActuatorInitializer> logger) : BackgroundService
+public class ActuatorInitializer(IServiceModuleManager moduleManager, ILogger<ActuatorInitializer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            await actuatorManager.SetupRegisterListenerAsync();
+            await moduleManager.SetupRegisterListenerAsync();
         }
         catch (Exception ex)
         {

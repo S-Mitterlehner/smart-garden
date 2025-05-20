@@ -4,10 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using SmartGarden.EntityFramework;
+using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ExecutorService;
 using SmartGarden.Messaging.Messages;
-using SmartGarden.Modules.Actuators;
+using SmartGarden.Modules;
+using SmartGarden.Modules.Service;
 using SmartGarden.Mqtt;
 
 Log.Logger = new LoggerConfiguration()
@@ -21,12 +22,12 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile("./appsettings.json");
 builder.Logging.AddSerilog();
 
-builder.AddNpgsqlDbContext<ApplicationContext>("smartgarden"
+builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("smartgarden-connection-service"
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );
-builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
-builder.Services.AddSingleton<IActuatorListener, NoOpActuatorListener>();
+builder.Services.AddSingleton<IServiceModuleManager, ServiceModuleManager>();
+builder.Services.AddSingleton<IModuleListener, RabbitMQModuleListener>();
 
 // MQTT
 builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));

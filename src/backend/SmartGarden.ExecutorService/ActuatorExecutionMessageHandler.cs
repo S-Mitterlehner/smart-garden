@@ -2,26 +2,27 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Messaging.Messages;
-using SmartGarden.Modules.Actuators;
-using SmartGarden.Modules.Actuators.Models;
+using SmartGarden.Modules;
 using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
+using ActionType = SmartGarden.Modules.Enums.ActionType;
 
 namespace SmartGarden.ExecutorService;
 
-public class ActuatorExecutionMessageHandler(ApplicationContext db, IActuatorManager manager) : IMessageHandler<ActuatorExecutionMessageBody>
+public class ActuatorExecutionMessageHandler(ApplicationDbContext db, IServiceModuleManager manager) : IMessageHandler<ActuatorExecutionMessageBody>
 {
     public async Task HandleAsync(ActuatorExecutionMessageBody msg)
     {
-        var reference = await db.Get<ActuatorRef>()
+        var reference = await db.Get<ModuleRef>()
             .FirstAsync(x => 
-                x.ConnectorKey == msg.ActuatorKey 
-                && x.Type == (ActuatorType)msg.ActuatorType);
+                x.ModuleKey == msg.ActuatorKey 
+                && x.Type == (ModuleType)msg.ActuatorType);
         
         var connector = await manager.GetConnectorAsync(reference);
         await connector.ExecuteAsync(new ActionExecution
         {
-            Key = msg.ActionKey,
-            Type = (SmartGarden.Modules.Actuators.Enums.ActionType)msg.Type,
+            ActionKey = msg.ActionKey,
+            Type = (ActionType)msg.Type,
             Value = msg.Value
         });
     }

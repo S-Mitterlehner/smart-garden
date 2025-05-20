@@ -10,13 +10,17 @@ Split the implentation of the Connectors, so that the ExecutionService (or Conne
 
 - Key
 - Type
-- ActionDefinitions
+- GetActions
+- GetStateAsync -> Different Implementation Tho
 
 **API**
 
 - Name
 - Description
+- GetAutomationConfigAsync
 
 **ExecutionService**
 
 - Topic
+- ExecuteAction
+- InitializeAsync

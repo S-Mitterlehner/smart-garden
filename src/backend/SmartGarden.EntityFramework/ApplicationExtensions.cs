@@ -16,7 +16,7 @@ public static class ApplicationExtensions
         {
             case "PostgresSql":
             default:
-                sc.AddDbContext<ApplicationContext, PostgresSqlApplicationContext>();
+                sc.AddDbContext<ApplicationDbContext, PostgresSqlApplicationDbContext>();
                 break;
         }
 

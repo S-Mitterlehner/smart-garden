@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using SmartGarden.EntityFramework.Core.Models;
+using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.EntityFramework.Models;
 
@@ -12,7 +14,15 @@ public class Bed : BaseEntity
     public Guid PlantId { get; set; }
     public virtual Plant Plant { get; set; }
 
-    public virtual List<SensorRef> Sensors { get; set; } = new();
-    public virtual List<ActuatorRef> Actuators { get; set; } = new();
+    public virtual List<ModuleRef> Modules { get; set; } = new();
     public virtual List<AutomationRule> Rules { get; set; } = new();
+
+    [NotMapped]
+    public virtual IEnumerable<ModuleRef> Actuators => Modules
+        .Where(m => (m.Type & ModuleType.Actuator) != 0);
+   
+    [NotMapped]
+    public virtual IEnumerable<ModuleRef> Sensors => Modules
+        .Where(m => (m.Type & ModuleType.Sensor) != 0);
+        
 }

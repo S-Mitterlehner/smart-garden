@@ -1,9 +1,11 @@
-﻿using SmartGarden.EntityFramework.Models;
+﻿using SmartGarden.Core.Enums;
+using SmartGarden.EntityFramework.Core.Seeder;
+using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.EntityFramework.Seeder;
 
-public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
+public class DevSeeder(ApplicationDbContext context) : BaseSeeder(context)
 {
     protected override async Task Initialize()
     {
@@ -12,7 +14,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Id = new Guid("1b9c649b-55e1-422b-b86c-876c72fd2ea1"),
             RangeFrom = 21,
             RangeTo = 29,
-            SensorType = SensorType.Temperature
+            ModuleType = ModuleType.Temperature
         });
         
         var psc2 = await CreateOrUpdateAsync(new PlantSensorConfig
@@ -20,15 +22,15 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             Id = new Guid("13be42e3-d80c-4566-9b1c-8fce80fe8c38"),
             RangeFrom = 60,
             RangeTo = 70,
-            SensorType = SensorType.Humidity
+            ModuleType = ModuleType.Humidity
         });
-        
+
         var psc3 = await CreateOrUpdateAsync(new PlantSensorConfig
         {
             Id = new Guid("f549b5df-ca9c-49a6-9cb4-26ebd90ff88a"),
             RangeFrom = 40,
             RangeTo = 70,
-            SensorType = SensorType.Moisture
+            ModuleType = ModuleType.Moisture
         });
 
         var p = await CreateOrUpdateAsync(new Plant
@@ -56,59 +58,54 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , ImageUrl = "/plants/potato.svg"
         });
 
-        var c = await CreateOrUpdateAsync(new ActuatorRef
+        var c = await CreateOrUpdateAsync(new ModuleRef
         {
             Id = new Guid("f3948dbb-4c99-4173-86d6-3e24834639df"),
             Name = "Water Pump",
             Description = "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
-            Type = ActuatorType.Pump,
+            Type = ModuleType.Pump,
             Order = 1,
-            ConnectorKey = "sg-48ca435508f0",
-            Topic = "smart-garden/sg-48ca435508f0/waterpump"
+            ModuleKey = "sg-48ca435508f0"
         });
 
-        var c2 = await CreateOrUpdateAsync(new ActuatorRef
+        var c2 = await CreateOrUpdateAsync(new ModuleRef
         {
             Id = new Guid("6060f089-42a3-4e7d-9ef6-2557866023a4"),
             Name = "Hatch",
             Description = "Hatch is a device that opens and closes to allow access to a space. It is often used in greenhouses.",
-            Type = ActuatorType.Hatch,
+            Type = ModuleType.Hatch,
             Order = 2,
-            ConnectorKey = "sg-48ca435508f0",
-            Topic = "smart-garden/sg-48ca435508f0/hatch"
+            ModuleKey = "sg-48ca435508f0"
         });
 
-        var s1 = await CreateOrUpdateAsync(new SensorRef
+        var s1 = await CreateOrUpdateAsync(new ModuleRef
         {
             Id = new Guid("52ff96f1-71f4-433f-829c-db07394e1aba")
             , Name = "Temperature"
             , Description = "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations."
-            , Type = SensorType.Temperature
-            , ConnectorKey = "sg-48ca435508f0"
-            , Topic = "smart-garden/sg-48ca435508f0/temperature"
+            , Type = ModuleType.Temperature
+            , ModuleKey = "sg-48ca435508f0"
             , Order = 1
         });
 
-        var s2 = await CreateOrUpdateAsync(new SensorRef
+        var s2 = await CreateOrUpdateAsync(new ModuleRef
         {
             Id = new Guid("28525480-9434-4318-82f7-3d89cb231166")
             , Name = "Humidity"
             , Description = "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations."
-            , Type = SensorType.Humidity
-            , ConnectorKey = "sg-48ca435508f0"
-            , Topic = "smart-garden/sg-48ca435508f0/humidity"
+            , Type = ModuleType.Humidity
+            , ModuleKey = "sg-48ca435508f0"
             , Order = 2
         });
         
         
-        var s3 = await CreateOrUpdateAsync(new SensorRef
+        var s3 = await CreateOrUpdateAsync(new ModuleRef
         {
             Id = new Guid("bea18347-3611-4cd7-a257-c9518c85cad7")
             , Name = "Moisture"
             , Description = "Soil moisture sensor is a device that measures the water content in the soil.\nIt is commonly used in gardening to monitor soil conditions."
-            , Type = SensorType.Moisture
-            , ConnectorKey = "sg-48ca435508f0"
-            , Topic = "smart-garden/sg-48ca435508f0/moisture"
+            , Type = ModuleType.Moisture
+            , ModuleKey = "sg-48ca435508f0"
             , Order = 2
         });
 
@@ -123,8 +120,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             , PlantId = p.Id
         };
 
-        bed.Actuators.AddRange(c, c2);
-        bed.Sensors.AddRange(s1, s2, s3);
+        bed.Modules.AddRange(s1, s2, s3, c, c2);
         await CreateOrUpdateAsync(bed);
 
         
@@ -137,7 +133,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             ExpressionJson = $$"""
                               {
                                  "<": [
-                                    { "var": "{{s1.ConnectorKey.Replace("-", "_")}}.Temperature" },
+                                    { "var": "{{s1.ModuleKey.Replace("-", "_")}}.Temperature" },
                                     30
                                  ]
                               }
@@ -148,7 +144,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             [
                 new AutomationRuleAction
                 {
-                    ActuatorId = c.Id,
+                    ModuleId = c.Id,
                     ActionKey = "pump.run",
                     Value = 10
                 }
@@ -175,7 +171,7 @@ public class DevSeeder(ApplicationContext context) : BaseSeeder(context)
             [
                 new AutomationRuleAction
                 {
-                    ActuatorId = c.Id,
+                    ModuleId = c.Id,
                     ActionKey = "pump.run",
                     Value = 10
                 }

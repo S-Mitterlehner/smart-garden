@@ -1,4 +1,4 @@
-﻿using SmartGarden.Modules.Actuators.Models;
+﻿using SmartGarden.Modules.Models;
 
 namespace SmartGarden.API.Dtos.Actuator;
 
@@ -17,10 +17,10 @@ public class ActuatorStateDto
 
     public IEnumerable<ActuatorActionDto> Actions { get; set; }
 
-    public static ActuatorStateDto FromState(ActuatorState state, IEnumerable<ActionDefinition> actions) => new()
+    public static ActuatorStateDto FromState(ModuleState state, IEnumerable<ActionDefinition> actions) => new()
         {
-            ActuatorKey = state.ActuatorKey
-            , ActuatorType = state.ActuatorType.ToString()
+            ActuatorKey = state.ModuleKey
+            , ActuatorType = state.ModuleType.ToString()
             , ConnectionState = state.ConnectionState.ToString()
             , StateType = state.StateType.ToString()
             , State = state.State

@@ -2,13 +2,18 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+// db
 var dbUsername = builder.AddParameter("username", secret: true, value: "postgres");
 var dbPassword = builder.AddParameter("password", secret: true, value: "postgres");
 
-var db = builder
-    .AddPostgres("db", dbUsername, dbPassword)
-    // .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5050))
-    .AddDatabase("smartgarden");
+var postgres = builder.AddPostgres("db", dbUsername, dbPassword);
+var dbApi = postgres.AddDatabase("smartgarden");
+var dbConnectionService = postgres.AddDatabase("smartgarden-connection-service");
+
+// redis
+var redis = builder.AddRedis("state-cache");
+
+// rabbitmq
 
 var rabbitMqUsername = builder.AddParameter("usernameRabbit", secret: true, value: "rabbitmq");
 var rabbitMqPassword = builder.AddParameter("passwordRabbit", secret: true, value: "rabbitmq");
@@ -18,6 +23,9 @@ var rabbitmq = builder
     .WithManagementPlugin()
     .WithExternalHttpEndpoints();
 
+
+// applications
+
 var frontend = builder.AddNpmApp(
         "frontend",
         "../../frontend",
@@ -26,18 +34,20 @@ var frontend = builder.AddNpmApp(
     .WithExternalHttpEndpoints();
 
 var api = builder.AddProject<SmartGarden_API>("api")
-    .WithReference(db)
+    .WithReference(dbApi)
     .WithReference(rabbitmq)
     .WithReference(frontend)
-    .WaitFor(db)
+    .WithReference(redis)
+    .WaitFor(dbApi)
     .WaitFor(rabbitmq)
+    .WaitFor(redis)
     .WithHttpEndpoint(5001, 8080, name: "httpapi")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();
 
 var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
     .WithReference(rabbitmq)
-    .WithReference(db)
+    .WithReference(dbConnectionService)
     .WaitFor(rabbitmq);
 
 builder.Build().Run();

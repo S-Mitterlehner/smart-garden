@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules;
 using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.GraphQL;
@@ -9,27 +10,27 @@ namespace SmartGarden.API.GraphQL;
 public partial class Query
 {
     [UseFiltering]
-    public async Task<IEnumerable<SensorRefDto>> GetSensors([Service] ApplicationContext db) => await db.Get<SensorRef>().Select(SensorRefDto.FromEntity).ToListAsync();
+    public async Task<IEnumerable<SensorRefDto>> GetSensors([Service] ApplicationDbContext db) => await db.Get<ModuleRef>().Select(SensorRefDto.FromEntity).ToListAsync();
 
     [UseFiltering]
     public async Task<IEnumerable<SensorDto>> GetSensors(
-        [Service] ApplicationContext db, [Service] ISensorManager sensorManager)
+        [Service] ApplicationDbContext db, [Service] IApiModuleManager moduleManager)
     {
-        var references = db.Get<SensorRef>().ToList();
+        var references = db.Get<ModuleRef>().ToList();
         var sensorTasks = references.Select(async r =>
         {
-            var connector = await sensorManager.GetConnectorAsync(r);
-            var data = await connector.GetDataAsync();
+            var connector = await moduleManager.GetConnectorAsync(r);
+            var data = await connector.GetStateAsync();
             return new SensorDto
             {
                 Id = r.Id
                 , Name = r.Name
-                , Key = r.ConnectorKey
+                , Key = r.ModuleKey
                 , Description = r.Description
                 , Unit = data.Unit
-                , MaxValue = data.Max
-                , MinValue = data.Min
-                , CurrentValue = data.CurrentValue
+                , MaxValue = data.Max ?? -1
+                , MinValue = data.Min ?? -1
+                , CurrentValue = data.CurrentValue ?? -1
                 , Type = r.Type.ToString()
             };
         });
@@ -39,9 +40,9 @@ public partial class Query
 
     [UseFiltering]
     public async Task<SensorDto?> GetSensor(Guid id,
-                                            [Service] ApplicationContext db, [Service] ISensorManager sensorManager)
+                                            [Service] ApplicationDbContext db, [Service] IApiModuleManager moduleManager)
     {
-        var sensor = (await GetSensors(db, sensorManager)).FirstOrDefault(x => x.Id == id);
+        var sensor = (await GetSensors(db, moduleManager)).FirstOrDefault(x => x.Id == id);
         return sensor;
     }
 }

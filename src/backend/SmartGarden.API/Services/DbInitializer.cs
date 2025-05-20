@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.EntityFramework.Seeder;
 
 namespace SmartGarden.API.Services;
@@ -10,7 +11,7 @@ public class DbInitializer(IServiceProvider serviceProvider) : BackgroundService
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
         await db.Database.EnsureCreatedAsync(stoppingToken);
 

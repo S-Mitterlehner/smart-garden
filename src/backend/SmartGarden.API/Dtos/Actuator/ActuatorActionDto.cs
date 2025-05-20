@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using SmartGarden.Modules.Actuators.Models;
+using ActionDefinition = SmartGarden.Modules.Models.ActionDefinition;
 
 namespace SmartGarden.API.Dtos.Actuator;
 
@@ -19,6 +19,23 @@ public class ActuatorActionDto
     public string? Unit { get; set; }
 
     public static Expression<Func<ActionDefinition, ActuatorActionDto>> FromEntity => ca => new ActuatorActionDto
+    {
+        Icon = ca.Icon.ToString().ToLower(),
+        Key = ca.ActionKey,
+        Name = ca.Name,
+        Description = ca.Description,
+        Type = ca.ActionType.ToString(),
+        CurrentValue = ca.CurrentValue,
+        Min = ca.Min,
+        Max = ca.Max,
+        Unit = ca.Unit,
+        Increment = ca.Increment,
+        IsAllowed = ca.IsAllowed
+    };
+
+    
+    [Obsolete("Use FromEntity instead. This will be removed in a future version.")]
+    public static Expression<Func<Modules.Actuators.Models.ActionDefinition, ActuatorActionDto>> FromEntityOld => ca => new ActuatorActionDto
     {
         Icon = ca.Icon.ToString().ToLower(),
         Key = ca.Key,

@@ -26,7 +26,7 @@ public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<S
             , ActuatorKey = data.ActuatorKey
             , ActuatorType = data.ActuatorType.ToString()
             , LastUpdate = data.LastUpdate
-            , Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
+            , Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntityOld).ToList()
         };
         
         await context.Clients.Group(GetGroup(dto.ActuatorKey, dto.ActuatorType)).SendAsync(STATE_CHANGED, dto.ActuatorKey, dto.ActuatorType, dto);

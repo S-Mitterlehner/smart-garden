@@ -7,7 +7,7 @@ using SmartGarden.EntityFramework.Models;
 namespace SmartGarden.API.Controllers;
 
 [Route("Beds/{id}/Sensors")]
-public class BedSensorsController(ApplicationContext db) : BaseBedController(db)
+public class BedSensorsController(ApplicationDbContext db) : BaseBedController(db)
 {
 
     [HttpPatch("{sensorId}")]
@@ -21,11 +21,11 @@ public class BedSensorsController(ApplicationContext db) : BaseBedController(db)
         if (bed.Sensors.Any(x => x.Id == sensorId))
             return BadRequest("Sensor already added to this bed");
 
-        var reference = await db.Get<SensorRef>().FirstOrDefaultAsync(x => x.Id == sensorId);
+        var reference = await db.Get<ModuleRef>().FirstOrDefaultAsync(x => x.Id == sensorId);
         if (reference == null)
             return NotFound($"sensor with id {sensorId} not found");
 
-        bed.Sensors.Add(reference);
+        bed.Modules.Add(reference);
         await db.SaveChangesAsync();
 
         return Ok();
@@ -39,11 +39,11 @@ public class BedSensorsController(ApplicationContext db) : BaseBedController(db)
         if (bed == null)
             return NotFound($"bed with id {BedId} not found");
 
-        var reference = await db.Get<SensorRef>().FirstOrDefaultAsync(x => x.Id == sensorId);
+        var reference = await db.Get<ModuleRef>().FirstOrDefaultAsync(x => x.Id == sensorId);
         if (reference == null)
             return NotFound($"sensor with id {sensorId} not found");
 
-        bed.Sensors.Remove(reference);
+        bed.Modules.Remove(reference);
         await db.SaveChangesAsync();
 
         return Ok();

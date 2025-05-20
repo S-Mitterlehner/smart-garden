@@ -1,14 +1,14 @@
-﻿using SmartGarden.Modules.Sensors;
+﻿using SmartGarden.Modules;
 
 namespace SmartGarden.API.Services;
 
-public class SensorInitializer(ISensorManager sensorManager, ILogger<SensorInitializer> logger) : BackgroundService
+public class SensorInitializer(IServiceModuleManager moduleManager, ILogger<SensorInitializer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            await sensorManager.SetupRegisterListenerAsync();
+            await moduleManager.SetupRegisterListenerAsync();
         }
         catch (Exception ex)
         {

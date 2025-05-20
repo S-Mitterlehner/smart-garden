@@ -8,11 +8,14 @@ using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.EntityFramework.Seeder;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Messaging;
+using SmartGarden.Modules;
+using SmartGarden.Modules.Api;
 using SmartGarden.Mqtt;
 
 Log.Logger = new LoggerConfiguration()
@@ -26,17 +29,21 @@ builder.Host.UseSerilog();
 
 // DB
 // builder.Services.RegisterDbContext(builder.Configuration);
-builder.AddNpgsqlDbContext<ApplicationContext>("smartgarden"
+builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden"
     , s => {}
     , b => b.UseLazyLoadingProxies()
     );
+
+builder.AddRedisClient(connectionName: "state-cache");
 
 // Config
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
 builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 
 // Services
-builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
+builder.Services.AddSingleton<IApiModuleManager, ApiModuleManager>();
+builder.Services.AddSingleton<IModuleListener, LegacyModuleListenerProxy>();
+
 builder.Services.AddSingleton<SignalRActuatorListener>();
 builder.Services.AddSingleton<GraphQlActuatorListener>();
 builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
@@ -44,15 +51,12 @@ builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s =>
     s.GetRequiredService<SignalRActuatorListener>(),
     s.GetRequiredService<GraphQlActuatorListener>()));
 
-builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<SignalRSensorListener>();
 builder.Services.AddSingleton<GraphQlSensorListener>();
-builder.Services.AddSingleton<RabbitMqSensorListener>();
 builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s => 
     new SensorListenerComposite(
         s.GetRequiredService<SignalRSensorListener>(),
-        s.GetRequiredService<GraphQlSensorListener>(),
-        s.GetRequiredService<RabbitMqSensorListener>()));
+        s.GetRequiredService<GraphQlSensorListener>()));
 
 builder.Services.AddSingleton<ActionExecutor>();
 builder.Services.AddSingleton<AutomationService>();

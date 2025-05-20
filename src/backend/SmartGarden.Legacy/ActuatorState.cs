@@ -4,6 +4,7 @@ using ConnectionState = SmartGarden.Modules.Enums.ConnectionState;
 
 namespace SmartGarden.Modules.Actuators.Models;
 
+[Obsolete("Please change implementation accordingly")]
 public class ActuatorState
 {
     public string ActuatorKey { get; set; }

@@ -2,6 +2,7 @@
 
 namespace SmartGarden.Modules.Sensors.Models;
 
+[Obsolete("Please change implementation accordingly")]
 public class SensorData
 {
     public string SensorKey { get; set; }

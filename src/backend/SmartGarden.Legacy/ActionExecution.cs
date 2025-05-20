@@ -2,6 +2,7 @@
 
 namespace SmartGarden.Modules.Actuators.Models;
 
+[Obsolete("Please change implementation accordingly")]
 public class ActionExecution
 {
     public string Key { get; set; }

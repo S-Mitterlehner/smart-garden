@@ -53,8 +53,8 @@ public:
   }
 
   void onActionMessage(JsonDocument& doc) override {
-    String actuatorType = doc["actuatorType"] | "";
-    if (actuatorType != "Pump") return;
+    String moduleType = doc["moduleType"] | "";
+    if (moduleType != "Pump") return;
 
     String actionKey = doc["actionKey"] | "";
     String actionType = doc["actionType"] | "";
@@ -96,8 +96,8 @@ private:
   void sendPumpStatus() {
     JsonDocument doc;
     doc["messageType"] = "State";
-    doc["actuatorKey"] = id;
-    doc["actuatorType"] = "Pump";
+    doc["moduleKey"] = id;
+    doc["moduleType"] = "Pump";
     doc["stateType"] = "Discrete";
     doc["state"] = pumpState;
 

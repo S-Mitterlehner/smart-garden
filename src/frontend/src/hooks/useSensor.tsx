@@ -94,7 +94,7 @@ export function useSensor(sensorId: string): SensorValue {
     connection.onreconnecting(() => setConnectionState(ConnectionState.NotConnected));
     connection.onreconnected(() => setConnectionState(ConnectionState.Connected));
 
-    connection.on("Sensor_Measurement", (key: string, type: ModuleType, data: SensorDataDto) => {
+    connection.on("Sensor_Measurement", (key: string, type: string, data: SensorDataDto) => {
       data.lastUpdate = new Date(data.lastUpdate);
       setCurrentState(data);
     });

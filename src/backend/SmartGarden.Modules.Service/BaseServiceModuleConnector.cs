@@ -41,20 +41,20 @@ public abstract class BaseServiceModuleConnector(string key, string topic, IMqtt
         {
             if (e.ApplicationMessage.Topic != Topic) return; // Ignore messages not for this topic
 
-            var data = e.Parse<MqttActuatorState>();
+            var data = e.Parse<MqttState>();
 
-            if (data is null || data.MessageType != MqttActuatorMessage.STATE_MESSAGE_TYPE) return; // Ignore messages which aren't state messages
+            if (data is null || data.MessageType != MqttMessage.STATE_MESSAGE_TYPE) return; // Ignore messages which aren't state messages
 
             var state = GetStateFromMqtt(data);
             await listener.PublishStateChangeAsync(state, await GetActionsAsync());
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error parsing MQTT message: " + ex.Message);
+            Console.WriteLine("Error parsing MQTT message: " + ex.Message); // TODO: call logger
         }
     }
 
-    protected ModuleState GetStateFromMqtt(MqttActuatorState? data)
+    protected ModuleState GetStateFromMqtt(MqttState? data)
     {
         if(!Enum.TryParse(data?.StateType, out StateType stateType))
             throw new ArgumentOutOfRangeException(nameof(data), "StateType not found");
@@ -96,8 +96,8 @@ public abstract class BaseServiceModuleConnector(string key, string topic, IMqtt
         return new MqttActionExecution
         {
             ActionKey = data.ActionKey,
-            ActuatorKey = Key,
-            ActuatorType = Type.ToString(),
+            ModuleKey = Key,
+            ModuleType = Type.ToString(),
             Value = data.Value,
             Type = data.Type.ToString()
         };

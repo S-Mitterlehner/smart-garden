@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartGarden.EntityFramework;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using SmartGarden.EntityFramework.Core.Seeder;
-using SmartGarden.EntityFramework.Seeder;
 
-namespace SmartGarden.API.Services;
+namespace SmartGarden.EntityFramework.Core;
 
-public class DbInitializer(IServiceProvider serviceProvider) : BackgroundService 
+public class DbInitializer<TContext>(IServiceProvider serviceProvider) : BackgroundService where TContext : BaseDbContext
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TContext>();
         
         await db.Database.EnsureCreatedAsync(stoppingToken);
 

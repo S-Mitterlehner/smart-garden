@@ -1,11 +1,12 @@
-﻿using SmartGarden.Messaging;
+﻿using Microsoft.Extensions.Logging;
+using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 
 namespace SmartGarden.Modules.Api;
 
-public class ModuleStateMessageHandler(IApiModuleManager manager, IModuleListener listener) : IMessageHandler<ModuleStateMessageBody>
+public class ModuleStateMessageHandler(IApiModuleManager manager, IModuleListener listener, ILogger<ModuleStateMessageHandler> logger) : IMessageHandler<ModuleStateMessageBody>
 {
     public async Task HandleAsync(ModuleStateMessageBody msgBody)
     {
@@ -26,6 +27,8 @@ public class ModuleStateMessageHandler(IApiModuleManager manager, IModuleListene
             , Unit = msgBody.Unit
             , LastUpdate = msgBody.LastUpdate
         };
+
+        logger.LogDebug("ModuleStateMessageHandler: {state}", state);
 
         await connector.UpdateStateAsync(state);
         await listener.PublishStateChangeAsync(state, await connector.GetActionsAsync());

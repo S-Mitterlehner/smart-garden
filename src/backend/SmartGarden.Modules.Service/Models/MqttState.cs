@@ -2,17 +2,17 @@
 
 namespace SmartGarden.Modules.Service.Models;
 
-public class MqttActuatorState : MqttActuatorMessage
+public class MqttState : MqttMessage
 {
     [JsonPropertyName("messageType")]
-    public override string MessageType => MqttActuatorMessage.STATE_MESSAGE_TYPE;
+    public override string MessageType => MqttMessage.STATE_MESSAGE_TYPE;
 
     
-    [JsonPropertyName("actuatorKey")]
-    public string ActuatorKey { get; set; }
+    [JsonPropertyName("moduleKey")]
+    public string ModuleKey { get; set; }
     
-    [JsonPropertyName("actuatorType")]
-    public string ActuatorType { get; set; }
+    [JsonPropertyName("moduleType")]
+    public string ModuleType { get; set; }
 
     [JsonPropertyName("stateType")]
     public string StateType { get; set; }

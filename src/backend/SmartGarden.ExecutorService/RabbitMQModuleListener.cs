@@ -1,11 +1,12 @@
-﻿using SmartGarden.Messaging;
+﻿using Microsoft.Extensions.Logging;
+using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Models;
 
 namespace SmartGarden.ExecutorService;
 
-public class RabbitMQModuleListener(IMessagingProducer producer) : IModuleListener
+public class RabbitMQModuleListener(IMessagingProducer producer, ILogger<RabbitMQMessagingProducer> logger) : IModuleListener
 {
     public async Task PublishStateChangeAsync(ModuleState data, IEnumerable<ActionDefinition> actions)
     {
@@ -24,6 +25,8 @@ public class RabbitMQModuleListener(IMessagingProducer producer) : IModuleListen
         };
 
         var msg = new ModuleStateMessage(body);
+
+        logger.LogInformation("ModuleStateChange Send: {msg}", body);
 
         await producer.SendAsync(msg);
     }

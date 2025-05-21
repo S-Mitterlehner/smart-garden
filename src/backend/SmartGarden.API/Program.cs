@@ -8,17 +8,20 @@ using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
+using SmartGarden.EntityFramework.Core;
 using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.EntityFramework.Seeder;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Messaging;
+using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Api;
 using SmartGarden.Mqtt;
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.OpenTelemetry()
@@ -79,6 +82,8 @@ builder.Services.AddGraphQLServer()
 // RabbitMQ
 builder.AddRabbitMQClient(connectionName: "messaging");
 builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
+builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
 
 // Automation
 builder.Services.AddQuartz(o =>
@@ -99,7 +104,7 @@ builder.Services.AddQuartzServer(options =>
 });
 
 // BackgroundServices 
-builder.Services.AddHostedService<DbInitializer>();
+builder.Services.AddHostedService<DbInitializer<ApplicationDbContext>>();
 //builder.Services.AddHostedService<SensorInitializer>();
 //builder.Services.AddHostedService<ActuatorInitializer>();
 

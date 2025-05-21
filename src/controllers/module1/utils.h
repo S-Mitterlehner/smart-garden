@@ -156,6 +156,7 @@ void publishSensorReading(const String& id, const String& topic, const String& t
   }
 
   StaticJsonDocument<200> message;
+  message["messageType"] = "State";
   message["moduleKey"] = id;
   message["moduleType"] = type;
   message["min"] = min;

@@ -18,7 +18,7 @@ public static class PumpModuleConnectorStates
     public const string Stopped = "Stopped";
 }
 
-public class PumpModuleConnector(string key, IConnectionMultiplexer redis, ILogger logger) : BaseActuatorApiModuleConnector(key, redis, logger)
+public class PumpModuleConnector(string key, IConnectionMultiplexer redis, ILogger<PumpModuleConnector> logger) : BaseActuatorApiModuleConnector(key, redis, logger)
 {
     public override ModuleType Type => ModuleType.Pump;
     public override string Name => "Water Pump";

@@ -1,4 +1,6 @@
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Messaging;
@@ -11,7 +13,7 @@ namespace SmartGarden.API.GraphQL;
 
 public partial class Mutation
 {
-    public async Task<ModuleRef?> UpdateActuatorRef([ID] Guid id, string? name, string? description,
+    public async Task<ActuatorRefDto?> UpdateActuatorRef([ID] Guid id, string? name, string? description,
                                                       [Service] ApplicationDbContext db)
     {
         var reference = await db.Get<ModuleRef>().FirstOrDefaultAsync(x => x.Id == id);
@@ -19,7 +21,8 @@ public partial class Mutation
         if (name is not null) reference.Name = name;
         if (description is not null) reference.Description = description;
         await db.SaveChangesAsync();
-        return reference;
+
+        return ActuatorRefDto.FromEntity.Invoke(reference);
     }
 
     public async Task<bool> ExecuteActuatorAction([ID] Guid id, string actionKey, double? value,
@@ -41,7 +44,7 @@ public partial class Mutation
         {
             ActuatorKey = connector.Key, 
             ActionKey = actionKey, 
-            Type = (Messaging.Messages.ActionType)action.ActionType, 
+            Type = action.ActionType, 
             Value = value
         };
         await messaging.SendAsync(new ActuatorExecutionMessage(execution));
@@ -49,20 +52,24 @@ public partial class Mutation
         return true;
     }
 
-    public async Task<ModuleRef> AddActuatorToBed([ID] Guid bedId, [ID] Guid actuatorId,
+    public async Task<ActuatorRefDto> AddActuatorToBed([ID] Guid bedId, [ID] Guid actuatorId,
                                                     [Service] ApplicationDbContext db)
     {
         var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
+
         if (bed == null)
             throw new GraphQLException($"Bed with id {bedId} not found");
-        if (bed.Modules.Any(a => (a.Type & ModuleType.Actuator) != 0 && a.Id == actuatorId))
+
+        if (bed.Actuators.Any(a => a.Type.IsActuator() && a.Id == actuatorId))
             throw new GraphQLException("Actuator already added to this bed");
+
         var actuator = await db.Get<ModuleRef>().FirstOrDefaultAsync(a => a.Id == actuatorId);
         if (actuator == null)
             throw new GraphQLException($"Actuator with id {actuatorId} not found");
+
         bed.Modules.Add(actuator);
         await db.SaveChangesAsync();
-        return actuator;
+        return ActuatorRefDto.FromEntity.Invoke(actuator);
     }
 
     public async Task<bool> RemoveActuatorFromBed([ID] Guid bedId, [ID] Guid actuatorId,

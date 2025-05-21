@@ -24,20 +24,17 @@ query getSensorById($id: UUID!) {
 
 mutation updateSensor($id: ID!, $name: String, $description: String) {
   updateSensorRef(input: { description: $description, id: $id, name: $name }) {
-    sensorRef {
-      connectorKey
+    sensorRefDto {
+      key
       description
       id
-      isDeleted
       name
-      order
-      topic
       type
     }
   }
 }
 
-subscription listenMeasurement($key: String!, $type: String!) {
+subscription listenMeasurement($key: String!, $type: ModuleType!) {
   onSensorMeasurement(key: $key, type: $type) {
     sensorKey
     sensorType

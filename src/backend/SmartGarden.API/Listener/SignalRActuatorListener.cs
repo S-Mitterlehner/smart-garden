@@ -3,13 +3,14 @@ using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.API.Hubs;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Actuators.Models;
+using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.Listener;
 
 public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<SignalRSensorListener> logger) : IActuatorListener
 {
     public const string STATE_CHANGED = "Actuator_State";
-    public static string GetGroup(string key, string type) => $"{STATE_CHANGED}_{key}_{type}";
+    public static string GetGroup(string key, ModuleType type) => $"{STATE_CHANGED}_{key}_{type}";
 
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
@@ -21,10 +22,10 @@ public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<S
             , Min = data.Min
             , Max = data.Max
             , State = data.State
-            , StateType = data.StateType.ToString()
-            , ConnectionState = data.ConnectionState.ToString()
+            , StateType = data.StateType
+            , ConnectionState = data.ConnectionState
             , ActuatorKey = data.ActuatorKey
-            , ActuatorType = data.ActuatorType.ToString()
+            , ActuatorType = data.ActuatorType
             , LastUpdate = data.LastUpdate
             , Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntityOld).ToList()
         };

@@ -32,7 +32,7 @@ public class ActuatorsController(ApplicationDbContext db, IApiModuleManager actu
             Id  = reference.Id,
             Name = reference.Name,
             Key = reference.ModuleKey,
-            Type = reference.Type.ToString(),
+            Type = reference.Type,
             Description = connector.Description,
             State = ActuatorStateDto.FromState(state, await connector.GetActionsAsync())
         });
@@ -71,7 +71,7 @@ public class ActuatorsController(ApplicationDbContext db, IApiModuleManager actu
         {
             ActuatorKey = connector.Key, 
             ActionKey = actionKey, 
-            Type = (Messaging.Messages.ActionType)action.ActionType, 
+            Type = action.ActionType, 
             Value = value
         };
         await messaging.SendAsync(new ActuatorExecutionMessage(execution));

@@ -1,4 +1,6 @@
-﻿namespace SmartGarden.Modules.Enums;
+﻿using System.Linq.Expressions;
+
+namespace SmartGarden.Modules.Enums;
 
 [Flags]
 public enum ModuleType
@@ -7,12 +9,20 @@ public enum ModuleType
     Temperature = 1 << 0,
     Humidity = 1 << 1,
     Moisture = 1 << 2,
-    
+
     // Actuators
     Pump = 1 << 20,
     Hatch = 1 << 21,
+}
 
-    // Groups for Checking
-    Sensor = Temperature | Humidity | Moisture,
-    Actuator = Pump | Hatch,
+public static class ModuleTypeExpressions
+{
+    public static Expression<Func<ModuleType, bool>> IsSensor => x => (int) x < 1 << 20;
+    public static Expression<Func<ModuleType, bool>> IsActuator => x => (int)x >= 1 << 20;
+}
+
+public static class ModuleTypeExtensions
+{
+    public static bool IsSensor(this ModuleType type) => ModuleTypeExpressions.IsSensor.Compile().Invoke(type);
+    public static bool IsActuator(this ModuleType type) => ModuleTypeExpressions.IsActuator.Compile().Invoke(type);
 }

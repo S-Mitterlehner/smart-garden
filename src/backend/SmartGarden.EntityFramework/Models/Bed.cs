@@ -19,10 +19,10 @@ public class Bed : BaseEntity
 
     [NotMapped]
     public virtual IEnumerable<ModuleRef> Actuators => Modules
-        .Where(m => (m.Type & ModuleType.Actuator) != 0);
+        .Where(m => m.Type.IsActuator());
    
     [NotMapped]
     public virtual IEnumerable<ModuleRef> Sensors => Modules
-        .Where(m => (m.Type & ModuleType.Sensor) != 0);
+        .Where(m => m.Type.IsSensor());
         
 }

@@ -13,14 +13,14 @@ public class LegacyModuleListenerProxy(ISensorListener sensorListener, IActuator
 {
     public async Task PublishStateChangeAsync(ModuleState data, IEnumerable<ActionDefinition> actions)
     {
-        if ((data.ModuleType & ModuleType.Sensor) != 0)
+        if (data.ModuleType.IsSensor())
         {
             var sensorData = new SensorData
             {
                 Unit = data.Unit
-                , CurrentValue = data.CurrentValue ?? -1
-                , Min = data.Min ?? -1
-                , Max = data.Max ?? -1
+                , CurrentValue = data.CurrentValue
+                , Min = data.Min
+                , Max = data.Max
                 , SensorKey = data.ModuleKey
                 , SensorType = data.ModuleType
                 , ConnectionState = data.ConnectionState
@@ -34,11 +34,11 @@ public class LegacyModuleListenerProxy(ISensorListener sensorListener, IActuator
             var actuatorState = new ActuatorState
             {
                 Unit = data.Unit,
-                CurrentValue = data.CurrentValue ?? -1,
+                CurrentValue = data.CurrentValue,
                 StateType = data.StateType,
                 State = data.State,
-                Min = data.Min ?? -1,
-                Max = data.Max ?? -1,
+                Min = data.Min,
+                Max = data.Max,
                 ActuatorKey = data.ModuleKey,
                 ActuatorType = data.ModuleType,
                 ConnectionState = data.ConnectionState,
@@ -49,7 +49,7 @@ public class LegacyModuleListenerProxy(ISensorListener sensorListener, IActuator
             {
                 Increment = a.Increment,
                 IsAllowed = a.IsAllowed,
-                ActionType = (SmartGarden.Modules.Actuators.Enums.ActionType)(int) a.ActionType,
+                ActionType = a.ActionType,
                 CurrentValue = a.CurrentValue,
                 Description = a.Description,
                 Icon = a.Icon,

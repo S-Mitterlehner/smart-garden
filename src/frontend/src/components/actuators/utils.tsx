@@ -1,25 +1,18 @@
 import { IconCircuitSwitchOpen, IconEngine, IconInfoCircle } from "@tabler/icons-react";
-import { ActuatorType } from "../../models/actuator";
+import { ModuleType } from "../../__generated__/graphql";
 
-export const getTypeIcon = (actuatorType: ActuatorType, iconClass?: string) => {
+export const getTypeIcon = (moduleType: ModuleType, iconClass?: string) => {
   iconClass = iconClass ?? "w-4 h-4 text-emerald-500";
-  switch (actuatorType) {
-    case ActuatorType.Pump:
+  switch (moduleType) {
+    case ModuleType.Pump:
       return <IconEngine className={iconClass} />;
-    case ActuatorType.Hatch:
+    case ModuleType.Hatch:
       return <IconCircuitSwitchOpen className={iconClass} />;
     default:
       return <IconInfoCircle className={iconClass} />;
   }
 };
 
-export const getTypeIconCircle = (
-  ActuatorType: ActuatorType,
-  iconClass?: string
-) => {
-  return (
-    <div className="bg-emerald-100 rounded-full p-2">
-      {getTypeIcon(ActuatorType, iconClass)}
-    </div>
-  );
+export const getTypeIconCircle = (moduleType: ModuleType, iconClass?: string) => {
+  return <div className="rounded-full bg-emerald-100 p-2">{getTypeIcon(moduleType, iconClass)}</div>;
 };

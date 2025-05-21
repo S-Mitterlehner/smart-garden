@@ -12,7 +12,7 @@ public static class HatchModuleConnectorActions
     public const string Set = "hatch.set";
 }
 
-public class HatchModuleConnector(string key, IConnectionMultiplexer redis, ILogger logger) : BaseActuatorApiModuleConnector(key, redis, logger)
+public class HatchModuleConnector(string key, IConnectionMultiplexer redis, ILogger<HatchModuleConnector> logger) : BaseActuatorApiModuleConnector(key, redis, logger)
 {
     public override ModuleType Type => ModuleType.Hatch;
     public override string Name => "Hatch";

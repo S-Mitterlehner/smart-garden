@@ -1,5 +1,6 @@
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using HotChocolate.Subscriptions;
 using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.Modules;
@@ -13,7 +14,7 @@ namespace SmartGarden.API.Listener;
 
 public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<GraphQlActuatorListener> logger) : IActuatorListener
 {
-    public static string GetTopic(string key, string type) => $"Actuator_State_{key}_{type}";
+    public static string GetTopic(string key, ModuleType type) => $"Actuator_State_{key}_{type}";
 
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
@@ -25,10 +26,10 @@ public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<Grap
             Min = data.Min,
             Max = data.Max,
             State = data.State,
-            StateType = data.StateType.ToString(),
-            ConnectionState = data.ConnectionState.ToString(),
+            StateType = data.StateType,
+            ConnectionState = data.ConnectionState,
             ActuatorKey = data.ActuatorKey,
-            ActuatorType = data.ActuatorType.ToString(),
+            ActuatorType = data.ActuatorType,
             LastUpdate = data.LastUpdate,
             Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntityOld).ToList()
         };
@@ -39,11 +40,11 @@ public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<Grap
 
 public class GraphQlActuatorModuleListener(ITopicEventSender eventSender, ILogger<GraphQlActuatorModuleListener> logger) : IModuleListener
 {
-    public static string GetTopic(string key, string type) => $"Actuator_State_{key}_{type}";
+    public static string GetTopic(string key, ModuleType type) => $"Actuator_State_{key}_{type}";
 
     public async Task PublishStateChangeAsync(ModuleState data, IEnumerable<Modules.Models.ActionDefinition> actions)
     {
-        if (data.ModuleType is not ModuleType.Actuator) return;
+        if (!data.ModuleType.IsActuator()) return;
 
         logger.LogDebug("GraphQL ActuatorState Published: {data}", data);
         var dto = new ActuatorStateDto
@@ -53,10 +54,10 @@ public class GraphQlActuatorModuleListener(ITopicEventSender eventSender, ILogge
             Min = data.Min,
             Max = data.Max,
             State = data.State,
-            StateType = data.StateType.ToString(),
-            ConnectionState = data.ConnectionState.ToString(),
+            StateType = data.StateType,
+            ConnectionState = data.ConnectionState,
             ActuatorKey = data.ModuleKey,
-            ActuatorType = data.ModuleType.ToString(),
+            ActuatorType = data.ModuleType,
             LastUpdate = data.LastUpdate,
             Actions = actions.AsQueryable().Select(ActuatorActionDto.FromEntity).ToList()
         };

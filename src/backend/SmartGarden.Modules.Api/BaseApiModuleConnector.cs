@@ -21,7 +21,7 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
         var cacheKey = Utils.GetCacheKey(Key, Type.ToString());
         try
         {
-            var db = redis.GetDatabase(1);
+            var db = redis.GetDatabase();
             var key = Utils.GetCacheKey(state.ModuleKey, state.ModuleType.ToString());
             var val = JsonSerializer.Serialize(state);
 
@@ -38,7 +38,7 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
         var cacheKey = Utils.GetCacheKey(Key, Type.ToString());
         try
         {
-            var db = redis.GetDatabase(1);
+            var db = redis.GetDatabase();
             var state = await db.StringGetAsync(cacheKey);
 
             if (state.IsNullOrEmpty)

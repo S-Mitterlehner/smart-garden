@@ -6,7 +6,6 @@ public class ModuleAutomationConfig
 {
     public string ConnectorKey { get; set; }
     public ModuleType ModuleType { get; set; }
-    public string Type => ModuleType.ToString();
 
     /// <summary>
     /// Typescript type of the field.

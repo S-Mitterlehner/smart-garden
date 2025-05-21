@@ -31,7 +31,8 @@ var frontend = builder.AddNpmApp(
         "../../frontend",
         "dev")
     .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
 
 var api = builder.AddProject<SmartGarden_API>("api")
     .WithReference(dbApi)
@@ -43,11 +44,13 @@ var api = builder.AddProject<SmartGarden_API>("api")
     .WaitFor(redis)
     .WithHttpEndpoint(5001, 8080, name: "httpapi")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
 
 var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)
-    .WaitFor(rabbitmq);
+    .WaitFor(rabbitmq)
+    .PublishAsDockerFile();
 
 builder.Build().Run();

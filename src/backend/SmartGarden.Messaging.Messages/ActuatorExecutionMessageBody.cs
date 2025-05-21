@@ -1,10 +1,6 @@
-namespace SmartGarden.Messaging.Messages;
+using SmartGarden.Modules.Enums;
 
-public enum ActionType
-{
-    Command, 
-    Value
-}
+namespace SmartGarden.Messaging.Messages;
 
 public class ActuatorExecutionMessageBody
 {

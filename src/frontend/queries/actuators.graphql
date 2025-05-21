@@ -44,28 +44,24 @@ query getActuatorById($id: UUID!) {
 }
 
 mutation updateActuator($id: ID!, $name: String, $description: String) {
-  updateActuatorRef(
-    input: { id: $id, name: $name, description: $description }
-  ) {
-    actuatorRef {
+  updateActuatorRef(input: { id: $id, name: $name, description: $description }) {
+    actuatorRefDto {
       id
       name
       description
-      connectorKey
+      key
       type
     }
   }
 }
 
 mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
-  executeActuatorAction(
-    input: { id: $id, actionKey: $actionKey, value: $value }
-  ) {
+  executeActuatorAction(input: { id: $id, actionKey: $actionKey, value: $value }) {
     boolean
   }
 }
 
-subscription listenStateChange($key: String!, $type: String!) {
+subscription listenStateChange($key: String!, $type: ModuleType!) {
   onActuatorStateChanged(key: $key, type: $type) {
     actuatorKey
     actuatorType

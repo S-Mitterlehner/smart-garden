@@ -1,5 +1,6 @@
 using HotChocolate.Subscriptions;
 using SmartGarden.API.Dtos.Sensor;
+using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Modules.Sensors.Models;
 
@@ -7,7 +8,7 @@ namespace SmartGarden.API.Listener;
 
 public class GraphQlSensorListener(ITopicEventSender eventSender, ILogger<GraphQlSensorListener> logger) : ISensorListener
 {
-    public static string GetTopic(string key, string type) => $"Sensor_Measurement_{key}_{type}";
+    public static string GetTopic(string key, ModuleType type) => $"Sensor_Measurement_{key}_{type}";
 
     public async Task PublishMeasurementAsync(SensorData data)
     {
@@ -19,8 +20,8 @@ public class GraphQlSensorListener(ITopicEventSender eventSender, ILogger<GraphQ
             Min = data.Min,
             Max = data.Max,
             SensorKey = data.SensorKey,
-            SensorType = data.SensorType.ToString(),
-            ConnectionState = data.ConnectionState.ToString(),
+            SensorType = data.SensorType,
+            ConnectionState = data.ConnectionState,
             LastUpdate = data.LastUpdate
         };
         

@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartGarden.ConnectorService.EntityFramework\SmartGarden.ConnectorService.EntityFramework.csproj" />
-    <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
     <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
     <ProjectReference Include="..\SmartGarden.Mqtt\SmartGarden.Mqtt.csproj" />
   </ItemGroup>

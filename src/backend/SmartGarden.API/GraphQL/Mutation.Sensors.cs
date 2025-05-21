@@ -1,4 +1,6 @@
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 
@@ -6,7 +8,7 @@ namespace SmartGarden.API.GraphQL;
 
 public partial class Mutation
 {
-    public async Task<ModuleRef> AddSensorToBed([ID] Guid bedId, [ID] Guid sensorId,
+    public async Task<SensorRefDto> AddSensorToBed([ID] Guid bedId, [ID] Guid sensorId,
                                                 [Service] ApplicationDbContext db)
     {
         var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
@@ -19,7 +21,7 @@ public partial class Mutation
             throw new GraphQLException($"Sensor with id {sensorId} not found");
         bed.Modules.Add(sensor);
         await db.SaveChangesAsync();
-        return sensor;
+        return SensorRefDto.FromEntity.Invoke(sensor);
     }
 
     public async Task<bool> RemoveSensorFromBed([ID] Guid bedId, [ID] Guid sensorId,
@@ -36,8 +38,8 @@ public partial class Mutation
         return true;
     }
 
-    public async Task<ModuleRef> UpdateSensorRef([ID] Guid id, string? name, string? description,
-                                                 [Service] ApplicationDbContext db)
+    public async Task<SensorRefDto> UpdateSensorRef([ID] Guid id, string? name, string? description,
+                                                    [Service] ApplicationDbContext db)
     {
         var reference = await db.Get<ModuleRef>().FirstOrDefaultAsync(x => x.Id == id);
         if (reference == null)
@@ -45,6 +47,6 @@ public partial class Mutation
         if (name is not null) reference.Name = name;
         if (description is not null) reference.Description = description;
         await db.SaveChangesAsync();
-        return reference;
+        return SensorRefDto.FromEntity.Invoke(reference);
     }
 }

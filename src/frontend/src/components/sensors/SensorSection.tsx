@@ -1,42 +1,39 @@
 import { ActionIcon, Drawer } from "@mantine/core";
 import { IconBinoculars, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
+import { ModuleType, PlantSensorConfigDto, SensorDto, SensorRefDto } from "../../__generated__/graphql";
 import SectionTitle from "../../components/SectionTitle";
 import SensorCard from "../../components/sensors/SensorCard";
 import SensorList from "../../components/sensors/SensorList";
 import { useBedContext } from "../../hooks/useCurrentBed";
 import { SensorProvider } from "../../hooks/useSensor";
 import useSensors from "../../hooks/useSensors";
-import { PlantSensorConfig } from "../../models/plant";
-import { SensorRef, SensorType } from "../../models/sensor";
 
 export default function SensorSection() {
   const { addSensor, removeSensor, sensors, currentPlant } = useBedContext();
   const [showSensorDrawer, setShowSensorDrawer] = useState(false);
   const { sensors: availableSensors } = useSensors();
-  const handleSensorAction = (sensor: SensorRef, action: string) => {
+  const handleSensorAction = (sensor: SensorDto, action: string) => {
     switch (action) {
       case "remove":
-        removeSensor(sensor);
+        removeSensor(sensor as SensorRefDto);
         break;
     }
   };
 
-  const handleSensorAdd = (sensor: SensorRef) => {
+  const handleSensorAdd = (sensor: SensorRefDto) => {
     addSensor(sensor);
     setShowSensorDrawer(false);
   };
 
-  const getSensorConfig = (sensorType: SensorType) => {
-    const defaultConfig: PlantSensorConfig = {
+  const getSensorConfig = (sensorType: ModuleType) => {
+    const defaultConfig: PlantSensorConfigDto = {
       sensorType: sensorType,
       rangeFrom: -1,
       rangeTo: -1,
     };
 
-    const sensorConfig = currentPlant?.value?.sensorConfigs?.find(
-      (config) => config.sensorType === sensorType,
-    );
+    const sensorConfig = currentPlant?.value?.sensorConfigs?.find((config) => config.sensorType === sensorType);
 
     if (!sensorConfig) return defaultConfig;
     return sensorConfig;
@@ -63,11 +60,7 @@ export default function SensorSection() {
         onClose={() => setShowSensorDrawer(false)}
         title="Add Sensor"
       >
-        <SensorList
-          sensors={availableSensors}
-          disabledSensors={sensors}
-          onSelectSensor={handleSensorAdd}
-        />
+        <SensorList sensors={availableSensors} disabledSensors={sensors} onSelectSensor={handleSensorAdd} />
       </Drawer>
       <div>
         <SectionTitle
@@ -80,10 +73,7 @@ export default function SensorSection() {
         <div className="flex flex-row flex-wrap gap-4">
           {sensors.map((sensor) => (
             <SensorProvider key={sensor.id} sensorId={sensor.id}>
-              <SensorCard
-                plantConfig={getSensorConfig(sensor.type)}
-                onAction={handleSensorAction}
-              />
+              <SensorCard plantConfig={getSensorConfig(sensor.type)} onAction={handleSensorAction} />
             </SensorProvider>
           ))}
 

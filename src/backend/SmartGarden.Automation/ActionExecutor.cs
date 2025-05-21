@@ -23,7 +23,7 @@ public class ActionExecutor(IApiModuleManager actuatorManager, IMessagingProduce
         {
             ActuatorKey = connector.Key, 
             ActionKey = action.ActionKey, 
-            Type = (Messaging.Messages.ActionType)actionDef.ActionType, 
+            Type = actionDef.ActionType, 
             Value = action.Value
         };
         await messaging.SendAsync(new ActuatorExecutionMessage(execution));

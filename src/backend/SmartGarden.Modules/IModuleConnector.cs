@@ -9,9 +9,6 @@ public interface IModuleConnector
     ModuleType Type { get; }
     Task<ModuleState> GetStateAsync();
     Task<IEnumerable<ActionDefinition>> GetActionsAsync();
-
-    bool IsSensor => (Type & ModuleType.Sensor) != 0;
-    bool IsActuator => (Type & ModuleType.Actuator) != 0;
 }
 
 public interface IApiModuleConnector : IModuleConnector

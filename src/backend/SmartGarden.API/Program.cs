@@ -100,14 +100,14 @@ builder.Services.AddQuartzServer(options =>
 
 // BackgroundServices 
 builder.Services.AddHostedService<DbInitializer>();
-builder.Services.AddHostedService<SensorInitializer>();
-builder.Services.AddHostedService<ActuatorInitializer>();
+//builder.Services.AddHostedService<SensorInitializer>();
+//builder.Services.AddHostedService<ActuatorInitializer>();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddHostedService<DummyRegistrationService>();
+//if (builder.Environment.IsDevelopment())
+//{
+    //builder.Services.AddHostedService<DummyRegistrationService>();
     //builder.Services.AddHostedService<MQTTNeutralizer>();
-}
+//}
 
 // -----
 builder.Services.AddControllers();

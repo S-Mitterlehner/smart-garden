@@ -35,7 +35,7 @@ public class SensorsController(ApplicationDbContext db, IApiModuleManager module
             MaxValue = data.Max ?? -1,
             MinValue = data.Min ?? -1,
             CurrentValue = data.CurrentValue ?? -1,
-            Type = reference.Type.ToString()
+            Type = reference.Type
         });
     }
 

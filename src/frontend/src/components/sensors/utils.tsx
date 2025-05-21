@@ -1,27 +1,20 @@
 import { IconDropletsFilled, IconInfoCircle, IconTemperature, IconWind } from "@tabler/icons-react";
-import { SensorType } from "../../models/sensor";
+import { ModuleType } from "../../__generated__/graphql";
 
-export const getTypeIcon = (sensorType: SensorType, iconClass?: string) => {
+export const getTypeIcon = (moduleType: ModuleType, iconClass?: string) => {
   iconClass = iconClass ?? "w-4 h-4 text-emerald-500";
-  switch (sensorType) {
-    case SensorType.Temperature:
+  switch (moduleType) {
+    case ModuleType.Temperature:
       return <IconTemperature className={iconClass} />;
-    case SensorType.Humidity:
+    case ModuleType.Humidity:
       return <IconWind className={iconClass} />;
-    case SensorType.Moisture:
+    case ModuleType.Moisture:
       return <IconDropletsFilled className={iconClass} />;
     default:
       return <IconInfoCircle className={iconClass} />;
   }
 };
 
-export const getTypeIconCircle = (
-  sensorType: SensorType,
-  iconClass?: string
-) => {
-  return (
-    <div className="bg-emerald-100 rounded-full p-2">
-      {getTypeIcon(sensorType, iconClass)}
-    </div>
-  );
+export const getTypeIconCircle = (moduleType: ModuleType, iconClass?: string) => {
+  return <div className="rounded-full bg-emerald-100 p-2">{getTypeIcon(moduleType, iconClass)}</div>;
 };

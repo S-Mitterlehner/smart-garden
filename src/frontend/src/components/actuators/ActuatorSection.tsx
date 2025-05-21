@@ -1,19 +1,19 @@
 import { ActionIcon, Drawer } from "@mantine/core";
 import { IconEngine, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
+import { ActuatorRefDto } from "../../__generated__/graphql";
 import ActuatorCard from "../../components/actuators/ActuatorCard";
 import ActuatorList from "../../components/actuators/ActuatorList";
 import SectionTitle from "../../components/SectionTitle";
 import { ActuatorProvider } from "../../hooks/useActuator";
 import useActuators from "../../hooks/useActuators";
 import { useBedContext } from "../../hooks/useCurrentBed";
-import { ActuatorRef } from "../../models/actuator";
 
 export default function ActuatorSection() {
   const { addActuator, removeActuator, actuators } = useBedContext();
   const { actuators: availableActuators } = useActuators();
   const [showActuatorDrawer, setShowActuatorDrawer] = useState(false);
-  const handleActuatorAction = (actuator: ActuatorRef, action: string) => {
+  const handleActuatorAction = (actuator: ActuatorRefDto, action: string) => {
     switch (action) {
       case "remove":
         removeActuator(actuator);
@@ -21,7 +21,7 @@ export default function ActuatorSection() {
     }
   };
 
-  const handleActuatorAdd = (actuator: ActuatorRef) => {
+  const handleActuatorAdd = (actuator: ActuatorRefDto) => {
     addActuator(actuator);
     setShowActuatorDrawer(false);
   };

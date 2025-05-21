@@ -8,7 +8,7 @@ public class ActionDefinition
     public string Key { get; init; }
     public string Name { get; init; }
     public string Description { get; init; }
-    public SmartGarden.Modules.Actuators.Enums.ActionType ActionType { get; init; }
+    public ActionType ActionType { get; init; }
     public bool IsAllowed { get; set; }
 
     public ActionIcons Icon { get; init; } = ActionIcons.Play;

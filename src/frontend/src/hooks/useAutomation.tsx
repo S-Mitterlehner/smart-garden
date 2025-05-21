@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
-import { BedDto } from "../__generated__/graphql";
-import { AutomationConfig, RuleElement } from "../models/automation";
+import { AutomationConfigDto, BedDto } from "../__generated__/graphql";
+import { RuleElement } from "../models/automation";
 import { useBedContext } from "./useCurrentBed";
 
 export type AutomationValue = {
   bed: BedDto;
-  config: AutomationConfig | null;
+  config: AutomationConfigDto | null;
   rules: RuleElement[];
   fieldSelection: any;
 };
@@ -32,7 +33,7 @@ export function useAutomation(): AutomationValue {
   const [ruleExpressions, setRuleExpressions] = useState<RuleElement[]>([]);
   const [fielSelection, setFieldSelection] = useState<any>(null);
 
-  const { data: config } = useQuery<AutomationConfig>({
+  const { data: config } = useQuery<AutomationConfigDto>({
     queryKey: ["automation", bed.id],
     refetchOnMount: true,
     queryFn: async () => {
@@ -69,7 +70,7 @@ export function useAutomation(): AutomationValue {
   return {
     bed,
     rules: ruleExpressions,
-    config: config ?? ({} as AutomationConfig),
+    config: config ?? ({} as AutomationConfigDto),
     fieldSelection: fielSelection,
   };
 }

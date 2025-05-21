@@ -1,13 +1,15 @@
-﻿namespace SmartGarden.API.Dtos.Sensor;
+﻿using SmartGarden.Modules.Enums;
+
+namespace SmartGarden.API.Dtos.Sensor;
 
 public class SensorDataDto
 {
     public string SensorKey { get; set; }
-    public string SensorType { get; set; }
-    public string ConnectionState { get; set; }
-    public double CurrentValue { get; set; }
-    public double Min { get; set; }
-    public double Max { get; set; }
-    public string Unit { get; set; }
+    public ModuleType SensorType { get; set; }
+    public ConnectionState ConnectionState { get; set; }
+    public double? CurrentValue { get; set; }
+    public double? Min { get; set; }
+    public double? Max { get; set; }
+    public string? Unit { get; set; }
     public DateTime LastUpdate { get; set; }
 }

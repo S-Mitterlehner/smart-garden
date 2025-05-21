@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using SmartGarden.EntityFramework;
-using SmartGarden.EntityFramework.Models;
+using SmartGarden.ConnectorService.EntityFramework;
+using SmartGarden.ConnectorService.EntityFramework.Models;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Enums;
@@ -9,7 +9,7 @@ using ActionType = SmartGarden.Modules.Enums.ActionType;
 
 namespace SmartGarden.ExecutorService;
 
-public class ActuatorExecutionMessageHandler(ApplicationDbContext db, IServiceModuleManager manager) : IMessageHandler<ActuatorExecutionMessageBody>
+public class ActuatorExecutionMessageHandler(ConnectionServiceDbContext db, IServiceModuleManager manager) : IMessageHandler<ActuatorExecutionMessageBody>
 {
     public async Task HandleAsync(ActuatorExecutionMessageBody msg)
     {

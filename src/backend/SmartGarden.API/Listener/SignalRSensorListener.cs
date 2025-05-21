@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using SmartGarden.API.Dtos;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.API.Hubs;
+using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Modules.Sensors.Models;
 
@@ -11,7 +12,7 @@ namespace SmartGarden.API.Listener;
 public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<SignalRSensorListener> logger) : ISensorListener
 {
     public const string MEASUREMENT_MADE = "Sensor_Measurement";
-    public static string GetGroup(string key, string type) => $"{MEASUREMENT_MADE}_{key}_{type}";
+    public static string GetGroup(string key, ModuleType type) => $"{MEASUREMENT_MADE}_{key}_{type}";
 
     public async Task PublishMeasurementAsync(SensorData data)
     {
@@ -23,8 +24,8 @@ public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<Signa
             , Min = data.Min
             , Max = data.Max
             , SensorKey = data.SensorKey
-            , SensorType = data.SensorType.ToString()
-            , ConnectionState = data.ConnectionState.ToString()
+            , SensorType = data.SensorType
+            , ConnectionState = data.ConnectionState
             , LastUpdate = data.LastUpdate
         };
         

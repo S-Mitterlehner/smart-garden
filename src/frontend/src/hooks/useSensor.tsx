@@ -2,15 +2,14 @@ import { notifications } from "@mantine/notifications";
 import * as signalR from "@microsoft/signalr";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
+  ConnectionState,
+  ModuleType,
   SensorDataDto,
   SensorDto,
-  SensorType,
   useGetSensorByIdQuery,
   useListenMeasurementSubscription,
   useUpdateSensorMutation,
 } from "../__generated__/graphql";
-import { ConnectionState } from "../models/general";
-import { Sensor } from "../models/sensor";
 import { SocketType, useAppSettingsContext } from "./useAppSettings";
 
 export type SensorValue = {
@@ -18,7 +17,7 @@ export type SensorValue = {
   sensor: SensorDto;
   currentState: SensorDataDto | null;
   connectionState: ConnectionState;
-  updateRef: (id: string, changes: Sensor) => Promise<void>;
+  updateRef: (id: string, changes: SensorDto) => Promise<void>;
 };
 
 const SensorContext = createContext<SensorValue | null>(null);
@@ -55,7 +54,7 @@ export function useSensor(sensorId: string): SensorValue {
   const { data: { onSensorMeasurement: state } = {} } = useListenMeasurementSubscription({
     variables: {
       key: sensor?.key ?? "",
-      type: sensor?.type ?? "",
+      type: sensor?.type ?? ModuleType.Temperature,
     },
     skip: !sensor || socketType.get !== SocketType.GraphQLSubs,
   });
@@ -95,7 +94,7 @@ export function useSensor(sensorId: string): SensorValue {
     connection.onreconnecting(() => setConnectionState(ConnectionState.NotConnected));
     connection.onreconnected(() => setConnectionState(ConnectionState.Connected));
 
-    connection.on("Sensor_Measurement", (key: string, type: SensorType, data: SensorDataDto) => {
+    connection.on("Sensor_Measurement", (key: string, type: ModuleType, data: SensorDataDto) => {
       data.lastUpdate = new Date(data.lastUpdate);
       setCurrentState(data);
     });
@@ -144,10 +143,10 @@ export function useSensor(sensorId: string): SensorValue {
 
   return {
     isFetched: !loading && !!sensor,
-    sensor: sensor ?? ({} as Sensor),
+    sensor: sensor ?? ({} as SensorDto),
     currentState: currentState ?? null,
     connectionState,
-    updateRef: async (id: string, changes: Sensor) => {
+    updateRef: async (id: string, changes: SensorDto) => {
       const r = await mutate({ variables: { ...changes, id } });
 
       if ((r.errors?.length ?? 0) > 0)

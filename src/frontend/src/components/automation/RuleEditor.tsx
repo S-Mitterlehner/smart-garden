@@ -1,7 +1,7 @@
-import { AutomationConfig, RuleElement } from "../../models/automation";
-import { useAutomationContext } from "../../hooks/useAutomation";
 import { Select } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { useAutomationContext } from "../../hooks/useAutomation";
+import { AutomationConfig, RuleElement } from "../../models/automation";
 
 const connectors = [
   { label: "AND", value: "and" },
@@ -57,16 +57,12 @@ export function Rule({ rulePart }: { rulePart: RuleElement }) {
   const [type, setType] = useState<"comparator" | "connector" | null>(null);
 
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
-  const [selectedComparator, setSelectedComparator] = useState<string | null>(
-    null
-  );
+  const [selectedComparator, setSelectedComparator] = useState<string | null>(null);
 
   // group items by connectorKey
 
   useEffect(() => {
-    setType(
-      connectors.find((i) => i.value === ruleKey) ? "connector" : "comparator"
-    );
+    setType(connectors.find((i) => i.value === ruleKey) ? "connector" : "comparator");
   }, [ruleKey]);
 
   const getInput = () => {
@@ -91,17 +87,9 @@ export function Rule({ rulePart }: { rulePart: RuleElement }) {
   console.log("selection", fieldSelection);
 
   return (
-    <div className="flex flex-row gap-2 items-center">
-      <Select
-        data={fieldSelection}
-        value={selectedValue}
-        onChange={setSelectedValue}
-      ></Select>
-      <Select
-        data={comparators}
-        value={selectedComparator}
-        onChange={setSelectedComparator}
-      ></Select>
+    <div className="flex flex-row items-center gap-2">
+      <Select data={fieldSelection} value={selectedValue} onChange={setSelectedValue}></Select>
+      <Select data={comparators} value={selectedComparator} onChange={setSelectedComparator}></Select>
       {getInput()}
     </div>
   );

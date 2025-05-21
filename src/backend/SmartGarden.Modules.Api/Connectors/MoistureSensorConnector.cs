@@ -4,7 +4,7 @@ using StackExchange.Redis;
 
 namespace SmartGarden.Modules.Api.Connectors;
 
-public class MoistureModuleConnector(string key, IConnectionMultiplexer redis, ILogger logger) : BaseSensorApiModuleConnector(key, redis, logger)
+public class MoistureModuleConnector(string key, IConnectionMultiplexer redis, ILogger<MoistureModuleConnector> logger) : BaseSensorApiModuleConnector(key, redis, logger)
 {
     public override ModuleType Type => ModuleType.Moisture;
     public override string Name => "Moisture";

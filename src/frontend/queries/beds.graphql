@@ -48,7 +48,7 @@ mutation setCurrentPlant($bedId: ID!, $plantId: ID!) {
 
 mutation addSensorToBed($bedId: ID!, $sensorId: ID!) {
   addSensorToBed(input: { bedId: $bedId, sensorId: $sensorId }) {
-    sensorRef {
+    sensorRefDto {
       id
     }
   }
@@ -62,7 +62,7 @@ mutation removeSensorFromBed($bedId: ID!, $sensorId: ID!) {
 
 mutation addActuatorToBed($bedId: ID!, $actuatorId: ID!) {
   addActuatorToBed(input: { bedId: $bedId, actuatorId: $actuatorId }) {
-    actuatorRef {
+    actuatorRefDto {
       id
     }
   }

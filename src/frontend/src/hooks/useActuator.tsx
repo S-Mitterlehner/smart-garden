@@ -5,13 +5,13 @@ import {
   ActuatorActionDto,
   ActuatorDto,
   ActuatorStateDto,
+  ConnectionState,
+  ModuleType,
   useExecuteActionMutation,
   useGetActuatorByIdQuery,
   useListenStateChangeSubscription,
   useUpdateActuatorMutation,
 } from "../__generated__/graphql";
-import { ActuatorState, ActuatorType } from "../models/actuator";
-import { ConnectionState } from "../models/general";
 import { SocketType, useAppSettingsContext } from "./useAppSettings";
 
 export type ActuatorValue = {
@@ -59,7 +59,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
   const { data: { onActuatorStateChanged: state } = {} } = useListenStateChangeSubscription({
     variables: {
       key: actuator?.key ?? "",
-      type: actuator?.type ?? "",
+      type: actuator?.type ?? ModuleType.Temperature,
     },
     skip: !actuator || socketType.get !== SocketType.GraphQLSubs,
   });
@@ -97,7 +97,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
     connection.onreconnecting(() => setConnectionState(ConnectionState.NotConnected));
     connection.onreconnected(() => setConnectionState(ConnectionState.Connected));
 
-    connection.on("Actuator_State", (key: string, type: ActuatorType, data: ActuatorState) => {
+    connection.on("Actuator_State", (key: string, type: ModuleType, data: ActuatorStateDto) => {
       data.lastUpdate = new Date(data.lastUpdate);
       setCurrentState(data);
     });

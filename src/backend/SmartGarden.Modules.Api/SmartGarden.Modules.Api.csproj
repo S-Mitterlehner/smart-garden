@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
     <ProjectReference Include="..\SmartGarden.Messaging\SmartGarden.Messaging.csproj" />
     <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
   </ItemGroup>

@@ -12,10 +12,11 @@ namespace SmartGarden.API.GraphQL;
 public partial class Query
 {
     [UseFiltering]
-    public async Task<IEnumerable<SensorRefDto>> GetSensors([Service] ApplicationDbContext db) => await db.Get<ModuleRef>()
-                                                                                                          .Where(x => ModuleTypeExpressions.IsSensor.Invoke(x.Type))
-                                                                                                          .Select(SensorRefDto.FromEntity)
-                                                                                                          .ToListAsync();
+    public async Task<IEnumerable<SensorRefDto>> GetSensors([Service] ApplicationDbContext db)
+        => await db.Get<ModuleRef>()
+            .Where(x => ModuleTypeExpressions.IsSensor.Invoke(x.Type))
+            .Select(SensorRefDto.FromEntity)
+            .ToListAsync();
 
     [UseFiltering]
     public async Task<IEnumerable<SensorDto>> GetSensors(

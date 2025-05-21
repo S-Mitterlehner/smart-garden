@@ -80,7 +80,7 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
                 {
                     Id = reference.Id
                     , ModuleKey = connector.Key
-                    , Type = connector.Type
+                    , ModuleType = connector.Type
                     , IsDeleted = false
                     , Topic = connector.Topic
                 };

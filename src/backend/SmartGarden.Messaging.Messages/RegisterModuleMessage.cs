@@ -17,8 +17,8 @@ public class RegisterModuleMessage(RegisterModuleMessageBody data) : IMessage<Re
 public class RegisterModuleMessageBody()
 {
     public Guid Id { get; set; }
-    public bool IsDeleted { get; set; } = false;
+    public bool IsDeleted { get; set; }
     public string ModuleKey { get; set; }
-    public ModuleType Type { get; set; }
+    public ModuleType ModuleType { get; set; }
     public string Topic { get; set; }
 }

@@ -84,6 +84,8 @@ builder.AddRabbitMQClient(connectionName: "messaging");
 builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
+builder.Services.AddHostedService<MessagingListenerService<RegisterModuleMessage, RegisterModuleMessageBody>>();
+builder.Services.AddSingleton<IMessageHandler<RegisterModuleMessageBody>, RegisterModuleMessageHandler>();
 
 // Automation
 builder.Services.AddQuartz(o =>

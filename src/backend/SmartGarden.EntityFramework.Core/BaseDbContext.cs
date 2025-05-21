@@ -9,7 +9,12 @@ public abstract class BaseDbContext(DbContextOptions options) : DbContext(option
 {
     public TEntity New<TEntity>() where TEntity : BaseEntity, new()
     {
-        var entity = new TEntity { Id = Guid.NewGuid() };
+        return this.New<TEntity>(Guid.NewGuid());
+    }
+    
+    public TEntity New<TEntity>(Guid guid) where TEntity : BaseEntity, new()
+    {
+        var entity = new TEntity { Id = guid };
         Set<TEntity>().Add(entity);
 
         return entity;

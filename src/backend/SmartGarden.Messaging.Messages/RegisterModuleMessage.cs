@@ -16,6 +16,7 @@ public class RegisterModuleMessage(RegisterModuleMessageBody data) : IMessage<Re
 
 public class RegisterModuleMessageBody()
 {
+    public Guid ModuleId { get; set; }
     public string ModuleKey { get; set; }
     public ModuleType ModuleType { get; set; }
 }

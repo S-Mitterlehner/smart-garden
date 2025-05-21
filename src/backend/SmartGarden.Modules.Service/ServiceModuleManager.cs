@@ -77,6 +77,7 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
 
                 var body = new RegisterModuleMessageBody
                 {
+                    ModuleId = reference.Id,
                     ModuleKey = connector.Key,
                     ModuleType = connector.Type
                 };

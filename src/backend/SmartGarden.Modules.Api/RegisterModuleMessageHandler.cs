@@ -18,13 +18,13 @@ public class RegisterModuleMessageHandler(IServiceProvider sp, IApiModuleManager
         
         await using var scope = sp.CreateAsyncScope();
         await using var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
+
         var reference = await db.Get<ModuleRef>()
-            .FirstOrDefaultAsync(x => x.ModuleKey == msgBody.ModuleKey && x.Type == msgBody.ModuleType);
+            .FirstOrDefaultAsync(x => x.Id == msgBody.ModuleId);
 
         if (reference is null)
         {
-            reference = db.New<ModuleRef>();
+            reference = db.New<ModuleRef>(msgBody.ModuleId);
             reference.Name = connector.Name;
             reference.Description = connector.Description;
             reference.ModuleKey = connector.Key;

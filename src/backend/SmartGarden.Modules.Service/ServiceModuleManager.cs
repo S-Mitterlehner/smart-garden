@@ -70,7 +70,6 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
                     reference.ModuleKey = connector.Key;
                     reference.Type = connector.Type;
                 }
-
                 reference.Topic = topic.Value;
 
                 await db.SaveChangesAsync();
@@ -78,11 +77,8 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
 
                 var body = new RegisterModuleMessageBody
                 {
-                    Id = reference.Id
-                    , ModuleKey = connector.Key
-                    , ModuleType = connector.Type
-                    , IsDeleted = false
-                    , Topic = connector.Topic
+                    ModuleKey = connector.Key,
+                    ModuleType = connector.Type
                 };
                 var msg = new RegisterModuleMessage(body);
                 await producer.SendAsync(msg);

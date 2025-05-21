@@ -20,7 +20,7 @@ var rabbitMqPassword = builder.AddParameter("passwordRabbit", secret: true, valu
 
 var rabbitmq = builder
     .AddRabbitMQ("messaging", rabbitMqUsername, rabbitMqPassword)
-    .WithManagementPlugin()
+    .WithManagementPlugin(port: 15672)
     .WithExternalHttpEndpoints();
 
 

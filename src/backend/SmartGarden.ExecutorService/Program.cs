@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ExecutorService;
+using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Service;
@@ -35,7 +36,7 @@ builder.Services.AddMqttClient();
 
 builder.Services.AddSingleton<IMessageHandler<ActuatorExecutionMessageBody>, ActuatorExecutionMessageHandler>();
 
-builder.Services.AddHostedService<ListenerService<ActuatorExecutionMessage, ActuatorExecutionMessageBody>>();
+builder.Services.AddHostedService<MessagingListenerService<ActuatorExecutionMessage, ActuatorExecutionMessageBody>>();
 
 builder.AddRabbitMQClient(connectionName: "messaging");
 // builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));

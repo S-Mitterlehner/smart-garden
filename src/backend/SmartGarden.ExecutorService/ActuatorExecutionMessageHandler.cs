@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ConnectorService.EntityFramework.Models;
+using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Enums;

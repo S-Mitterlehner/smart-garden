@@ -18,7 +18,6 @@ using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Api;
-using SmartGarden.Mqtt;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -41,7 +40,6 @@ builder.AddRedisClient(connectionName: "state-cache");
 
 // Config
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
-builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
 
 // Services
 builder.Services.AddSingleton<IApiModuleManager, ApiModuleManager>();
@@ -65,7 +63,6 @@ builder.Services.AddSingleton<ActionExecutor>();
 builder.Services.AddSingleton<AutomationService>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
-builder.Services.AddMqttClient();
 builder.Services.AddSignalR();
 
 // GraphQL
@@ -113,7 +110,6 @@ builder.Services.AddHostedService<DbInitializer<ApplicationDbContext>>();
 //if (builder.Environment.IsDevelopment())
 //{
     //builder.Services.AddHostedService<DummyRegistrationService>();
-    //builder.Services.AddHostedService<MQTTNeutralizer>();
 //}
 
 // -----

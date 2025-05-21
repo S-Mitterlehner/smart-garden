@@ -10,12 +10,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ConnectorService.EntityFramework.Models;
+using SmartGarden.Messaging;
+using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules.Service.Connectors;
 using SmartGarden.Modules.Service.Connectors.Dummies;
 
 namespace SmartGarden.Modules.Service;
 
-public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleManager> logger, IOptions<ModuleSettings> settings)  : IServiceModuleManager
+public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleManager> logger,
+    IOptions<ModuleSettings> settings, IMessagingProducer producer)  : IServiceModuleManager
 {
     public const string RegisterTopic = "smart-garden/register";
     private readonly ConcurrentDictionary<string, IServiceModuleConnector> _connectors = new();
@@ -59,8 +62,8 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
                 _connectors.TryAdd(GetDictKey(key, moduleType), connector);
 
                 var reference = await db.Get<ModuleRef>()
-                                        .FirstOrDefaultAsync(x => x.ModuleKey == key && x.Type == moduleType);
-
+                                            .FirstOrDefaultAsync(x => x.ModuleKey == key && x.Type == moduleType);
+                
                 if (reference is null)
                 {
                     reference = db.New<ModuleRef>();
@@ -71,6 +74,18 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
                 reference.Topic = topic.Value;
 
                 await db.SaveChangesAsync();
+
+
+                var body = new RegisterModuleMessageBody
+                {
+                    Id = reference.Id
+                    , ModuleKey = connector.Key
+                    , Type = connector.Type
+                    , IsDeleted = false
+                    , Topic = connector.Topic
+                };
+                var msg = new RegisterModuleMessage(body);
+                await producer.SendAsync(msg);
             }
             catch (Exception ex)
             {

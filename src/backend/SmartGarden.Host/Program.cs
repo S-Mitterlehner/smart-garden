@@ -51,6 +51,7 @@ var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)
     .WaitFor(rabbitmq)
+    .WaitFor(dbConnectionService)
     .PublishAsDockerFile();
 
 builder.Build().Run();

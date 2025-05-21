@@ -48,5 +48,6 @@ builder.Services.AddMqttClient();
 builder.Services.AddHostedService<ConnectorManagingService>();
 builder.Services.AddHostedService<DbInitializer<ConnectionServiceDbContext>>();
 builder.Services.AddHostedService<MessagingListenerService<ActuatorExecutionMessage, ActuatorExecutionMessageBody>>();
+builder.Services.AddHostedService<ModuleInitializerHostedService>();
 
 await builder.Build().RunAsync();

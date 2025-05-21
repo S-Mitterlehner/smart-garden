@@ -14,8 +14,6 @@ public class ConnectorManagingService(IServiceProvider sp, ILogger<ConnectorMana
     {
         var manager = sp.GetRequiredService<IServiceModuleManager>();
 
-        await manager.SetupRegisterListenerAsync();
-
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(10000, stoppingToken);

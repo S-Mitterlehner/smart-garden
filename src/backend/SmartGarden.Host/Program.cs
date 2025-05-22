@@ -23,7 +23,6 @@ var rabbitmq = builder
     .WithManagementPlugin(port: 15672)
     .WithExternalHttpEndpoints();
 
-
 // applications
 
 var frontend = builder.AddNpmApp(

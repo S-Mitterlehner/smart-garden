@@ -43,6 +43,7 @@ public partial class Mutation
         var execution = new ActuatorExecutionMessageBody
         {
             ActuatorKey = connector.Key, 
+            ActuatorType = (int)connector.Type,
             ActionKey = actionKey, 
             Type = action.ActionType, 
             Value = value

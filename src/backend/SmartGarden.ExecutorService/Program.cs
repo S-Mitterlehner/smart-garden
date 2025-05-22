@@ -13,6 +13,7 @@ using SmartGarden.ExecutorService.Services;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
+using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Service;
 using SmartGarden.Mqtt;
 
@@ -32,6 +33,8 @@ builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("smartgarden-connection-s
     , b => b.UseLazyLoadingProxies()
 );
 builder.AddRabbitMQClient(connectionName: "messaging");
+
+builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
 
 // Services
 builder.Services.AddSingleton<IServiceModuleManager, ServiceModuleManager>();

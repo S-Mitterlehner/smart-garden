@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.AspNetCore;
@@ -63,7 +65,12 @@ builder.Services.AddSingleton<ActionExecutor>();
 builder.Services.AddSingleton<AutomationService>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseUpper));
+    });
 
 // GraphQL
 builder.Services.AddGraphQLServer()

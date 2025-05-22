@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ConnectorService.EntityFramework.Models;
@@ -10,7 +9,7 @@ using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 using ActionType = SmartGarden.Modules.Enums.ActionType;
 
-namespace SmartGarden.ExecutorService;
+namespace SmartGarden.ConnectorService;
 
 public class ActuatorExecutionMessageHandler(
     ConnectionServiceDbContext db, 

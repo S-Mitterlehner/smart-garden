@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using SmartGarden.Modules;
 
-namespace SmartGarden.ExecutorService;
+namespace SmartGarden.ConnectorService;
 
 public class ModuleInitializerHostedService(IServiceModuleManager moduleManager) : BackgroundService
 {

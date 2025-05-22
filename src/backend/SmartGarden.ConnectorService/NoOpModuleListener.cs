@@ -1,7 +1,7 @@
 using SmartGarden.Modules;
 using SmartGarden.Modules.Models;
 
-namespace SmartGarden.ExecutorService;
+namespace SmartGarden.ConnectorService;
 
 public class NoOpModuleListener : IModuleListener
 {

@@ -45,7 +45,7 @@ var api = builder.AddProject<SmartGarden_API>("api")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();
 
-var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
+var connector = builder.AddProject<SmartGarden_ConnectorService>("connector")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)
     .WaitFor(rabbitmq)

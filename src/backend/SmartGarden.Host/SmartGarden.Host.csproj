@@ -21,7 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SmartGarden.API\SmartGarden.API.csproj" />
-      <ProjectReference Include="..\SmartGarden.ExecutorService\SmartGarden.ExecutorService.csproj" />
+      <ProjectReference Include="..\SmartGarden.ConnectorService\SmartGarden.ConnectorService.csproj" />
     </ItemGroup>
 
 </Project>

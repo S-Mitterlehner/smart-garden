@@ -1,11 +1,10 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Models;
 
-namespace SmartGarden.ExecutorService;
+namespace SmartGarden.ConnectorService;
 
 public class RabbitMQModuleListener(IMessagingProducer producer, ILogger<RabbitMQMessagingProducer> logger) : IModuleListener
 {

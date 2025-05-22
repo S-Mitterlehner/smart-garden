@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Messaging", "Sm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Messaging.Messages", "SmartGarden.Messaging.Messages\SmartGarden.Messaging.Messages.csproj", "{27B972F1-3101-4D9B-9671-73096BCBFA85}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExecutorService", "ExecutorService", "{99207866-0876-4AF9-88CA-2F81CFF81CF4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConnectorService", "ConnectorService", "{99207866-0876-4AF9-88CA-2F81CFF81CF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.ExecutorService", "SmartGarden.ExecutorService\SmartGarden.ExecutorService.csproj", "{465E692B-768A-438E-B4AE-497FAC2B5933}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.ConnectorService", "SmartGarden.ConnectorService\SmartGarden.ConnectorService.csproj", "{465E692B-768A-438E-B4AE-497FAC2B5933}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Modules.Service", "SmartGarden.Modules.Service\SmartGarden.Modules.Service.csproj", "{6C3CD622-57D1-4B64-8955-95485AF9FB97}"
 EndProject

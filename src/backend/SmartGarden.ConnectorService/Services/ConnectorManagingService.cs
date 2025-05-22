@@ -6,7 +6,7 @@ using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ConnectorService.EntityFramework.Models;
 using SmartGarden.Modules;
 
-namespace SmartGarden.ExecutorService.Services;
+namespace SmartGarden.ConnectorService.Services;
 
 public class ConnectorManagingService(IServiceProvider sp, ILogger<ConnectorManagingService> logger) : BackgroundService
 {

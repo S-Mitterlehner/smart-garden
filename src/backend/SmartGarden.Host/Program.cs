@@ -11,6 +11,7 @@ var dbApi = postgres.AddDatabase("smartgarden");
 var dbConnectionService = postgres.AddDatabase("smartgarden-connection-service");
 
 // redis
+
 var redis = builder.AddRedis("state-cache");
 
 // rabbitmq
@@ -30,8 +31,7 @@ var frontend = builder.AddNpmApp(
         "../../frontend",
         "dev")
     .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
-    .WithExternalHttpEndpoints()
-    .PublishAsDockerFile();
+    .WithExternalHttpEndpoints();
 
 var api = builder.AddProject<SmartGarden_API>("api")
     .WithReference(dbApi)
@@ -43,14 +43,12 @@ var api = builder.AddProject<SmartGarden_API>("api")
     .WaitFor(redis)
     .WithHttpEndpoint(5001, 8080, name: "httpapi")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
-    .WithExternalHttpEndpoints()
-    .PublishAsDockerFile();
+    .WithExternalHttpEndpoints();
 
 var executor = builder.AddProject<SmartGarden_ExecutorService>("executor")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)
     .WaitFor(rabbitmq)
-    .WaitFor(dbConnectionService)
-    .PublishAsDockerFile();
+    .WaitFor(dbConnectionService);
 
 builder.Build().Run();

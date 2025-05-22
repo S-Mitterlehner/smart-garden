@@ -27,7 +27,7 @@ public class RabbitMQModuleListener(IMessagingProducer producer, ILogger<RabbitM
 
         var msg = new ModuleStateMessage(body);
 
-        logger.LogInformation("ModuleStateChange Send: {msg}", JsonSerializer.Serialize(body));
+        logger.LogInformation("ModuleStateChange Send: {@msg}", body);
 
         await producer.SendAsync(msg);
     }

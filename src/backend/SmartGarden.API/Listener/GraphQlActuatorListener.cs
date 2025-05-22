@@ -18,7 +18,7 @@ public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<Grap
 
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
-        logger.LogDebug("GraphQL ActuatorState Published: {data}", data);
+        logger.LogDebug("GraphQL ActuatorState Published: {@data}", data);
         var dto = new ActuatorStateDto
         {
             Unit = data.Unit,

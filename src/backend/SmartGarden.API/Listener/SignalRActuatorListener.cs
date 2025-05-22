@@ -14,7 +14,7 @@ public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<S
 
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)
     {
-        logger.LogDebug("SignalR ActuatorState Published: {data}", data);
+        logger.LogDebug("SignalR ActuatorState Published: {@data}", data);
         var dto = new ActuatorStateDto
         {
             Unit = data.Unit

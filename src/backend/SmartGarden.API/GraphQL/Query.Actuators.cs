@@ -23,8 +23,10 @@ public partial class Query
     {
         var reference = await db.Get<ModuleRef>().FirstOrDefaultAsync(x => ModuleTypeExpressions.IsActuator.Invoke(x.Type) && x.Id == id);
         if (reference == null) return null;
+        
         var connector = await moduleManager.GetConnectorAsync(reference);
         var state = await connector.GetStateAsync();
+        
         return new ActuatorDto
         {
             Id = reference.Id

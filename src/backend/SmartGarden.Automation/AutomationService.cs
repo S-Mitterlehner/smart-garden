@@ -26,7 +26,7 @@ public class AutomationService(
 
     public async Task Execute(IJobExecutionContext context)
     {
-        logger.LogInformation("AutomationService - Execute");
+        logger.LogDebug("AutomationService - Execute");
         await using var scope = sp.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         

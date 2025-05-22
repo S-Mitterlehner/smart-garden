@@ -16,7 +16,7 @@ public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<Signa
 
     public async Task PublishMeasurementAsync(SensorData data)
     {
-        logger.LogDebug("SignalR PublishMeasurement: {data}", data);
+        logger.LogDebug("SignalR PublishMeasurement: {@data}", data);
         var dto = new SensorDataDto
         {
             Unit = data.Unit

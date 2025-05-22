@@ -17,7 +17,7 @@ public class ModuleListenerComposite(ILogger<ModuleListenerComposite> logger, pa
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in listener {listener}: {message}", l.GetType().Name, ex.Message);
+                logger.LogError(ex, "Error in listener {listener}: {@message}", l.GetType().Name, ex.Message);
             }
         }
     }

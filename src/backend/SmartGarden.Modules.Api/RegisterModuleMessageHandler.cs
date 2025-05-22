@@ -32,6 +32,6 @@ public class RegisterModuleMessageHandler(IServiceProvider sp, IApiModuleManager
         }
 
         await db.SaveChangesAsync();
-        logger.LogInformation("Registered Module: {name} from type {type} with key {key}", connector.Name, connector.Type, connector.Key);
+        logger.LogDebug("Registered Module: {name} from type {type} with key {key}", connector.Name, connector.Type, connector.Key);
     }
 }

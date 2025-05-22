@@ -14,22 +14,20 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
     public abstract string Description { get; }
 
     public abstract Task<IEnumerable<ActionDefinition>> GetActionsAsync();
-
-
+    
     public async Task UpdateStateAsync(ModuleState state)
     {
         var cacheKey = Utils.GetCacheKey(Key, Type.ToString());
         try
         {
             var db = redis.GetDatabase();
-            var key = Utils.GetCacheKey(state.ModuleKey, state.ModuleType.ToString());
             var val = JsonSerializer.Serialize(state);
 
-            await db.StringSetAsync(key, val, TimeSpan.FromMinutes(2));
+            await db.StringSetAsync(Key, val, TimeSpan.FromMinutes(2));
         }
         catch (Exception ex)
         {
-            logger.LogError("Error updating state in cache for {key}: {ex}", cacheKey, ex);
+            logger.LogError("Error updating state in cache for {key}: {@ex}", cacheKey, ex);
         }
     }
 
@@ -54,7 +52,7 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
         }
         catch (Exception ex)
         {
-            logger.LogInformation("No or invalid state in cache for {key}: {ex}", cacheKey, ex);
+            logger.LogInformation("No or invalid state in cache for {key}: {@ex}", cacheKey, ex);
             return new ModuleState {ConnectionState = ConnectionState.NotConnected, ModuleType = Type, ModuleKey = Key};
         }
     }

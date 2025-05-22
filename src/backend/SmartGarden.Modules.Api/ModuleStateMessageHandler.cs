@@ -28,7 +28,7 @@ public class ModuleStateMessageHandler(IApiModuleManager manager, IModuleListene
             , LastUpdate = msgBody.LastUpdate
         };
 
-        logger.LogDebug("ModuleStateMessageHandler: {state}", state);
+        logger.LogDebug("ModuleStateMessageHandler: {@state}", state);
 
         await connector.UpdateStateAsync(state);
         await listener.PublishStateChangeAsync(state, await connector.GetActionsAsync());

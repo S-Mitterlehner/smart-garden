@@ -12,7 +12,7 @@ public class GraphQlSensorListener(ITopicEventSender eventSender, ILogger<GraphQ
 
     public async Task PublishMeasurementAsync(SensorData data)
     {
-        logger.LogDebug("GraphQL PublishMeasurement: {data}", data);
+        logger.LogDebug("GraphQL PublishMeasurement: {@data}", data);
         var dto = new SensorDataDto
         {
             Unit = data.Unit,

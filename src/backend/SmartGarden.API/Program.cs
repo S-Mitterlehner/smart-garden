@@ -1,30 +1,50 @@
+using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.AspNetCore;
-using SmartGarden.API;
-using SmartGarden.API.Dtos;
+using Serilog;
 using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
 using SmartGarden.API.Services;
 using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
-using SmartGarden.EntityFramework.Models;
+using SmartGarden.EntityFramework.Core;
+using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.EntityFramework.Seeder;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
-using SmartGarden.Mqtt;
+using SmartGarden.Messaging;
+using SmartGarden.Messaging.Messages;
+using SmartGarden.Modules;
+using SmartGarden.Modules.Api;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.OpenTelemetry()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // DB
-builder.Services.RegisterDbContext(builder.Configuration);
+// builder.Services.RegisterDbContext(builder.Configuration);
+builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden"
+    , s => {}
+    , b => b.UseLazyLoadingProxies()
+    );
+
+builder.AddRedisClient(connectionName: "state-cache");
 
 // Config
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
 
 // Services
-builder.Services.AddSingleton<IActuatorManager, ActuatorManager>();
+builder.Services.AddSingleton<IApiModuleManager, ApiModuleManager>();
+builder.Services.AddSingleton<IModuleListener, LegacyModuleListenerProxy>();
+
 builder.Services.AddSingleton<SignalRActuatorListener>();
 builder.Services.AddSingleton<GraphQlActuatorListener>();
 builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
@@ -32,7 +52,6 @@ builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s =>
     s.GetRequiredService<SignalRActuatorListener>(),
     s.GetRequiredService<GraphQlActuatorListener>()));
 
-builder.Services.AddSingleton<ISensorManager, SensorManager>();
 builder.Services.AddSingleton<SignalRSensorListener>();
 builder.Services.AddSingleton<GraphQlSensorListener>();
 builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s => 
@@ -44,7 +63,6 @@ builder.Services.AddSingleton<ActionExecutor>();
 builder.Services.AddSingleton<AutomationService>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
-builder.Services.AddMqttClient();
 builder.Services.AddSignalR();
 
 // GraphQL
@@ -57,6 +75,14 @@ builder.Services.AddGraphQLServer()
     .AddSorting()
     .AddInMemorySubscriptions();
     //.AddProjections() // direct DB requests
+
+// RabbitMQ
+builder.AddRabbitMQClient(connectionName: "messaging");
+builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
+builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
+builder.Services.AddHostedService<MessagingListenerService<RegisterModuleMessage, RegisterModuleMessageBody>>();
+builder.Services.AddSingleton<IMessageHandler<RegisterModuleMessageBody>, RegisterModuleMessageHandler>();
 
 // Automation
 builder.Services.AddQuartz(o =>
@@ -77,18 +103,14 @@ builder.Services.AddQuartzServer(options =>
 });
 
 // BackgroundServices 
-builder.Services.AddHostedService<DbInitializer>();
-builder.Services.AddHostedService<SensorInitializer>();
-builder.Services.AddHostedService<ActuatorInitializer>();
+builder.Services.AddHostedService<DbInitializer<ApplicationDbContext>>();
+//builder.Services.AddHostedService<SensorInitializer>();
+//builder.Services.AddHostedService<ActuatorInitializer>();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddHostedService<DummyRegistrationService>();
-    //builder.Services.AddHostedService<MQTTNeutralizer>();
-}
-
-// Options
-builder.Services.Configure<MqttSettings>(builder.Configuration.GetSection("Mqtt"));
+//if (builder.Environment.IsDevelopment())
+//{
+    //builder.Services.AddHostedService<DummyRegistrationService>();
+//}
 
 // -----
 builder.Services.AddControllers();
@@ -109,11 +131,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(o =>
+{
+    o.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+    
+    o.AllowAnyHeader()
+     .AllowAnyMethod()
+     .AllowCredentials();
+});
+
 app.UseWebSockets();
 app.MapGraphQL();
 
 // app.UseHttpsRedirection();
-app.UseCors(o => o.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 
 app.UseAuthorization();
 

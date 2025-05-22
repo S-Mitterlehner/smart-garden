@@ -8,16 +8,14 @@ using Microsoft.Extensions.Logging;
 using Quartz;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
-using SmartGarden.Modules.Actuators;
-using SmartGarden.Modules.Actuators.Enums;
-using SmartGarden.Modules.Sensors;
+using SmartGarden.Modules;
+using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.Automation;
 
 public class AutomationService(
     ILogger<AutomationService> logger,
-    ISensorManager sensorManager, 
-    IActuatorManager actuatorManager,
+    IApiModuleManager moduleManager,
     ActionExecutor executor, 
     IServiceProvider sp) 
     : IJob
@@ -30,7 +28,7 @@ public class AutomationService(
     {
         logger.LogInformation("AutomationService - Execute");
         await using var scope = sp.CreateAsyncScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
         var rules = await db.Get<AutomationRule>()
                             .Where(x => x.IsEnabled && DateTime.UtcNow - (x.LastActionRunAt ?? DateTime.MinValue) > x.CoolDown)
@@ -40,37 +38,19 @@ public class AutomationService(
             return;
 
         var parameters = new JsonObject {{CURRENT_TIME, DateTime.UtcNow.TimeOfDay.Ticks}};
-        var sensors = await db.Get<SensorRef>().GroupBy(x => x.ConnectorKey).ToListAsync();
 
-        foreach (var sensor in sensors)
+        var modules = await db.Get<ModuleRef>().GroupBy(x => x.ModuleKey).ToListAsync();
+        foreach (var module in modules)
         {
-            if (!(parameters.TryGetPropertyValue(sensor.Key, out var node) && node is JsonObject sensorObj))
-            {
-                sensorObj = new JsonObject();
-                parameters.Add(sensor.Key, sensorObj);
-            }
-
-            foreach (var reference in sensor.ToList())
-            {
-                var connector = await sensorManager.GetConnectorAsync(reference);
-                var sensorData = await connector.GetDataAsync();
-
-                sensorObj.Add(reference.Type.ToString(), sensorData.CurrentValue);
-            }
-        }
-
-        var actuators = await db.Get<ActuatorRef>().GroupBy(x => x.ConnectorKey).ToListAsync();
-        foreach (var actuator in actuators)
-        {
-            if (!(parameters.TryGetPropertyValue(actuator.Key, out var node) && node is JsonObject actuatorObj))
+            if (!(parameters.TryGetPropertyValue(module.Key, out var node) && node is JsonObject actuatorObj))
             {
                 actuatorObj = new JsonObject();
-                parameters.Add(actuator.Key, actuatorObj);
+                parameters.Add(module.Key, actuatorObj);
             }
 
-            foreach (var reference in actuator.ToList())
+            foreach (var reference in module.ToList())
             {
-                var connector = await actuatorManager.GetConnectorAsync(reference);
+                var connector = await moduleManager.GetConnectorAsync(reference);
                 var state = await connector.GetStateAsync();
                 actuatorObj.Add(reference.Type.ToString(), state.StateType == StateType.Discrete ? state.State : state.CurrentValue);
             }

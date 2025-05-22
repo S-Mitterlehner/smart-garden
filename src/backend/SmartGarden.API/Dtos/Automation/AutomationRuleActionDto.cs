@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using SmartGarden.EntityFramework.Models;
+using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.Dtos.Automation;
 
@@ -9,7 +10,7 @@ public class AutomationRuleActionDto : BaseDto
     public Guid ActuatorId { get; set; }
     
     public string ActuatorKey { get; set; }
-    public string ActuatorType { get; set; }
+    public ModuleType ActuatorType { get; set; }
     
     public string ActionKey { get; set; }
     public double? Value { get; set; }
@@ -21,9 +22,9 @@ public class AutomationRuleActionDto : BaseDto
         {
             Id = a.Id,
             RuleId = a.RuleId,
-            ActuatorId = a.ActuatorId,
-            ActuatorKey = a.Actuator.ConnectorKey,
-            ActuatorType = a.Actuator.Type.ToString(),
+            ActuatorId = a.ModuleId,
+            ActuatorKey = a.Module.ModuleKey,
+            ActuatorType = a.Module.Type,
             ActionKey = a.ActionKey,
             Value = a.Value,
             Order = a.Order

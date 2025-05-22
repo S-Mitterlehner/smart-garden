@@ -8,7 +8,7 @@ namespace SmartGarden.API.GraphQL;
 public partial class Mutation
 {
     public async Task<BedDto> SetPlantToBed([ID] Guid bedId, [ID] Guid plantId,
-                                            [Service] ApplicationContext db)
+                                            [Service] ApplicationDbContext db)
     {
         var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
         if (bed == null)

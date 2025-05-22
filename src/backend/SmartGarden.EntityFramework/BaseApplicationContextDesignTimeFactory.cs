@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SmartGarden.EntityFramework;
 
-public abstract class BaseApplicationContextDesignTimeFactory<T> : IDesignTimeDbContextFactory<T> where T : ApplicationContext
+public abstract class BaseApplicationContextDesignTimeFactory<T> : IDesignTimeDbContextFactory<T> where T : ApplicationDbContext
 {
     private readonly IServiceProvider _serviceProvider;
     protected IConfigurationRoot Config { get; }

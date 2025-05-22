@@ -8,7 +8,7 @@ using SmartGarden.EntityFramework.Models;
 namespace SmartGarden.API.Controllers;
 
 
-public class BedsController(ApplicationContext db) : BaseController
+public class BedsController(ApplicationDbContext db) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() 

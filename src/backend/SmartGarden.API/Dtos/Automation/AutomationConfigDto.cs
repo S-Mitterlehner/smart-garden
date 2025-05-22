@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 
 namespace SmartGarden.API.Dtos.Automation;
@@ -11,7 +12,7 @@ public class AutomationConfigDto
 public class ParameterFieldDto
 {
     public string ConnectorKey { get; set; }
-    public virtual string Type { get; set; }
+    public virtual ModuleType Type { get; set; }
     public string? TsType { get; set; }
 
     public double? Min { get; set; }
@@ -25,7 +26,7 @@ public class ParameterFieldDto
         c => new ParameterFieldDto
         {
             ConnectorKey = c.ConnectorKey
-            , Type = c.Type.ToString()
+            , Type = c.ModuleType
             , TsType = c.TsType
             , Min = c.Min
             , Max = c.Max

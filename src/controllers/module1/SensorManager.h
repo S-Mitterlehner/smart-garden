@@ -6,7 +6,7 @@
 #include "Component.h"
 
 #define MAX_SENSORS 10
-#define SENSOR_REGISTER_TOPIC "smart-garden/register/sensor"
+#define SENSOR_REGISTER_TOPIC "smart-garden/register"
 
 class SensorManager {
 private:
@@ -30,7 +30,7 @@ public:
 
   void registerSensors(const String deviceId) {
     StaticJsonDocument<1024> doc;
-    doc["sensorKey"] = deviceId;
+    doc["moduleKey"] = deviceId;
     JsonObject topics = doc.createNestedObject("topics");
     for (int i = 0; i < sensorCount; i++) {
       sensors[i]->appendTopicsTo(topics);

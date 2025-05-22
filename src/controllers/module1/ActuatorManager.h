@@ -7,7 +7,7 @@
 #include "Component.h"
 
 #define MAX_ACTUATORS 10
-#define ACTUATOR_REGISTER_TOPIC "smart-garden/register/actuator"
+#define ACTUATOR_REGISTER_TOPIC "smart-garden/register"
 #define ACTION_MESSAGE_TYPE "Action"
 
 class ActuatorManager {
@@ -32,7 +32,7 @@ public:
 
   void registerActuators(const String deviceId) {
     StaticJsonDocument<1024> doc;
-    doc["actuatorKey"] = deviceId;
+    doc["moduleKey"] = deviceId;
     JsonObject topics = doc.createNestedObject("topics");
     for (int i = 0; i < actuatorCount; i++) {
       actuators[i]->appendTopicsTo(topics);

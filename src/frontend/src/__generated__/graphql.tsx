@@ -19,18 +19,43 @@ export type Scalars = {
   UUID: { input: any; output: any; }
 };
 
+export enum ActionIcons {
+  Play = 'PLAY',
+  Stop = 'STOP',
+  Timer = 'TIMER'
+}
+
+export type ActionIconsOperationFilterInput = {
+  eq?: InputMaybe<ActionIcons>;
+  in?: InputMaybe<Array<ActionIcons>>;
+  neq?: InputMaybe<ActionIcons>;
+  nin?: InputMaybe<Array<ActionIcons>>;
+};
+
+export enum ActionType {
+  Command = 'COMMAND',
+  Value = 'VALUE'
+}
+
+export type ActionTypeOperationFilterInput = {
+  eq?: InputMaybe<ActionType>;
+  in?: InputMaybe<Array<ActionType>>;
+  neq?: InputMaybe<ActionType>;
+  nin?: InputMaybe<Array<ActionType>>;
+};
+
 export type ActuatorActionDto = {
   __typename?: 'ActuatorActionDto';
   currentValue?: Maybe<Scalars['Float']['output']>;
   description: Scalars['String']['output'];
-  icon: Scalars['String']['output'];
+  icon: ActionIcons;
   increment?: Maybe<Scalars['Float']['output']>;
   isAllowed: Scalars['Boolean']['output'];
   key: Scalars['String']['output'];
   max?: Maybe<Scalars['Float']['output']>;
   min?: Maybe<Scalars['Float']['output']>;
   name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
+  type: ActionType;
   unit?: Maybe<Scalars['String']['output']>;
 };
 
@@ -38,7 +63,7 @@ export type ActuatorActionDtoFilterInput = {
   and?: InputMaybe<Array<ActuatorActionDtoFilterInput>>;
   currentValue?: InputMaybe<FloatOperationFilterInput>;
   description?: InputMaybe<StringOperationFilterInput>;
-  icon?: InputMaybe<StringOperationFilterInput>;
+  icon?: InputMaybe<ActionIconsOperationFilterInput>;
   increment?: InputMaybe<FloatOperationFilterInput>;
   isAllowed?: InputMaybe<BooleanOperationFilterInput>;
   key?: InputMaybe<StringOperationFilterInput>;
@@ -46,7 +71,7 @@ export type ActuatorActionDtoFilterInput = {
   min?: InputMaybe<FloatOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<ActuatorActionDtoFilterInput>>;
-  type?: InputMaybe<StringOperationFilterInput>;
+  type?: InputMaybe<ActionTypeOperationFilterInput>;
   unit?: InputMaybe<StringOperationFilterInput>;
 };
 
@@ -57,7 +82,7 @@ export type ActuatorDto = {
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
   state: ActuatorStateDto;
-  type: Scalars['String']['output'];
+  type: ModuleType;
 };
 
 export type ActuatorDtoFilterInput = {
@@ -68,19 +93,7 @@ export type ActuatorDtoFilterInput = {
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<ActuatorDtoFilterInput>>;
   state?: InputMaybe<ActuatorStateDtoFilterInput>;
-  type?: InputMaybe<StringOperationFilterInput>;
-};
-
-export type ActuatorRef = {
-  __typename?: 'ActuatorRef';
-  connectorKey?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['UUID']['output'];
-  isDeleted: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  order: Scalars['Int']['output'];
-  topic?: Maybe<Scalars['String']['output']>;
-  type: ActuatorType;
+  type?: InputMaybe<ModuleTypeOperationFilterInput>;
 };
 
 export type ActuatorRefDto = {
@@ -89,7 +102,7 @@ export type ActuatorRefDto = {
   id: Scalars['UUID']['output'];
   key: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
+  type: ModuleType;
 };
 
 export type ActuatorRefDtoFilterInput = {
@@ -99,20 +112,20 @@ export type ActuatorRefDtoFilterInput = {
   key?: InputMaybe<StringOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<ActuatorRefDtoFilterInput>>;
-  type?: InputMaybe<StringOperationFilterInput>;
+  type?: InputMaybe<ModuleTypeOperationFilterInput>;
 };
 
 export type ActuatorStateDto = {
   __typename?: 'ActuatorStateDto';
   actions: Array<ActuatorActionDto>;
   actuatorKey: Scalars['String']['output'];
-  actuatorType: Scalars['String']['output'];
-  connectionState: Scalars['String']['output'];
+  actuatorType: ModuleType;
+  connectionState: ConnectionState;
   lastUpdate: Scalars['DateTime']['output'];
   max?: Maybe<Scalars['Float']['output']>;
   min?: Maybe<Scalars['Float']['output']>;
   state?: Maybe<Scalars['String']['output']>;
-  stateType: Scalars['String']['output'];
+  stateType: StateType;
   unit?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['Float']['output']>;
 };
@@ -120,23 +133,18 @@ export type ActuatorStateDto = {
 export type ActuatorStateDtoFilterInput = {
   actions?: InputMaybe<ListFilterInputTypeOfActuatorActionDtoFilterInput>;
   actuatorKey?: InputMaybe<StringOperationFilterInput>;
-  actuatorType?: InputMaybe<StringOperationFilterInput>;
+  actuatorType?: InputMaybe<ModuleTypeOperationFilterInput>;
   and?: InputMaybe<Array<ActuatorStateDtoFilterInput>>;
-  connectionState?: InputMaybe<StringOperationFilterInput>;
+  connectionState?: InputMaybe<ConnectionStateOperationFilterInput>;
   lastUpdate?: InputMaybe<DateTimeOperationFilterInput>;
   max?: InputMaybe<FloatOperationFilterInput>;
   min?: InputMaybe<FloatOperationFilterInput>;
   or?: InputMaybe<Array<ActuatorStateDtoFilterInput>>;
   state?: InputMaybe<StringOperationFilterInput>;
-  stateType?: InputMaybe<StringOperationFilterInput>;
+  stateType?: InputMaybe<StateTypeOperationFilterInput>;
   unit?: InputMaybe<StringOperationFilterInput>;
   value?: InputMaybe<FloatOperationFilterInput>;
 };
-
-export enum ActuatorType {
-  Hatch = 'HATCH',
-  Pump = 'PUMP'
-}
 
 export type AddActuatorToBedInput = {
   actuatorId: Scalars['ID']['input'];
@@ -145,7 +153,7 @@ export type AddActuatorToBedInput = {
 
 export type AddActuatorToBedPayload = {
   __typename?: 'AddActuatorToBedPayload';
-  actuatorRef?: Maybe<ActuatorRef>;
+  actuatorRefDto?: Maybe<ActuatorRefDto>;
 };
 
 export type AddSensorToBedInput = {
@@ -155,7 +163,12 @@ export type AddSensorToBedInput = {
 
 export type AddSensorToBedPayload = {
   __typename?: 'AddSensorToBedPayload';
-  sensorRef?: Maybe<SensorRef>;
+  sensorRefDto?: Maybe<SensorRefDto>;
+};
+
+export type AutomationConfigDto = {
+  __typename?: 'AutomationConfigDto';
+  fields: Array<ParameterFieldDto>;
 };
 
 export type AutomationRuleActionDto = {
@@ -163,7 +176,7 @@ export type AutomationRuleActionDto = {
   actionKey: Scalars['String']['output'];
   actuatorId: Scalars['UUID']['output'];
   actuatorKey: Scalars['String']['output'];
-  actuatorType: Scalars['String']['output'];
+  actuatorType: ModuleType;
   id: Scalars['UUID']['output'];
   order: Scalars['Int']['output'];
   ruleId: Scalars['UUID']['output'];
@@ -174,7 +187,7 @@ export type AutomationRuleActionDtoFilterInput = {
   actionKey?: InputMaybe<StringOperationFilterInput>;
   actuatorId?: InputMaybe<UuidOperationFilterInput>;
   actuatorKey?: InputMaybe<StringOperationFilterInput>;
-  actuatorType?: InputMaybe<StringOperationFilterInput>;
+  actuatorType?: InputMaybe<ModuleTypeOperationFilterInput>;
   and?: InputMaybe<Array<AutomationRuleActionDtoFilterInput>>;
   id?: InputMaybe<UuidOperationFilterInput>;
   or?: InputMaybe<Array<AutomationRuleActionDtoFilterInput>>;
@@ -200,6 +213,12 @@ export type AutomationRuleDtoFilterInput = {
   id?: InputMaybe<UuidOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<AutomationRuleDtoFilterInput>>;
+};
+
+export type AutomationSelectValueDto = {
+  __typename?: 'AutomationSelectValueDto';
+  label: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type BedDto = {
@@ -228,6 +247,18 @@ export type BedDtoFilterInput = {
 export type BooleanOperationFilterInput = {
   eq?: InputMaybe<Scalars['Boolean']['input']>;
   neq?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export enum ConnectionState {
+  Connected = 'CONNECTED',
+  NotConnected = 'NOT_CONNECTED'
+}
+
+export type ConnectionStateOperationFilterInput = {
+  eq?: InputMaybe<ConnectionState>;
+  in?: InputMaybe<Array<ConnectionState>>;
+  neq?: InputMaybe<ConnectionState>;
+  nin?: InputMaybe<Array<ConnectionState>>;
 };
 
 export type DateTimeOperationFilterInput = {
@@ -328,6 +359,21 @@ export type ListFilterInputTypeOfSensorRefDtoFilterInput = {
   some?: InputMaybe<SensorRefDtoFilterInput>;
 };
 
+export enum ModuleType {
+  Hatch = 'HATCH',
+  Humidity = 'HUMIDITY',
+  Moisture = 'MOISTURE',
+  Pump = 'PUMP',
+  Temperature = 'TEMPERATURE'
+}
+
+export type ModuleTypeOperationFilterInput = {
+  eq?: InputMaybe<ModuleType>;
+  in?: InputMaybe<Array<ModuleType>>;
+  neq?: InputMaybe<ModuleType>;
+  nin?: InputMaybe<Array<ModuleType>>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addActuatorToBed: AddActuatorToBedPayload;
@@ -380,6 +426,17 @@ export type MutationUpdateSensorRefArgs = {
   input: UpdateSensorRefInput;
 };
 
+export type ParameterFieldDto = {
+  __typename?: 'ParameterFieldDto';
+  connectorKey: Scalars['String']['output'];
+  max?: Maybe<Scalars['Float']['output']>;
+  min?: Maybe<Scalars['Float']['output']>;
+  tsType?: Maybe<Scalars['String']['output']>;
+  type: ModuleType;
+  unit?: Maybe<Scalars['String']['output']>;
+  values: Array<AutomationSelectValueDto>;
+};
+
 export type PlantDto = {
   __typename?: 'PlantDto';
   description: Scalars['String']['output'];
@@ -414,7 +471,7 @@ export type PlantSensorConfigDto = {
   __typename?: 'PlantSensorConfigDto';
   rangeFrom: Scalars['Float']['output'];
   rangeTo: Scalars['Float']['output'];
-  sensorType: Scalars['String']['output'];
+  sensorType: ModuleType;
 };
 
 export type PlantSensorConfigDtoFilterInput = {
@@ -422,17 +479,20 @@ export type PlantSensorConfigDtoFilterInput = {
   or?: InputMaybe<Array<PlantSensorConfigDtoFilterInput>>;
   rangeFrom?: InputMaybe<FloatOperationFilterInput>;
   rangeTo?: InputMaybe<FloatOperationFilterInput>;
-  sensorType?: InputMaybe<StringOperationFilterInput>;
+  sensorType?: InputMaybe<ModuleTypeOperationFilterInput>;
 };
 
 export type Query = {
   __typename?: 'Query';
   actuator?: Maybe<ActuatorDto>;
   actuators: Array<ActuatorRefDto>;
+  automationConfig?: Maybe<AutomationConfigDto>;
   bed?: Maybe<BedDto>;
   beds: Array<BedDto>;
   plant?: Maybe<PlantDto>;
   plants: Array<PlantDto>;
+  rule?: Maybe<AutomationRuleDto>;
+  rules: Array<AutomationRuleDto>;
   sensor?: Maybe<SensorDto>;
   sensors: Array<SensorRefDto>;
 };
@@ -446,6 +506,11 @@ export type QueryActuatorArgs = {
 
 export type QueryActuatorsArgs = {
   where?: InputMaybe<ActuatorRefDtoFilterInput>;
+};
+
+
+export type QueryAutomationConfigArgs = {
+  bedId: Scalars['UUID']['input'];
 };
 
 
@@ -468,6 +533,16 @@ export type QueryPlantArgs = {
 
 export type QueryPlantsArgs = {
   where?: InputMaybe<PlantDtoFilterInput>;
+};
+
+
+export type QueryRuleArgs = {
+  ruleId: Scalars['UUID']['input'];
+};
+
+
+export type QueryRulesArgs = {
+  bedId: Scalars['UUID']['input'];
 };
 
 
@@ -503,27 +578,27 @@ export type RemoveSensorFromBedPayload = {
 
 export type SensorDataDto = {
   __typename?: 'SensorDataDto';
-  connectionState: Scalars['String']['output'];
-  currentValue: Scalars['Float']['output'];
+  connectionState: ConnectionState;
+  currentValue?: Maybe<Scalars['Float']['output']>;
   lastUpdate: Scalars['DateTime']['output'];
-  max: Scalars['Float']['output'];
-  min: Scalars['Float']['output'];
+  max?: Maybe<Scalars['Float']['output']>;
+  min?: Maybe<Scalars['Float']['output']>;
   sensorKey: Scalars['String']['output'];
-  sensorType: Scalars['String']['output'];
-  unit: Scalars['String']['output'];
+  sensorType: ModuleType;
+  unit?: Maybe<Scalars['String']['output']>;
 };
 
 export type SensorDto = {
   __typename?: 'SensorDto';
-  currentValue: Scalars['Float']['output'];
+  currentValue?: Maybe<Scalars['Float']['output']>;
   description: Scalars['String']['output'];
   id: Scalars['UUID']['output'];
   key?: Maybe<Scalars['String']['output']>;
-  maxValue: Scalars['Float']['output'];
-  minValue: Scalars['Float']['output'];
+  maxValue?: Maybe<Scalars['Float']['output']>;
+  minValue?: Maybe<Scalars['Float']['output']>;
   name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-  unit: Scalars['String']['output'];
+  type: ModuleType;
+  unit?: Maybe<Scalars['String']['output']>;
 };
 
 export type SensorDtoFilterInput = {
@@ -536,20 +611,8 @@ export type SensorDtoFilterInput = {
   minValue?: InputMaybe<FloatOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<SensorDtoFilterInput>>;
-  type?: InputMaybe<StringOperationFilterInput>;
+  type?: InputMaybe<ModuleTypeOperationFilterInput>;
   unit?: InputMaybe<StringOperationFilterInput>;
-};
-
-export type SensorRef = {
-  __typename?: 'SensorRef';
-  connectorKey?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['UUID']['output'];
-  isDeleted: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  order: Scalars['Int']['output'];
-  topic?: Maybe<Scalars['String']['output']>;
-  type: SensorType;
 };
 
 export type SensorRefDto = {
@@ -558,7 +621,7 @@ export type SensorRefDto = {
   id: Scalars['UUID']['output'];
   key?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  type: Scalars['String']['output'];
+  type: ModuleType;
 };
 
 export type SensorRefDtoFilterInput = {
@@ -568,14 +631,8 @@ export type SensorRefDtoFilterInput = {
   key?: InputMaybe<StringOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<SensorRefDtoFilterInput>>;
-  type?: InputMaybe<StringOperationFilterInput>;
+  type?: InputMaybe<ModuleTypeOperationFilterInput>;
 };
-
-export enum SensorType {
-  Humidity = 'HUMIDITY',
-  Moisture = 'MOISTURE',
-  Temperature = 'TEMPERATURE'
-}
 
 export type SetPlantToBedInput = {
   bedId: Scalars['ID']['input'];
@@ -585,6 +642,18 @@ export type SetPlantToBedInput = {
 export type SetPlantToBedPayload = {
   __typename?: 'SetPlantToBedPayload';
   bedDto?: Maybe<BedDto>;
+};
+
+export enum StateType {
+  Continuous = 'CONTINUOUS',
+  Discrete = 'DISCRETE'
+}
+
+export type StateTypeOperationFilterInput = {
+  eq?: InputMaybe<StateType>;
+  in?: InputMaybe<Array<StateType>>;
+  neq?: InputMaybe<StateType>;
+  nin?: InputMaybe<Array<StateType>>;
 };
 
 export type StringOperationFilterInput = {
@@ -611,13 +680,13 @@ export type Subscription = {
 
 export type SubscriptionOnActuatorStateChangedArgs = {
   key: Scalars['String']['input'];
-  type: Scalars['String']['input'];
+  type: ModuleType;
 };
 
 
 export type SubscriptionOnSensorMeasurementArgs = {
   key: Scalars['String']['input'];
-  type: Scalars['String']['input'];
+  type: ModuleType;
 };
 
 export type UpdateActuatorRefInput = {
@@ -628,7 +697,7 @@ export type UpdateActuatorRefInput = {
 
 export type UpdateActuatorRefPayload = {
   __typename?: 'UpdateActuatorRefPayload';
-  actuatorRef?: Maybe<ActuatorRef>;
+  actuatorRefDto?: Maybe<ActuatorRefDto>;
 };
 
 export type UpdateSensorRefInput = {
@@ -639,7 +708,7 @@ export type UpdateSensorRefInput = {
 
 export type UpdateSensorRefPayload = {
   __typename?: 'UpdateSensorRefPayload';
-  sensorRef?: Maybe<SensorRef>;
+  sensorRefDto?: Maybe<SensorRefDto>;
 };
 
 export type UuidOperationFilterInput = {
@@ -660,14 +729,14 @@ export type UuidOperationFilterInput = {
 export type GetActuatorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetActuatorsQuery = { __typename?: 'Query', actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: string }> };
+export type GetActuatorsQuery = { __typename?: 'Query', actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: ModuleType }> };
 
 export type GetActuatorByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetActuatorByIdQuery = { __typename?: 'Query', actuator?: { __typename?: 'ActuatorDto', id: any, key: string, name: string, description: string, type: string, state: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: string, connectionState: string, stateType: string, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ActuatorActionDto', key: string, name: string, description: string, type: string, isAllowed: boolean, icon: string, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
+export type GetActuatorByIdQuery = { __typename?: 'Query', actuator?: { __typename?: 'ActuatorDto', id: any, key: string, name: string, description: string, type: ModuleType, state: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: ModuleType, connectionState: ConnectionState, stateType: StateType, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ActuatorActionDto', key: string, name: string, description: string, type: ActionType, isAllowed: boolean, icon: ActionIcons, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
 
 export type UpdateActuatorMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -676,7 +745,7 @@ export type UpdateActuatorMutationVariables = Exact<{
 }>;
 
 
-export type UpdateActuatorMutation = { __typename?: 'Mutation', updateActuatorRef: { __typename?: 'UpdateActuatorRefPayload', actuatorRef?: { __typename?: 'ActuatorRef', id: any, name: string, description?: string | null, connectorKey?: string | null, type: ActuatorType } | null } };
+export type UpdateActuatorMutation = { __typename?: 'Mutation', updateActuatorRef: { __typename?: 'UpdateActuatorRefPayload', actuatorRefDto?: { __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: ModuleType } | null } };
 
 export type ExecuteActionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -689,18 +758,18 @@ export type ExecuteActionMutation = { __typename?: 'Mutation', executeActuatorAc
 
 export type ListenStateChangeSubscriptionVariables = Exact<{
   key: Scalars['String']['input'];
-  type: Scalars['String']['input'];
+  type: ModuleType;
 }>;
 
 
-export type ListenStateChangeSubscription = { __typename?: 'Subscription', onActuatorStateChanged: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: string, connectionState: string, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: string, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ActuatorActionDto', currentValue?: number | null, description: string, icon: string, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: string, unit?: string | null }> } };
+export type ListenStateChangeSubscription = { __typename?: 'Subscription', onActuatorStateChanged: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: ModuleType, connectionState: ConnectionState, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: StateType, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ActuatorActionDto', currentValue?: number | null, description: string, icon: ActionIcons, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: ActionType, unit?: string | null }> } };
 
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, sensors: Array<{ __typename?: 'SensorRefDto', id: any, name: string, description: string, key?: string | null, type: string }>, actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: string }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: string, actionKey: string, value?: number | null, order: number }> }> } | null };
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, sensors: Array<{ __typename?: 'SensorRefDto', id: any, name: string, description: string, key?: string | null, type: ModuleType }>, actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: ModuleType }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: ModuleType, actionKey: string, value?: number | null, order: number }> }> } | null };
 
 export type SetCurrentPlantMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -716,7 +785,7 @@ export type AddSensorToBedMutationVariables = Exact<{
 }>;
 
 
-export type AddSensorToBedMutation = { __typename?: 'Mutation', addSensorToBed: { __typename?: 'AddSensorToBedPayload', sensorRef?: { __typename?: 'SensorRef', id: any } | null } };
+export type AddSensorToBedMutation = { __typename?: 'Mutation', addSensorToBed: { __typename?: 'AddSensorToBedPayload', sensorRefDto?: { __typename?: 'SensorRefDto', id: any } | null } };
 
 export type RemoveSensorFromBedMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -732,7 +801,7 @@ export type AddActuatorToBedMutationVariables = Exact<{
 }>;
 
 
-export type AddActuatorToBedMutation = { __typename?: 'Mutation', addActuatorToBed: { __typename?: 'AddActuatorToBedPayload', actuatorRef?: { __typename?: 'ActuatorRef', id: any } | null } };
+export type AddActuatorToBedMutation = { __typename?: 'Mutation', addActuatorToBed: { __typename?: 'AddActuatorToBedPayload', actuatorRefDto?: { __typename?: 'ActuatorRefDto', id: any } | null } };
 
 export type RemoveActuatorFromBedMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -745,26 +814,26 @@ export type RemoveActuatorFromBedMutation = { __typename?: 'Mutation', removeAct
 export type GetPlantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPlantsQuery = { __typename?: 'Query', plants: Array<{ __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: string, rangeFrom: number, rangeTo: number }> }> };
+export type GetPlantsQuery = { __typename?: 'Query', plants: Array<{ __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: ModuleType, rangeFrom: number, rangeTo: number }> }> };
 
 export type GetPlantByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetPlantByIdQuery = { __typename?: 'Query', plant?: { __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: string, rangeFrom: number, rangeTo: number }> } | null };
+export type GetPlantByIdQuery = { __typename?: 'Query', plant?: { __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: ModuleType, rangeFrom: number, rangeTo: number }> } | null };
 
 export type GetSensorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSensorsQuery = { __typename?: 'Query', sensors: Array<{ __typename?: 'SensorRefDto', id: any, name: string, description: string, key?: string | null, type: string }> };
+export type GetSensorsQuery = { __typename?: 'Query', sensors: Array<{ __typename?: 'SensorRefDto', id: any, name: string, description: string, key?: string | null, type: ModuleType }> };
 
 export type GetSensorByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetSensorByIdQuery = { __typename?: 'Query', sensor?: { __typename?: 'SensorDto', id: any, key?: string | null, name: string, type: string, description: string, currentValue: number, maxValue: number, minValue: number, unit: string } | null };
+export type GetSensorByIdQuery = { __typename?: 'Query', sensor?: { __typename?: 'SensorDto', id: any, key?: string | null, name: string, type: ModuleType, description: string, currentValue?: number | null, maxValue?: number | null, minValue?: number | null, unit?: string | null } | null };
 
 export type UpdateSensorMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -773,15 +842,15 @@ export type UpdateSensorMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSensorMutation = { __typename?: 'Mutation', updateSensorRef: { __typename?: 'UpdateSensorRefPayload', sensorRef?: { __typename?: 'SensorRef', connectorKey?: string | null, description?: string | null, id: any, isDeleted: boolean, name: string, order: number, topic?: string | null, type: SensorType } | null } };
+export type UpdateSensorMutation = { __typename?: 'Mutation', updateSensorRef: { __typename?: 'UpdateSensorRefPayload', sensorRefDto?: { __typename?: 'SensorRefDto', key?: string | null, description: string, id: any, name: string, type: ModuleType } | null } };
 
 export type ListenMeasurementSubscriptionVariables = Exact<{
   key: Scalars['String']['input'];
-  type: Scalars['String']['input'];
+  type: ModuleType;
 }>;
 
 
-export type ListenMeasurementSubscription = { __typename?: 'Subscription', onSensorMeasurement: { __typename?: 'SensorDataDto', sensorKey: string, sensorType: string, connectionState: string, currentValue: number, min: number, max: number, unit: string, lastUpdate: any } };
+export type ListenMeasurementSubscription = { __typename?: 'Subscription', onSensorMeasurement: { __typename?: 'SensorDataDto', sensorKey: string, sensorType: ModuleType, connectionState: ConnectionState, currentValue?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any } };
 
 
 export const GetActuatorsDocument = gql`
@@ -899,11 +968,11 @@ export type GetActuatorByIdQueryResult = Apollo.QueryResult<GetActuatorByIdQuery
 export const UpdateActuatorDocument = gql`
     mutation updateActuator($id: ID!, $name: String, $description: String) {
   updateActuatorRef(input: {id: $id, name: $name, description: $description}) {
-    actuatorRef {
+    actuatorRefDto {
       id
       name
       description
-      connectorKey
+      key
       type
     }
   }
@@ -973,7 +1042,7 @@ export type ExecuteActionMutationHookResult = ReturnType<typeof useExecuteAction
 export type ExecuteActionMutationResult = Apollo.MutationResult<ExecuteActionMutation>;
 export type ExecuteActionMutationOptions = Apollo.BaseMutationOptions<ExecuteActionMutation, ExecuteActionMutationVariables>;
 export const ListenStateChangeDocument = gql`
-    subscription listenStateChange($key: String!, $type: String!) {
+    subscription listenStateChange($key: String!, $type: ModuleType!) {
   onActuatorStateChanged(key: $key, type: $type) {
     actuatorKey
     actuatorType
@@ -1138,7 +1207,7 @@ export type SetCurrentPlantMutationOptions = Apollo.BaseMutationOptions<SetCurre
 export const AddSensorToBedDocument = gql`
     mutation addSensorToBed($bedId: ID!, $sensorId: ID!) {
   addSensorToBed(input: {bedId: $bedId, sensorId: $sensorId}) {
-    sensorRef {
+    sensorRefDto {
       id
     }
   }
@@ -1208,7 +1277,7 @@ export type RemoveSensorFromBedMutationOptions = Apollo.BaseMutationOptions<Remo
 export const AddActuatorToBedDocument = gql`
     mutation addActuatorToBed($bedId: ID!, $actuatorId: ID!) {
   addActuatorToBed(input: {bedId: $bedId, actuatorId: $actuatorId}) {
-    actuatorRef {
+    actuatorRefDto {
       id
     }
   }
@@ -1464,14 +1533,11 @@ export type GetSensorByIdQueryResult = Apollo.QueryResult<GetSensorByIdQuery, Ge
 export const UpdateSensorDocument = gql`
     mutation updateSensor($id: ID!, $name: String, $description: String) {
   updateSensorRef(input: {description: $description, id: $id, name: $name}) {
-    sensorRef {
-      connectorKey
+    sensorRefDto {
+      key
       description
       id
-      isDeleted
       name
-      order
-      topic
       type
     }
   }
@@ -1506,7 +1572,7 @@ export type UpdateSensorMutationHookResult = ReturnType<typeof useUpdateSensorMu
 export type UpdateSensorMutationResult = Apollo.MutationResult<UpdateSensorMutation>;
 export type UpdateSensorMutationOptions = Apollo.BaseMutationOptions<UpdateSensorMutation, UpdateSensorMutationVariables>;
 export const ListenMeasurementDocument = gql`
-    subscription listenMeasurement($key: String!, $type: String!) {
+    subscription listenMeasurement($key: String!, $type: ModuleType!) {
   onSensorMeasurement(key: $key, type: $type) {
     sensorKey
     sensorType

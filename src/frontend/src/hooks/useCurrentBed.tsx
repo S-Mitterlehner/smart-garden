@@ -13,8 +13,6 @@ import {
   useRemoveSensorFromBedMutation,
   useSetCurrentPlantMutation,
 } from "../__generated__/graphql";
-import { ActuatorRef } from "../models/actuator";
-import { SensorRef } from "../models/sensor";
 import usePlants from "./usePlants";
 
 export type BedValue = {
@@ -71,7 +69,7 @@ export function useBed(id: string) {
     return plants.find((p) => p.id === bed.plant.id) ?? null;
   }, [bed, plants]);
 
-  const addSensor = (sensor: SensorRef) => {
+  const addSensor = (sensor: SensorRefDto) => {
     if (!bed) return;
 
     addSensorMutation({
@@ -97,7 +95,7 @@ export function useBed(id: string) {
       });
   };
 
-  const removeSensor = (sensor: SensorRef) => {
+  const removeSensor = (sensor: SensorRefDto) => {
     if (!bed) return;
 
     if (!confirm("are you sure?")) return;
@@ -125,7 +123,7 @@ export function useBed(id: string) {
       });
   };
 
-  const addActuator = (actuator: ActuatorRef) => {
+  const addActuator = (actuator: ActuatorRefDto) => {
     if (!bed) return;
 
     addActuatorMutation({
@@ -151,7 +149,7 @@ export function useBed(id: string) {
       });
   };
 
-  const removeActuator = (actuator: ActuatorRef) => {
+  const removeActuator = (actuator: ActuatorRefDto) => {
     if (!bed) return;
 
     if (!confirm("are you sure?")) return;

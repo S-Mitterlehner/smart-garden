@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos.Automation;
 using SmartGarden.EntityFramework;
+using SmartGarden.Modules;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
@@ -10,7 +11,7 @@ using SmartGarden.Modules.Sensors;
 namespace SmartGarden.API.Controllers;
 
 [Route("Beds/{id}/Automation")]
-public class BedAutomationController(ApplicationContext db, IActuatorManager actuatorManager, ISensorManager sensorManager) 
+public class BedAutomationController(ApplicationDbContext db, IApiModuleManager moduleManager) 
     : BaseBedController(db)
 {
     [HttpGet("config")]
@@ -21,15 +22,9 @@ public class BedAutomationController(ApplicationContext db, IActuatorManager act
 
         var moduleConfig = new List<ModuleAutomationConfig>();
 
-        foreach (var sensor in bed.Sensors)
+        foreach (var sensor in bed.Modules)
         {
-            var connector = await sensorManager.GetConnectorAsync(sensor);
-            moduleConfig.Add(await connector.GetAutomationConfigAsync());
-        }
-
-        foreach (var reference in bed.Actuators)
-        {
-            var connector = await actuatorManager.GetConnectorAsync(reference);
+            var connector = await moduleManager.GetConnectorAsync(sensor);
             moduleConfig.Add(await connector.GetAutomationConfigAsync());
         }
 

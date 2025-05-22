@@ -1,4 +1,6 @@
-﻿namespace SmartGarden.EntityFramework.Models;
+﻿using SmartGarden.EntityFramework.Core.Models;
+
+namespace SmartGarden.EntityFramework.Models;
 
 public class Plant : BaseEntityWithOrder
 {

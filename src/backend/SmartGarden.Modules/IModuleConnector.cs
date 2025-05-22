@@ -1,18 +1,27 @@
-﻿using SmartGarden.Modules.Models;
+﻿using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
 
 namespace SmartGarden.Modules;
-
-public interface IModuleConnector<out TModuleType> : IModuleConnector where TModuleType : Enum
-{
-    TModuleType Type { get; }
-}
 
 public interface IModuleConnector
 {
     string Key { get; }
-    string Topic { get; }
+    ModuleType Type { get; }
+    Task<ModuleState> GetStateAsync();
+    Task<IEnumerable<ActionDefinition>> GetActionsAsync();
+}
+
+public interface IApiModuleConnector : IModuleConnector
+{
     string Name { get; }
     string Description { get; }
-    Task InitializeAsync();
+    Task UpdateStateAsync(ModuleState state);
     Task<ModuleAutomationConfig> GetAutomationConfigAsync();
+}
+
+public interface IServiceModuleConnector : IModuleConnector
+{
+    string Topic { get; }
+    Task InitializeAsync();
+    Task ExecuteAsync(ActionExecution execution);
 }

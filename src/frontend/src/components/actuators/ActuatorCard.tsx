@@ -1,64 +1,40 @@
 import { Button, Drawer, Menu, Modal, Slider, Tooltip } from "@mantine/core";
-import { useActuatorContext } from "../../hooks/useActuator";
-import {
-  ActionIcon,
-  ActionType,
-  ActuatorAction,
-  ActuatorRef,
-} from "../../models/actuator";
-import Card from "../Card";
-import ActuatorStateIndicator from "./ActuatorStateIndicator";
-import {
-  IconListDetails,
-  IconPlayerPlay,
-  IconPlayerStop,
-  IconStopwatch,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconListDetails, IconPlayerPlay, IconPlayerStop, IconStopwatch, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
+import { ActionIcons, ActionType, ActuatorActionDto, ActuatorRefDto } from "../../__generated__/graphql";
+import { useActuatorContext } from "../../hooks/useActuator";
 import { getTimeString } from "../../utils";
-import { getTypeIconCircle } from "./utils";
+import Card from "../Card";
 import ActuatorProperties from "./ActuatorProperties";
+import ActuatorStateIndicator from "./ActuatorStateIndicator";
+import { getTypeIconCircle } from "./utils";
 
 export default function ActuatorCard({
   onMenuAction = () => {},
 }: {
-  onMenuAction?: (
-    actuator: ActuatorRef,
-    action: string,
-    actionData?: unknown
-  ) => void;
+  onMenuAction?: (actuator: ActuatorRefDto, action: string, actionData?: unknown) => void;
 }) {
-  const {
-    actuator,
-    state,
-    connectionState,
-    actions,
-    canDoAction,
-    startAction,
-  } = useActuatorContext();
+  const { actuator, state, connectionState, actions, canDoAction, startAction } = useActuatorContext();
 
   const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
   const [showValueModal, setShowValueModal] = useState(false);
   const [sliderValue, setSliderValue] = useState<number | undefined>(undefined);
-  const [currentAction, setCurrentAction] = useState<ActuatorAction | null>(
-    null
-  );
+  const [currentAction, setCurrentAction] = useState<ActuatorActionDto | null>(null);
 
-  const getIcon = (icon: ActionIcon) => {
+  const getIcon = (icon: ActionIcons) => {
     switch (icon) {
-      case ActionIcon.play:
-        return <IconPlayerPlay className="w-4 h-4 text-emerald-600" />;
-      case ActionIcon.stop:
-        return <IconPlayerStop className="w-4 h-4 text-red-700" />;
-      case ActionIcon.timer:
-        return <IconStopwatch className="w-4 h-4 text-yellow-500" />;
+      case ActionIcons.Play:
+        return <IconPlayerPlay className="h-4 w-4 text-emerald-600" />;
+      case ActionIcons.Stop:
+        return <IconPlayerStop className="h-4 w-4 text-red-700" />;
+      case ActionIcons.Timer:
+        return <IconStopwatch className="h-4 w-4 text-yellow-500" />;
       default:
-        return <IconPlayerPlay className="w-4 h-4" />;
+        return <IconPlayerPlay className="h-4 w-4" />;
     }
   };
 
-  const executeAction = (action: ActuatorAction, value: number | undefined) => {
+  const executeAction = (action: ActuatorActionDto, value: number | undefined) => {
     if (!action.isAllowed) return;
 
     setCurrentAction(action);
@@ -94,7 +70,7 @@ export default function ActuatorCard({
         }}
       >
         <p>Please select the value for the action</p>
-        <div className="flex justify-between items-center mt-4 gap-2">
+        <div className="mt-4 flex items-center justify-between gap-2">
           <Slider
             color="oklch(69.6% 0.17 162.48)"
             className="w-full"
@@ -104,26 +80,21 @@ export default function ActuatorCard({
             value={sliderValue}
             onChange={setSliderValue}
           ></Slider>
-          <span className="text-sm text-gray-500 w-24 text-right">
-            {`${sliderValue} ${currentAction?.unit ?? ""}`}
-          </span>
+          <span className="w-24 text-right text-sm text-gray-500">{`${sliderValue} ${currentAction?.unit ?? ""}`}</span>
         </div>
 
-        <div className="flex justify-between items-center mt-4">
+        <div className="mt-4 flex items-center justify-between">
           <Button color="gray" onClick={() => setShowValueModal(false)}>
             Cancel
           </Button>
-          <Button
-            color="oklch(69.6% 0.17 162.48)"
-            onClick={() => executeAction(currentAction!, sliderValue)}
-          >
+          <Button color="oklch(69.6% 0.17 162.48)" onClick={() => executeAction(currentAction!, sliderValue)}>
             Execute
           </Button>
         </div>
       </Modal>
       <Menu shadow="md">
         <Menu.Target>
-          <button className="text-left cursor-pointer w-full phone:w-auto">
+          <button className="w-full cursor-pointer text-left phone:w-auto">
             <Card
               title={actuator.name}
               icon={
@@ -132,17 +103,14 @@ export default function ActuatorCard({
                 </Tooltip>
               }
               right={
-                <div className="flex flex-col text-xs text-right">
+                <div className="flex flex-col text-right text-xs">
                   <span className="text-gray-400">Last Update: </span>
                   <span>{getTimeString(state?.lastUpdate)}</span>
                 </div>
               }
             >
-              <div className="flex flex-col items-center gap-4 h-full justify-center">
-                <ActuatorStateIndicator
-                  state={state}
-                  connectionState={connectionState}
-                />
+              <div className="flex h-full flex-col items-center justify-center gap-4">
+                <ActuatorStateIndicator state={state} connectionState={connectionState} />
               </div>
             </Card>
           </button>
@@ -164,14 +132,14 @@ export default function ActuatorCard({
           <Menu.Label>Misc</Menu.Label>
           <Menu.Item
             onClick={() => setShowPropertiesDrawer(true)}
-            leftSection={<IconListDetails className="w-4 h-4" />}
+            leftSection={<IconListDetails className="h-4 w-4" />}
           >
             View Actuator Details
           </Menu.Item>
           <Menu.Item
-            onClick={() => onMenuAction(actuator, "remove")}
+            onClick={() => onMenuAction(actuator as ActuatorRefDto, "remove")}
             color="red"
-            leftSection={<IconTrash className="w-4 h-4" />}
+            leftSection={<IconTrash className="h-4 w-4" />}
           >
             Remove Actuator from Bed
           </Menu.Item>

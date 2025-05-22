@@ -51,8 +51,8 @@ public:
   }
 
   void onActionMessage(JsonDocument& doc) override {
-    String actuatorType = doc["actuatorType"] | "";
-    if (actuatorType != "Hatch") return;
+    String moduleType = doc["moduleType"] | "";
+    if (moduleType != "Hatch") return;
 
     String actionKey = doc["actionKey"] | "";
     String actionType = doc["actionType"] | "";
@@ -79,8 +79,8 @@ private:
   void sendMotorStatus() {
     JsonDocument doc;
     doc["messageType"] = "State";
-    doc["actuatorKey"] = id;
-    doc["actuatorType"] = "Hatch";
+    doc["moduleKey"] = id;
+    doc["moduleType"] = "Hatch";
     doc["stateType"] = "Continuous";
     doc["min"] = 0;
     doc["max"] = 100;

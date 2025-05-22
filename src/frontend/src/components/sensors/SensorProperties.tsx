@@ -1,19 +1,14 @@
 import { Badge, Button, Textarea, TextInput, Tooltip } from "@mantine/core";
 import { useState } from "react";
+import { ConnectionState } from "../../__generated__/graphql";
+import { useSensorContext } from "../../hooks/useSensor";
+import { getTimeString } from "../../utils";
+import PropertyEntry from "../properties/PropertyEntry";
 import "../styles/properties.css";
 import { getTypeIconCircle } from "./utils";
-import { ConnectionState } from "../../models/general";
-import { getTimeString } from "../../utils";
-import { useSensorContext } from "../../hooks/useSensor";
-import PropertyEntry from "../properties/PropertyEntry";
 
 export default function SensorProperties() {
-  const {
-    sensor,
-    currentState: state,
-    connectionState,
-    updateRef,
-  } = useSensorContext();
+  const { sensor, currentState: state, connectionState, updateRef } = useSensorContext();
   const [name, setName] = useState(sensor.name);
   const [description, setDescription] = useState(sensor.description);
   const [hasChanges, setHasChanges] = useState(false);
@@ -30,7 +25,7 @@ export default function SensorProperties() {
   return (
     <div>
       <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-[auto_1fr_auto] gap-8 items-center">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-8">
           <Tooltip label={sensor.type} position="top" withArrow>
             {getTypeIconCircle(sensor.type, "w-10 h-10")}
           </Tooltip>
@@ -40,7 +35,7 @@ export default function SensorProperties() {
             <span className="text-sm text-gray-600">{sensor.key}</span>
           </div>
 
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col items-end gap-2">
             {connectionState === ConnectionState.NotConnected ? (
               <Badge radius="sm" color="red">
                 Not Connected
@@ -51,22 +46,16 @@ export default function SensorProperties() {
               </Badge>
             )}
             <div className="flex flex-col items-end">
-              <span className="text-xs text-gray-400 line-clamp-1">
-                Last Update
-              </span>
-              <span className="text-xs text-gray-600 line-clamp-1">
-                {getTimeString(state?.lastUpdate)}
-              </span>
+              <span className="line-clamp-1 text-xs text-gray-400">Last Update</span>
+              <span className="line-clamp-1 text-xs text-gray-600">{getTimeString(state?.lastUpdate)}</span>
             </div>
           </div>
         </div>
 
-        <span className="border-b border-gray-300 mt-6 mb-2" />
+        <span className="mt-6 mb-2 border-b border-gray-300" />
 
         <div>
-          <span className="text-sm translate-y-3 inline-block text-gray-400">
-            Name
-          </span>
+          <span className="inline-block translate-y-3 text-sm text-gray-400">Name</span>
           <TextInput
             className="properties-input properties-title"
             variant="unstyled"
@@ -79,9 +68,7 @@ export default function SensorProperties() {
           />
         </div>
         <div>
-          <span className="text-xs translate-y-1 inline-block text-gray-400">
-            Description
-          </span>
+          <span className="inline-block translate-y-1 text-xs text-gray-400">Description</span>
           <Textarea
             className="properties-input properties-description"
             rows={3}
@@ -93,33 +80,19 @@ export default function SensorProperties() {
             }}
           />
         </div>
-        <div className="flex flex-row gap-2 mt-4 justify-end">
-          <Tooltip
-            label="No Changes"
-            position="top"
-            withArrow
-            disabled={hasChanges}
-          >
-            <Button
-              variant="filled"
-              color="oklch(69.6% 0.17 162.48)"
-              disabled={!hasChanges}
-              onClick={saveChanges}
-            >
+        <div className="mt-4 flex flex-row justify-end gap-2">
+          <Tooltip label="No Changes" position="top" withArrow disabled={hasChanges}>
+            <Button variant="filled" color="oklch(69.6% 0.17 162.48)" disabled={!hasChanges} onClick={saveChanges}>
               Save
             </Button>
           </Tooltip>
         </div>
 
-        <span className="border-b border-gray-300 mt-6 mb-4" />
+        <span className="mt-6 mb-4 border-b border-gray-300" />
 
-        <h4 className="text-md text-gray-600 font-semibold mb-4">State</h4>
+        <h4 className="text-md mb-4 font-semibold text-gray-600">State</h4>
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-          <PropertyEntry
-            property="Value"
-            value={state?.currentValue}
-            unit={state?.unit}
-          />
+          <PropertyEntry property="Value" value={state?.currentValue} unit={state?.unit} />
           <PropertyEntry property="Min" value={state?.min} unit={state?.unit} />
           <PropertyEntry property="Max" value={state?.max} unit={state?.unit} />
         </div>

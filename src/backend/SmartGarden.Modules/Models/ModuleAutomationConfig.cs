@@ -1,15 +1,11 @@
-﻿namespace SmartGarden.Modules.Models;
+﻿using SmartGarden.Modules.Enums;
 
-public class ModuleAutomationConfig<TModuleType> : ModuleAutomationConfig where TModuleType : Enum
-{
-    public TModuleType ModuleType { get; set; } = default!;
-    public override string Type => ModuleType.ToString();
-}
+namespace SmartGarden.Modules.Models;
 
 public class ModuleAutomationConfig
 {
     public string ConnectorKey { get; set; }
-    public virtual string Type { get; set; }
+    public ModuleType ModuleType { get; set; }
 
     /// <summary>
     /// Typescript type of the field.

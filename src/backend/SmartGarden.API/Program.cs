@@ -1,9 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using Serilog;
+using SmartGarden.API;
 using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
+using SmartGarden.API.Jobs;
 using SmartGarden.API.Listener;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Core;
@@ -59,6 +62,7 @@ builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s =>
 
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
+// SignalR
 builder.Services.AddSignalR()
     .AddJsonProtocol(options =>
     {
@@ -75,7 +79,6 @@ builder.Services.AddGraphQLServer()
     .AddFiltering()
     .AddSorting()
     .AddInMemorySubscriptions();
-    //.AddProjections() // direct DB requests
 
 // RabbitMQ
 builder.AddRabbitMQClient(connectionName: "messaging");
@@ -85,14 +88,14 @@ builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleSta
 builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
 builder.Services.AddSingleton<IMessageHandler<ModuleRegisterMessageBody>, RegisterModuleMessageHandler>();
 
+// Scheduled Services
+builder.Services.AddQuartz(o =>
+{
+    o.AddJobAdvanced<AutomationRuleSyncJob>(CronExpressions.EveryMinute);
+});
 
 // BackgroundServices 
 builder.Services.AddHostedService<DbInitializer<ApplicationDbContext>>();
-
-//if (builder.Environment.IsDevelopment())
-//{
-    //builder.Services.AddHostedService<DummyRegistrationService>();
-//}
 
 // -----
 builder.Services.AddControllers();

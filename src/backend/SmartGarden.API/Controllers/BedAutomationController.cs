@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos.Automation;
 using SmartGarden.EntityFramework;
+using SmartGarden.Messaging;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
@@ -61,6 +62,7 @@ public class BedAutomationController(ApplicationDbContext db, IApiModuleManager 
     public async Task<IActionResult> Save([FromBody] AutomationRuleDto dto)
     {
         // TODO
+        // TODO: send message to rmq
 
         return Ok();
     }

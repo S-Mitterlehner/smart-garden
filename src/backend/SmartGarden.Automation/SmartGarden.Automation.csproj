@@ -13,14 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
+      <ProjectReference Include="..\SmartGarden.AutomationService.EntityFramework\SmartGarden.AutomationService.EntityFramework.csproj" />
       <ProjectReference Include="..\SmartGarden.Messaging\SmartGarden.Messaging.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="SmartGarden.Core">
-        <HintPath>..\SmartGarden.Core\bin\Debug\net9.0\SmartGarden.Core.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
 </Project>

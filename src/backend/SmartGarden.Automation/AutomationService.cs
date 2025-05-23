@@ -3,20 +3,21 @@ using System.Text.RegularExpressions;
 using Json.Logic;
 using Json.More;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using SmartGarden.EntityFramework;
-using SmartGarden.EntityFramework.Models;
-using SmartGarden.Modules;
+using SmartGarden.Automation.Models;
+using SmartGarden.AutomationService.EntityFramework;
+using SmartGarden.AutomationService.EntityFramework.Models;
 using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.Automation;
 
 public class AutomationService(
     ILogger<AutomationService> logger,
-    IApiModuleManager moduleManager,
-    ActionExecutor executor, 
+    ActionExecutor executor,
+    IMemoryCache cache,
     IServiceProvider sp) 
     : IJob
 {
@@ -28,7 +29,7 @@ public class AutomationService(
     {
         logger.LogDebug("AutomationService - Execute");
         await using var scope = sp.CreateAsyncScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<AutomationServiceDbContext>();
         
         var rules = await db.Get<AutomationRule>()
                             .Where(x => x.IsEnabled && DateTime.UtcNow - (x.LastActionRunAt ?? DateTime.MinValue) > x.CoolDown)
@@ -50,8 +51,7 @@ public class AutomationService(
 
             foreach (var reference in module.ToList())
             {
-                var connector = await moduleManager.GetConnectorAsync(reference);
-                var state = await connector.GetStateAsync();
+                var state = cache.Get<ModuleState>(AutomationUtils.GetCacheKey(reference.ModuleKey, reference.ModuleKey));
                 actuatorObj.Add(reference.Type.ToString(), state.StateType == StateType.Discrete ? state.State : state.CurrentValue);
             }
         }

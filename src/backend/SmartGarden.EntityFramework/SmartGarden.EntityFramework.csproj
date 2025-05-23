@@ -29,12 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SmartGarden.Core">
-      <HintPath>..\SmartGarden.Core\bin\Debug\net9.0\SmartGarden.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SmartGarden.EntityFramework.Core\SmartGarden.EntityFramework.Core.csproj" />
     <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
   </ItemGroup>

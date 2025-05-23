@@ -5,20 +5,21 @@ using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
+using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 
 namespace SmartGarden.Modules.Api;
 
 public class RegisterModuleMessageHandler(IServiceProvider sp, IApiModuleManager manager, ILogger<RegisterModuleMessageHandler> logger)
-    : IMessageHandler<RegisterModuleMessageBody>
+    : IMessageHandler<ModuleRegisterMessageBody>
 {
-    public async Task HandleAsync(RegisterModuleMessageBody msgBody)
+    public async Task HandleAsync(ModuleRegisterMessageBody msgBody)
     {
-        var connector = await manager.GetConnectorAsync(new ModuleRefRecord(msgBody.ModuleKey, msgBody.ModuleType));
+        var connector = await manager.GetConnectorAsync(new ModuleRefRecord(msgBody.ModuleKey, (ModuleType)msgBody.ModuleType));
         
         await using var scope = sp.CreateAsyncScope();
         await using var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
+         
         var reference = await db.Get<ModuleRef>()
             .FirstOrDefaultAsync(x => x.Id == msgBody.ModuleId);
 

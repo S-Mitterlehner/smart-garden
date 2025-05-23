@@ -2,14 +2,17 @@
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SmartGarden.Messaging.Messages;
+using SmartGarden.Messaging.Models;
 
 namespace SmartGarden.Messaging;
 
 public class MessagingListenerService<TMessage, TBody>(
     IConnection conn, 
+    IOptions<RabbitMQSettings> settings, 
     IMessageHandler<TBody> handler, 
     ILogger<MessagingListenerService<TMessage, TBody>> logger) 
     : BackgroundService 
@@ -18,8 +21,12 @@ public class MessagingListenerService<TMessage, TBody>(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var channel = await conn.CreateChannelAsync(cancellationToken: stoppingToken);
-        await channel.QueueDeclareAsync(TMessage.Queue, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
+        var queueName = TMessage.GetQueueName(settings.Value.AppId);
         
+        await channel.ExchangeDeclareAsync(TMessage.Exchange, ExchangeType.Direct, durable: true, cancellationToken: stoppingToken);
+        await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
+        await channel.QueueBindAsync(queueName, TMessage.Exchange, string.Empty, cancellationToken: stoppingToken);
+
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += async (model, ea) =>
         {
@@ -48,7 +55,7 @@ public class MessagingListenerService<TMessage, TBody>(
             }
         };
 
-        await channel.BasicConsumeAsync(queue: TMessage.Queue, 
+        await channel.BasicConsumeAsync(queue: queueName, 
                                         autoAck: true, 
                                         consumer: consumer, 
                                         cancellationToken: stoppingToken);

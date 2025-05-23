@@ -40,15 +40,15 @@ public partial class Mutation
         if (action.ActionType == ActionType.Value && value == null)
             throw new GraphQLException("This action requires a value.");
         
-        var execution = new ActuatorExecutionMessageBody
+        var execution = new ActionExecutionMessageBody
         {
             ActuatorKey = connector.Key, 
             ActuatorType = (int)connector.Type,
             ActionKey = actionKey, 
-            Type = action.ActionType, 
+            Type = (int)action.ActionType, 
             Value = value
         };
-        await messaging.SendAsync(new ActuatorExecutionMessage(execution));
+        await messaging.SendAsync(new ActionExecutionMessage(execution));
         
         return true;
     }

@@ -1,14 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Quartz;
-using Quartz.AspNetCore;
 using Serilog;
 using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Listener;
-using SmartGarden.API.Services;
-using SmartGarden.Automation;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Core;
 using SmartGarden.EntityFramework.Core.Seeder;
@@ -61,8 +57,6 @@ builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s =>
         s.GetRequiredService<SignalRSensorListener>(),
         s.GetRequiredService<GraphQlSensorListener>()));
 
-builder.Services.AddSingleton<ActionExecutor>();
-builder.Services.AddSingleton<AutomationService>();
 builder.Services.AddScoped<ISeeder, DevSeeder>();
 
 builder.Services.AddSignalR()
@@ -88,31 +82,12 @@ builder.AddRabbitMQClient(connectionName: "messaging");
 builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
-builder.Services.AddHostedService<MessagingListenerService<RegisterModuleMessage, RegisterModuleMessageBody>>();
-builder.Services.AddSingleton<IMessageHandler<RegisterModuleMessageBody>, RegisterModuleMessageHandler>();
+builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
+builder.Services.AddSingleton<IMessageHandler<ModuleRegisterMessageBody>, RegisterModuleMessageHandler>();
 
-// Automation
-builder.Services.AddQuartz(o =>
-{
-    var jobKey = new JobKey("Automation");
-    o.AddJob<AutomationService>(o => o.WithIdentity(jobKey));
-
-    o.AddTrigger(op =>
-    {
-        op.ForJob(jobKey)
-            .WithIdentity("AutomationTrigger")
-            .WithCronSchedule("0 * * ? * * *");
-    });
-});
-builder.Services.AddQuartzServer(options =>
-{
-    options.WaitForJobsToComplete = true;
-});
 
 // BackgroundServices 
 builder.Services.AddHostedService<DbInitializer<ApplicationDbContext>>();
-//builder.Services.AddHostedService<SensorInitializer>();
-//builder.Services.AddHostedService<ActuatorInitializer>();
 
 //if (builder.Environment.IsDevelopment())
 //{

@@ -67,14 +67,14 @@ public class ActuatorsController(ApplicationDbContext db, IApiModuleManager actu
         if (action.ActionType == Modules.Enums.ActionType.Value && value == null)
             return BadRequest("Action requires a value");
 
-        var execution = new ActuatorExecutionMessageBody
+        var execution = new ActionExecutionMessageBody
         {
             ActuatorKey = connector.Key, 
             ActionKey = actionKey, 
-            Type = action.ActionType, 
+            Type = (int)action.ActionType, 
             Value = value
         };
-        await messaging.SendAsync(new ActuatorExecutionMessage(execution));
+        await messaging.SendAsync(new ActionExecutionMessage(execution));
         return NoContent();
     }
 }

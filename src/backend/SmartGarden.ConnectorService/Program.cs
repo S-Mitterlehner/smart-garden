@@ -12,6 +12,7 @@ using SmartGarden.EntityFramework.Core;
 using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
+using SmartGarden.Messaging.Models;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Service;
@@ -35,12 +36,13 @@ builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("smartgarden-connection-s
 builder.AddRabbitMQClient(connectionName: "messaging");
 
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
 
 // Services
 builder.Services.AddSingleton<IServiceModuleManager, ServiceModuleManager>();
 builder.Services.AddSingleton<IModuleListener, RabbitMQModuleListener>();
 builder.Services.AddSingleton<ISeeder, DevSeeder>();
-builder.Services.AddSingleton<IMessageHandler<ActuatorExecutionMessageBody>, ActuatorExecutionMessageHandler>();
+builder.Services.AddSingleton<IMessageHandler<ActionExecutionMessageBody>, ActuatorExecutionMessageHandler>();
 builder.Services.AddSingleton<IMessagingProducer, RabbitMQMessagingProducer>();
 
 // MQTT
@@ -50,7 +52,7 @@ builder.Services.AddMqttClient();
 // BackgroundServices
 builder.Services.AddHostedService<ConnectorManagingService>();
 builder.Services.AddHostedService<DbInitializer<ConnectionServiceDbContext>>();
-builder.Services.AddHostedService<MessagingListenerService<ActuatorExecutionMessage, ActuatorExecutionMessageBody>>();
+builder.Services.AddHostedService<MessagingListenerService<ActionExecutionMessage, ActionExecutionMessageBody>>();
 builder.Services.AddHostedService<ModuleInitializerHostedService>();
 
 await builder.Build().RunAsync();

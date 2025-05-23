@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartGarden.API.Models;
+using SmartGarden.Messaging.Models;
 
 namespace SmartGarden.Messaging;
 

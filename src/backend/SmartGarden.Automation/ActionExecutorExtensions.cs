@@ -1,4 +1,4 @@
-using SmartGarden.EntityFramework.Models;
+using SmartGarden.AutomationService.EntityFramework.Models;
 
 namespace SmartGarden.Automation;
 

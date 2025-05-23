@@ -15,9 +15,9 @@ public class ActuatorExecutionMessageHandler(
     ConnectionServiceDbContext db, 
     IServiceModuleManager manager, 
     ILogger<ActuatorExecutionMessageHandler> logger) 
-    : IMessageHandler<ActuatorExecutionMessageBody>
+    : IMessageHandler<ActionExecutionMessageBody>
 {
-    public async Task HandleAsync(ActuatorExecutionMessageBody msg)
+    public async Task HandleAsync(ActionExecutionMessageBody msg)
     {
         try
         {

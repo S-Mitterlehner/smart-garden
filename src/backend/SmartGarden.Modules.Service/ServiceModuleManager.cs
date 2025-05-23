@@ -75,13 +75,13 @@ public class ServiceModuleManager(IServiceProvider sp, ILogger<ServiceModuleMana
                 await db.SaveChangesAsync();
 
 
-                var body = new RegisterModuleMessageBody
+                var body = new ModuleRegisterMessageBody
                 {
                     ModuleId = reference.Id,
                     ModuleKey = connector.Key,
-                    ModuleType = connector.Type
+                    ModuleType = (int)connector.Type
                 };
-                var msg = new RegisterModuleMessage(body);
+                var msg = new ModuleRegisterMessage(body);
                 await producer.SendAsync(msg);
             }
             catch (Exception ex)

@@ -1,12 +1,10 @@
-using SmartGarden.Modules.Enums;
-
 namespace SmartGarden.Messaging.Messages;
 
-public class ActuatorExecutionMessageBody
+public class ActionExecutionMessageBody
 {
     public string ActuatorKey { get; set; }
     public string ActionKey { get; set; }
-    public ActionType Type { get; set; }
+    public int Type { get; set; }
     public double? Value { get; set; }
     public int ActuatorType { get; set; }
 }

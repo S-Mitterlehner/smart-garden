@@ -9,6 +9,7 @@ var dbPassword = builder.AddParameter("password", secret: true, value: "postgres
 var postgres = builder.AddPostgres("db", dbUsername, dbPassword);
 var dbApi = postgres.AddDatabase("smartgarden");
 var dbConnectionService = postgres.AddDatabase("smartgarden-connection-service");
+var dbAutomationService = postgres.AddDatabase("smartgarden-automation-service");
 
 // redis
 
@@ -45,10 +46,16 @@ var api = builder.AddProject<SmartGarden_API>("api")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();
 
-var connector = builder.AddProject<SmartGarden_ConnectorService>("connector")
+builder.AddProject<SmartGarden_ConnectorService>("connector")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)
     .WaitFor(rabbitmq)
     .WaitFor(dbConnectionService);
+
+builder.AddProject<SmartGarden_AutomationService>("automationService")
+    .WithReference(rabbitmq)
+    .WithReference(dbAutomationService)
+    .WaitFor(rabbitmq)
+    .WaitFor(dbAutomationService);
 
 builder.Build().Run();

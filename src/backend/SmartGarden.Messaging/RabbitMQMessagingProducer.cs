@@ -12,8 +12,6 @@ public class RabbitMQMessagingProducer(IConnection rabbitConnection) : IMessagin
         await using var channel = await rabbitConnection.CreateChannelAsync();
 
         await channel.ExchangeDeclareAsync(T.Exchange, ExchangeType.Direct, durable: true);
-        await channel.QueueDeclareAsync(T.Queue, durable: true, exclusive: false, autoDelete: false);
-        await channel.QueueBindAsync(T.Queue, T.Exchange, T.RoutingKey);
         
         var json = JsonSerializer.Serialize(msg.Body);
         var body = Encoding.UTF8.GetBytes(json);
@@ -27,6 +25,6 @@ public class RabbitMQMessagingProducer(IConnection rabbitConnection) : IMessagin
             , 
         };
 
-        await channel.BasicPublishAsync(T.Exchange, T.RoutingKey, true, props, body);
+        await channel.BasicPublishAsync(T.Exchange, string.Empty, true, props, body);
     }
 }

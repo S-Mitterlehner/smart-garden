@@ -1,4 +1,4 @@
-﻿namespace SmartGarden.API.Models;
+﻿namespace SmartGarden.Messaging.Models;
 
 public class RabbitMQSettings
 {

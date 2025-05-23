@@ -5,10 +5,9 @@ namespace SmartGarden.Messaging.Messages;
 public interface IMessage
 {
     abstract static string Exchange { get; }
-    abstract static string Queue { get; }
-    abstract static string RoutingKey { get; }
     abstract static ulong? Expiration { get; }
     abstract static DeliveryModes DeliveryMode { get; }
+    abstract static string GetQueueName(string clientId);
     
     object? Body { get; }
     string? CorrelationId { get; }

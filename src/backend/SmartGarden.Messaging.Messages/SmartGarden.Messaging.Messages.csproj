@@ -10,8 +10,4 @@
     <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
-  </ItemGroup>
-
 </Project>

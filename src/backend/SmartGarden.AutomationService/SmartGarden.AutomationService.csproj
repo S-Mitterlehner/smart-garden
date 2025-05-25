@@ -22,6 +22,7 @@
 		<PackageReference Include="Quartz" Version="3.14.0" />
 		<PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
 		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
+		<PackageReference Include="JsonLogic" Version="5.4.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\SmartGarden.AutomationService.EntityFramework\SmartGarden.AutomationService.EntityFramework.csproj" />

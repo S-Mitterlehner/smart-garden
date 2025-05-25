@@ -14,6 +14,7 @@ using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Messaging.Models;
+using ModuleStateMessageHandler = SmartGarden.AutomationService.ModuleStateMessageHandler;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -41,13 +42,13 @@ builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("R
 builder.Services.AddQuartz(o =>
 {
     var jobKey = new JobKey("Automation");
-    o.AddJob<AutomationJob>(o => o.WithIdentity(jobKey));
-
+    o.AddJob<AutomationJob>(j => j.WithIdentity(jobKey));
     o.AddTrigger(op =>
     {
         op.ForJob(jobKey)
             .WithIdentity("AutomationTrigger")
-            .WithCronSchedule("0 * * ? * * *");
+            //.WithCronSchedule("0 * * ? * * *")
+            .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever());
     });
 });
 builder.Services.AddQuartzServer(options =>
@@ -65,10 +66,7 @@ builder.Services.AddHostedService<DbInitializer<AutomationServiceDbContext>>();
 
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
 builder.Services.AddSingleton<IMessageHandler<AutomationRuleMessageBody>, AutomationRuleMessageHandler>();
-builder.Services.AddSingleton<IMessageHandler<ModuleRegisterMessageBody>, ModuleRegisterMessageHandler>();
-
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
 builder.Services.AddHostedService<MessagingListenerService<AutomationRuleMessage, AutomationRuleMessageBody>>();
-builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
 
 await builder.Build().RunAsync();

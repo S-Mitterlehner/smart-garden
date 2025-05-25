@@ -23,7 +23,7 @@ public class AutomationRuleSyncJob(ApplicationDbContext db, IMessagingProducer m
                 IsEnabled = rule.IsEnabled,
                 LastActionRunAt = rule.LastActionRunAt,
                 CoolDown = rule.CoolDown,
-                Actions = rule.Actions.Select(x => new AutomationRuleActionMesssageItem
+                Actions = rule.Actions.Select(x => new AutomationRuleActionMessageItem
                 {
                     ModuleId = x.ModuleId,
                     ActionKey = x.ActionKey,

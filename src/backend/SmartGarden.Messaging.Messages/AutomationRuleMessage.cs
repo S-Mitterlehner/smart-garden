@@ -27,10 +27,10 @@ public class AutomationRuleMessageBody
 
     public TimeSpan CoolDown { get; set; }
     
-    public virtual List<AutomationRuleActionMesssageItem> Actions { get; set; } = new();
+    public virtual List<AutomationRuleActionMessageItem> Actions { get; set; } = new();
 }
 
-public class AutomationRuleActionMesssageItem
+public class AutomationRuleActionMessageItem
 {
     public Guid ModuleId { get; set; }
     public string ActionKey { get; set; }

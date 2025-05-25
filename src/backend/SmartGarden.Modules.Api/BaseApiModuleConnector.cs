@@ -23,7 +23,7 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
             var db = redis.GetDatabase();
             var val = JsonSerializer.Serialize(state);
 
-            await db.StringSetAsync(Key, val, TimeSpan.FromMinutes(2));
+            await db.StringSetAsync(cacheKey, val, TimeSpan.FromMinutes(2)); //TODO: from config
         }
         catch (Exception ex)
         {

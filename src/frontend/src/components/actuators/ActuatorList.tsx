@@ -1,5 +1,5 @@
 import { ActuatorRefDto } from "../../__generated__/graphql";
-import { getTypeIconCircle } from "./utils";
+import { getTypeIconCircle } from "../sensors/utils";
 
 export type ActuatorListProps = {
   Actuators: ActuatorRefDto[];

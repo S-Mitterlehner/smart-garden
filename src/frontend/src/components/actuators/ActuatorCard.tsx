@@ -1,13 +1,19 @@
 import { Button, Drawer, Menu, Modal, Slider, Tooltip } from "@mantine/core";
 import { IconListDetails, IconPlayerPlay, IconPlayerStop, IconStopwatch, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
-import { ActionIcons, ActionType, ActuatorActionDto, ActuatorRefDto } from "../../__generated__/graphql";
+import {
+  ActionIcons,
+  ActionType,
+  ActuatorActionDto,
+  ActuatorRefDto,
+  ConnectionState,
+} from "../../__generated__/graphql";
 import { useActuatorContext } from "../../hooks/useActuator";
 import { getTimeString } from "../../utils";
 import Card from "../Card";
+import { getTypeIconCircle } from "../sensors/utils";
 import ActuatorProperties from "./ActuatorProperties";
 import ActuatorStateIndicator from "./ActuatorStateIndicator";
-import { getTypeIconCircle } from "./utils";
 
 export default function ActuatorCard({
   onMenuAction = () => {},
@@ -48,6 +54,22 @@ export default function ActuatorCard({
     setShowValueModal(false);
     setCurrentAction(null);
     startAction(action, value);
+  };
+
+  const getCardIcon = () => {
+    let tooltip = actuator.type?.toString() ?? "";
+    let variants = {};
+
+    if (state?.connectionState === ConnectionState.NotConnected) {
+      tooltip += " (Statusupdate overdue)";
+      variants = { color: "orange" };
+    }
+
+    return (
+      <Tooltip label={tooltip} position="top" withArrow>
+        {getTypeIconCircle(actuator.type, variants)}
+      </Tooltip>
+    );
   };
 
   return (
@@ -97,11 +119,7 @@ export default function ActuatorCard({
           <button className="w-full cursor-pointer text-left phone:w-auto">
             <Card
               title={actuator.name}
-              icon={
-                <Tooltip label={actuator.type} position="top" withArrow>
-                  {getTypeIconCircle(actuator.type)}
-                </Tooltip>
-              }
+              icon={getCardIcon()}
               right={
                 <div className="flex flex-col text-right text-xs">
                   <span className="text-gray-400">Last Update: </span>

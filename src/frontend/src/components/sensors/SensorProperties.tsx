@@ -27,7 +27,7 @@ export default function SensorProperties() {
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-8">
           <Tooltip label={sensor.type} position="top" withArrow>
-            {getTypeIconCircle(sensor.type, "w-10 h-10")}
+            {getTypeIconCircle(sensor.type, { size: "xl" })}
           </Tooltip>
 
           <div className="flex flex-col">

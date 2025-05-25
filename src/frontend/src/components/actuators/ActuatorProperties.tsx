@@ -4,8 +4,8 @@ import { ConnectionState, StateType } from "../../__generated__/graphql";
 import { useActuatorContext } from "../../hooks/useActuator";
 import { getTimeString } from "../../utils";
 import PropertyEntry from "../properties/PropertyEntry";
+import { getTypeIconCircle } from "../sensors/utils";
 import "../styles/properties.css";
-import { getTypeIconCircle } from "./utils";
 
 export default function ActuatorProperties() {
   const { actuator, state, connectionState, updateRef } = useActuatorContext();
@@ -27,7 +27,7 @@ export default function ActuatorProperties() {
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-8">
           <Tooltip label={actuator.type} position="top" withArrow>
-            {getTypeIconCircle(actuator.type, "w-10 h-10")}
+            {getTypeIconCircle(actuator.type, { size: "xl" })}
           </Tooltip>
 
           <div className="flex flex-col">

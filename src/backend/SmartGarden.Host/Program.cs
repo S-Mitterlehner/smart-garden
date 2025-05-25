@@ -17,8 +17,8 @@ var redis = builder.AddRedis("state-cache");
 
 // rabbitmq
 
-var rabbitMqUsername = builder.AddParameter("usernameRabbit", secret: true, value: "rabbitmq");
-var rabbitMqPassword = builder.AddParameter("passwordRabbit", secret: true, value: "rabbitmq");
+var rabbitMqUsername = builder.AddParameter("username-rabbit", secret: true, value: "rabbitmq");
+var rabbitMqPassword = builder.AddParameter("password-rabbit", secret: true, value: "rabbitmq");
 
 var rabbitmq = builder
     .AddRabbitMQ("messaging", rabbitMqUsername, rabbitMqPassword)
@@ -31,10 +31,11 @@ var frontend = builder.AddNpmApp(
         "frontend",
         "../../frontend",
         "dev")
+    //.WithExplicitStart()
     .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
     .WithExternalHttpEndpoints();
 
-var api = builder.AddProject<SmartGarden_API>("api")
+builder.AddProject<SmartGarden_API>("api")
     .WithReference(dbApi)
     .WithReference(rabbitmq)
     .WithReference(frontend)
@@ -46,13 +47,13 @@ var api = builder.AddProject<SmartGarden_API>("api")
     .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();
 
-builder.AddProject<SmartGarden_ConnectorService>("connector")
+builder.AddProject<SmartGarden_ConnectorService>("connector-service")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)
     .WaitFor(rabbitmq)
     .WaitFor(dbConnectionService);
 
-builder.AddProject<SmartGarden_AutomationService>("automationService")
+builder.AddProject<SmartGarden_AutomationService>("automation-service")
     .WithReference(rabbitmq)
     .WithReference(dbAutomationService)
     .WaitFor(rabbitmq)

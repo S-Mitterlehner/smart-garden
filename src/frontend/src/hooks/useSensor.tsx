@@ -40,6 +40,7 @@ export function useSensor(sensorId: string): SensorValue {
   const { socketType } = useAppSettingsContext();
   const [currentState, setCurrentState] = useState<SensorDataDto | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.NotConnected);
+  const [resetTimer, setResetTimer] = useState<NodeJS.Timeout | null>(null);
 
   const {
     data: { sensor } = {},
@@ -140,6 +141,37 @@ export function useSensor(sensorId: string): SensorValue {
       });
     }
   }, [sensor]);
+
+  useEffect(() => {
+    if (!currentState) return;
+
+    if (resetTimer) {
+      clearTimeout(resetTimer);
+    }
+
+    const timer = setTimeout(
+      () => {
+        setCurrentState((prev) => ({
+          connectionState: ConnectionState.NotConnected,
+          currentValue: prev?.currentValue ?? null,
+          min: prev?.min ?? null,
+          max: prev?.max ?? null,
+          unit: prev?.unit ?? null,
+          lastUpdate: prev?.lastUpdate ?? null,
+          sensorKey: prev?.sensorKey ?? "-",
+          sensorType: prev?.sensorType ?? ModuleType.Temperature,
+        }));
+      },
+      20 * 1000,
+      // 2 * 60 * 1000,
+    ); // 2 minutes
+
+    setResetTimer(timer);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentState]);
 
   return {
     isFetched: !loading && !!sensor,

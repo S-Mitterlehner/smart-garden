@@ -7,6 +7,7 @@ import {
   ActuatorStateDto,
   ConnectionState,
   ModuleType,
+  StateType,
   useExecuteActionMutation,
   useGetActuatorByIdQuery,
   useListenStateChangeSubscription,
@@ -45,6 +46,7 @@ export function useActuator(actuatorId: string): ActuatorValue {
   const [currentState, setCurrentState] = useState<ActuatorStateDto | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.NotConnected);
   const [loading, setLoading] = useState(false);
+  const [resetTimer, setResetTimer] = useState<NodeJS.Timeout | null>(null);
   const {
     data: { actuator } = {},
     refetch,
@@ -72,8 +74,6 @@ export function useActuator(actuatorId: string): ActuatorValue {
   useEffect(() => {
     let connection: signalR.HubConnection | null = null;
     if (socketType.get !== SocketType.SignalR || actuator?.key === null || actuator?.type === null) {
-      // console.log(`${actuator?.key}/${actuator?.type} GraphQL is used`);
-
       try {
         if (connection) {
           (connection as signalR.HubConnection).stop();
@@ -145,6 +145,40 @@ export function useActuator(actuatorId: string): ActuatorValue {
       });
     }
   }, [actuator]);
+
+  useEffect(() => {
+    if (!currentState) return;
+
+    if (resetTimer) {
+      clearTimeout(resetTimer);
+    }
+
+    const timer = setTimeout(
+      () => {
+        setCurrentState((prev) => ({
+          connectionState: ConnectionState.NotConnected,
+          actions: prev?.actions ?? [],
+          actuatorKey: prev?.actuatorKey ?? "-",
+          actuatorType: prev?.actuatorType ?? ModuleType.Pump,
+          lastUpdate: prev?.lastUpdate ?? null,
+          stateType: prev?.stateType ?? StateType.Continuous,
+          max: prev?.max ?? null,
+          min: prev?.min ?? null,
+          state: prev?.state ?? null,
+          unit: prev?.unit ?? null,
+          value: prev?.value ?? null,
+        }));
+      },
+      20 * 1000,
+      // 2 * 60 * 1000,
+    ); // 2 minutes
+
+    setResetTimer(timer);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentState]);
 
   return {
     actuator: actuator ?? ({} as ActuatorDto),

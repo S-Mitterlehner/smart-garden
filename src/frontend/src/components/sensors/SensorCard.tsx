@@ -25,7 +25,7 @@ export default function SensorCard({
   const rangeTo = plantConfig?.rangeTo ?? -1;
 
   const getGauge = () => {
-    if (!isFetched || connectionState === ConnectionState.NotConnected)
+    if (!isFetched || (connectionState === ConnectionState.NotConnected && currentState?.currentValue === null))
       return (
         <Tooltip label="Not Connected" withArrow position="top">
           <IconPlugConnectedX className="h-24 w-24 text-gray-500" />
@@ -39,6 +39,7 @@ export default function SensorCard({
         </Tooltip>
       );
     }
+
     return (
       <Gauge
         min={currentState.min as number}
@@ -55,6 +56,22 @@ export default function SensorCard({
   const getRangeString = () => {
     if (rangeFrom > -1 && rangeTo > -1) return `${rangeFrom} - ${rangeTo} ${sensor.unit ?? ""}`;
     else return "not defined";
+  };
+
+  const getCardIcon = () => {
+    let tooltip = sensor.type?.toString() ?? "";
+    let variants = {};
+
+    if (currentState?.connectionState === ConnectionState.NotConnected) {
+      tooltip += " (Statusupdate overdue)";
+      variants = { color: "orange" };
+    }
+
+    return (
+      <Tooltip label={tooltip} position="top" withArrow>
+        {getTypeIconCircle(sensor.type, variants)}
+      </Tooltip>
+    );
   };
 
   return (
@@ -74,11 +91,7 @@ export default function SensorCard({
             <Card
               title={sensor.name}
               className="hover:bg-gray-50!"
-              icon={
-                <Tooltip label={sensor.type} position="top" withArrow>
-                  {getTypeIconCircle(sensor.type)}
-                </Tooltip>
-              }
+              icon={getCardIcon()}
               right={
                 <div className="flex flex-col text-right text-xs">
                   <span className="text-gray-400">Last Update: </span>

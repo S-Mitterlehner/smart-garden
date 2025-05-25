@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using SmartGarden.Modules.ConnectorActionProviders;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 using StackExchange.Redis;
@@ -14,7 +15,7 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
     public abstract string Description { get; }
 
     public abstract Task<IEnumerable<ActionDefinition>> GetActionsAsync();
-    
+
     public async Task UpdateStateAsync(ModuleState state)
     {
         var cacheKey = Utils.GetCacheKey(Key, Type.ToString());
@@ -78,4 +79,12 @@ public abstract class BaseSensorApiModuleConnector(string key, IConnectionMultip
     public override Task<IEnumerable<ActionDefinition>> GetActionsAsync() => Task.FromResult((IEnumerable<ActionDefinition>) []);
 }
 
-public abstract class BaseActuatorApiModuleConnector(string key, IConnectionMultiplexer redis, ILogger logger) : BaseApiModuleConnector(key, redis, logger);
+public abstract class BaseActuatorApiModuleConnector(string key, IConnectionMultiplexer redis, ILogger logger) : BaseApiModuleConnector(key, redis, logger)
+{
+    public override async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
+    {
+        var state = await GetStateAsync();
+
+        return ConnectorActionsProviderFactory.GetActionsProvider(Type).GetActions(state);
+    }
+}

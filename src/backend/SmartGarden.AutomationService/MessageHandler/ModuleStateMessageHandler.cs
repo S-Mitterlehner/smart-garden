@@ -4,10 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SmartGarden.AutomationService.EntityFramework;
 using SmartGarden.AutomationService.EntityFramework.Models;
-using SmartGarden.AutomationService.Models;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
 
 namespace SmartGarden.AutomationService.MessageHandler;
 
@@ -29,8 +29,7 @@ public class ModuleStateMessageHandler(IServiceProvider sp, IMemoryCache cache, 
             , Min = msgBody.Min
             , Max = msgBody.Max
             , Unit = msgBody.Unit
-            , CreatedAt = DateTime.UtcNow
-            , ModuleId = module.Id
+            , LastUpdate = DateTime.UtcNow
         };
 
         cache.Set(AutomationUtils.GetCacheKey(msgBody.ModuleKey, msgBody.ModuleType), 

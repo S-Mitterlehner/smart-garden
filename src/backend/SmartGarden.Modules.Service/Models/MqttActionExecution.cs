@@ -17,7 +17,7 @@ public class MqttActionExecution : MqttMessage
     public string ModuleType { get; set; }
 
     [JsonPropertyName("actionType")]
-    public string Type { get; set; }
+    public string ActionType { get; set; }
 
     [JsonPropertyName("value")]
     public double? Value { get; set; }

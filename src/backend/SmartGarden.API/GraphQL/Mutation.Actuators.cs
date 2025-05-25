@@ -42,10 +42,9 @@ public partial class Mutation
         
         var execution = new ActionExecutionMessageBody
         {
-            ActuatorKey = connector.Key, 
-            ActuatorType = (int)connector.Type,
+            ModuleKey = connector.Key, 
+            ModuleType = (int)connector.Type,
             ActionKey = actionKey, 
-            Type = (int)action.ActionType, 
             Value = value
         };
         await messaging.SendAsync(new ActionExecutionMessage(execution));

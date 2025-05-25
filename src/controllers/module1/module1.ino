@@ -95,7 +95,7 @@ void listen(char* topic, byte* payload, unsigned int length) {
   }
 
   // Check if the message is for this device
-  if (doc["actuatorKey"].as<String>() == deviceId) {
+  if (doc["moduleKey"].as<String>() == deviceId) {
     actuatorManager.onActionMessage(doc);
   }
 }

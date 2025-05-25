@@ -10,6 +10,6 @@ public class ActionExecutionMessage(ActionExecutionMessageBody body) : IMessage<
     public static string GetQueueName(string clientId) => $"{clientId}_ActionExecution_Queue";
 
     public object Body => Data;
-    public string? CorrelationId => Data.ActuatorKey;
+    public string? CorrelationId => Data.ModuleKey;
     public ActionExecutionMessageBody Data { get; set; } = body;
 }

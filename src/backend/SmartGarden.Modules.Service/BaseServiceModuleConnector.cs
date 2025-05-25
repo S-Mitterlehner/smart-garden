@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using MQTTnet;
 using MQTTnet.Protocol;
+using SmartGarden.Modules.ConnectorActionProviders;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Service.Models;
@@ -19,13 +20,7 @@ public abstract class BaseServiceModuleConnector(string key, string topic, IMqtt
     public abstract Task<IEnumerable<ActionDefinition>> GetActionsAsync();
     protected abstract ModuleState GetInitialState();
     public abstract Task ExecuteAsync(ActionExecution execution);
-
-    public Task UpdateStateAsync(ModuleState state) 
-    {
-        _lastState = state;
-        return Task.CompletedTask;
-    }
-
+    
     public virtual Task<ModuleState> GetStateAsync() => Task.FromResult(_lastState);
 
     public virtual async Task InitializeAsync()
@@ -46,6 +41,7 @@ public abstract class BaseServiceModuleConnector(string key, string topic, IMqtt
             if (data is null || data.MessageType != MqttMessage.STATE_MESSAGE_TYPE) return; // Ignore messages which aren't state messages
 
             var state = GetStateFromMqtt(data);
+            _lastState = state;
             await listener.PublishStateChangeAsync(state, await GetActionsAsync());
         }
         catch (Exception ex)
@@ -90,7 +86,7 @@ public abstract class BaseServiceModuleConnector(string key, string topic, IMqtt
         }
     }
 
-    protected MqttActionExecution GetMqttActionFromExecution(ActionExecution data)
+    protected MqttActionExecution GetMqttActionFromExecution(ActionDefinition action, ActionExecution data)
     {
         if (data is null) throw new ArgumentNullException(nameof(data));
         return new MqttActionExecution
@@ -99,10 +95,9 @@ public abstract class BaseServiceModuleConnector(string key, string topic, IMqtt
             ModuleKey = Key,
             ModuleType = Type.ToString(),
             Value = data.Value,
-            Type = data.Type.ToString()
+            ActionType = action.ActionType.ToString()
         };
     }
-
 }
 
 public abstract class BaseSensorServiceModuleConnector(string key, string topic, IMqttClient mqtt, IModuleListener listener) : BaseServiceModuleConnector(key, topic, mqtt, listener)
@@ -113,6 +108,12 @@ public abstract class BaseSensorServiceModuleConnector(string key, string topic,
 
 public abstract class BaseActuatorServiceModuleConnector(string key, string topic, IMqttClient mqttClient, IModuleListener listener) : BaseServiceModuleConnector(key, topic, mqttClient, listener)
 {
+    public override async Task<IEnumerable<ActionDefinition>> GetActionsAsync()
+    {
+        var state = await GetStateAsync();
+        return ConnectorActionsProviderFactory.GetActionsProvider(Type).GetActions(state);
+    }
+
     public override async Task ExecuteAsync(ActionExecution execution)
     {
         var actions = await GetActionsAsync();
@@ -124,7 +125,7 @@ public abstract class BaseActuatorServiceModuleConnector(string key, string topi
         if (!currentAction.IsAllowed)
             throw new InvalidOperationException("Action not allowed for this Actuator");
 
-        var message = GetMqttActionFromExecution(execution);
+        var message = GetMqttActionFromExecution(currentAction, execution);
 
         var appMessage = new MqttApplicationMessageBuilder()
                          .WithTopic(Topic)

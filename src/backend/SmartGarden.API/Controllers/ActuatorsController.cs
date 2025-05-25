@@ -69,9 +69,8 @@ public class ActuatorsController(ApplicationDbContext db, IApiModuleManager actu
 
         var execution = new ActionExecutionMessageBody
         {
-            ActuatorKey = connector.Key, 
+            ModuleKey = connector.Key, 
             ActionKey = actionKey, 
-            Type = (int)action.ActionType, 
             Value = value
         };
         await messaging.SendAsync(new ActionExecutionMessage(execution));

@@ -7,7 +7,6 @@ using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
-using ActionType = SmartGarden.Modules.Enums.ActionType;
 
 namespace SmartGarden.ConnectorService;
 
@@ -23,14 +22,13 @@ public class ActuatorExecutionMessageHandler(
         {
             var reference = await db.Get<ModuleRef>()
                 .FirstAsync(x =>
-                    x.ModuleKey == msg.ActuatorKey
-                    && x.Type == (ModuleType)msg.ActuatorType);
+                    x.ModuleKey == msg.ModuleKey
+                    && x.Type == (ModuleType)msg.ModuleType);
 
             var connector = await manager.GetConnectorAsync(reference);
             await connector.ExecuteAsync(new ActionExecution
             {
                 ActionKey = msg.ActionKey,
-                Type = (ActionType)msg.Type,
                 Value = msg.Value
             });
         }

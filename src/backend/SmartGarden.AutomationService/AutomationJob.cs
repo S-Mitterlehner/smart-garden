@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Quartz;
 using SmartGarden.AutomationService.EntityFramework;
 using SmartGarden.AutomationService.EntityFramework.Models;
-using SmartGarden.AutomationService.Models;
 using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
 
 namespace SmartGarden.AutomationService;
 

@@ -53,6 +53,7 @@ public:
   }
 
   void onActionMessage(JsonDocument& doc) override {
+    Serial.println("Pump Action called");
     String moduleType = doc["moduleType"] | "";
     if (moduleType != "Pump") return;
 

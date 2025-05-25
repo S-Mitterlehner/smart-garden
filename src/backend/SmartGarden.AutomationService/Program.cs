@@ -14,7 +14,6 @@ using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Messaging.Models;
-using ModuleStateMessageHandler = SmartGarden.AutomationService.ModuleStateMessageHandler;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()

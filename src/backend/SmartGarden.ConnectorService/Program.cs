@@ -33,7 +33,7 @@ builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("smartgarden-connection-s
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );
-builder.AddRabbitMQClient(connectionName: "messaging");
+builder.AddRabbitMQClient(connectionName: "rabbitmq");
 
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));

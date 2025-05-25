@@ -59,7 +59,7 @@ public class DevSeeder(AutomationServiceDbContext context) : BaseSeeder(context)
                                  ]
                               }
                               """,
-            IsEnabled = false,
+            IsEnabled = true,
             CoolDown = new TimeSpan(0, 5, 0) /*5 min*/,
             Actions =
             [

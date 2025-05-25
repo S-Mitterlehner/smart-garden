@@ -1,6 +1,6 @@
 ﻿using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.Automation.Models;
+namespace SmartGarden.AutomationService.Models;
 
 public class ModuleState
 {

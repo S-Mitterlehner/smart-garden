@@ -4,7 +4,7 @@ using SmartGarden.AutomationService.EntityFramework.Models;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 
-namespace SmartGarden.Automation;
+namespace SmartGarden.AutomationService;
 
 public class ActionExecutor(AutomationServiceDbContext db, IMessagingProducer messaging, ILogger<ActionExecutor> logger)
 {

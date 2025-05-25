@@ -1,6 +1,6 @@
 using SmartGarden.AutomationService.EntityFramework.Models;
 
-namespace SmartGarden.Automation;
+namespace SmartGarden.AutomationService;
 
 public static class ActionExecutorExtensions
 {

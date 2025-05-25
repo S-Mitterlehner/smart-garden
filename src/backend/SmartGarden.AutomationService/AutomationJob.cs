@@ -7,15 +7,15 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using SmartGarden.Automation.Models;
 using SmartGarden.AutomationService.EntityFramework;
 using SmartGarden.AutomationService.EntityFramework.Models;
+using SmartGarden.AutomationService.Models;
 using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.Automation;
+namespace SmartGarden.AutomationService;
 
-public class AutomationService(
-    ILogger<AutomationService> logger,
+public class AutomationJob(
+    ILogger<AutomationJob> logger,
     ActionExecutor executor,
     IMemoryCache cache,
     IServiceProvider sp) 
@@ -36,7 +36,10 @@ public class AutomationService(
                             .ToListAsync();
 
         if (!rules.Any())
+        {
+            logger.LogInformation("No rules to check");
             return;
+        }
 
         var parameters = new JsonObject {{CURRENT_TIME, DateTime.UtcNow.TimeOfDay.Ticks}};
 
@@ -51,7 +54,14 @@ public class AutomationService(
 
             foreach (var reference in module.ToList())
             {
-                var state = cache.Get<ModuleState>(AutomationUtils.GetCacheKey(reference.ModuleKey, reference.ModuleKey));
+                var state = cache.Get<ModuleState>(AutomationUtils.GetCacheKey(reference.ModuleKey, reference.Type));
+
+                if (state is null)
+                {
+                    logger.LogWarning("No state for module {moduleKey}/{type}", reference.ModuleKey, reference.Type);
+                    continue;
+                }
+
                 actuatorObj.Add(reference.Type.ToString(), state.StateType == StateType.Discrete ? state.State : state.CurrentValue);
             }
         }

@@ -7,13 +7,13 @@ var dbUsername = builder.AddParameter("username", secret: true, value: "postgres
 var dbPassword = builder.AddParameter("password", secret: true, value: "postgres");
 
 var postgres = builder.AddPostgres("db", dbUsername, dbPassword);
-var dbApi = postgres.AddDatabase("smartgarden");
+var dbApi = postgres.AddDatabase("smartgarden-api");
 var dbConnectionService = postgres.AddDatabase("smartgarden-connection-service");
 var dbAutomationService = postgres.AddDatabase("smartgarden-automation-service");
 
 // redis
 
-var redis = builder.AddRedis("state-cache");
+var redis = builder.AddRedis("redis-api");
 
 // rabbitmq
 
@@ -21,7 +21,7 @@ var rabbitMqUsername = builder.AddParameter("username-rabbit", secret: true, val
 var rabbitMqPassword = builder.AddParameter("password-rabbit", secret: true, value: "rabbitmq");
 
 var rabbitmq = builder
-    .AddRabbitMQ("messaging", rabbitMqUsername, rabbitMqPassword)
+    .AddRabbitMQ("rabbitmq", rabbitMqUsername, rabbitMqPassword)
     .WithManagementPlugin(port: 15672)
     .WithExternalHttpEndpoints();
 

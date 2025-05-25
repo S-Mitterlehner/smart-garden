@@ -25,7 +25,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\SmartGarden.AutomationService.EntityFramework\SmartGarden.AutomationService.EntityFramework.csproj" />
-	  <ProjectReference Include="..\SmartGarden.Automation\SmartGarden.Automation.csproj" />
 	  <ProjectReference Include="..\SmartGarden.Messaging\SmartGarden.Messaging.csproj" />
 	</ItemGroup>
 	<ItemGroup>

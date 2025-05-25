@@ -5,7 +5,7 @@ using SmartGarden.AutomationService.EntityFramework.Models;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 
-namespace SmartGarden.AutomationService;
+namespace SmartGarden.AutomationService.MessageHandler;
 
 public class AutomationRuleMessageHandler(AutomationServiceDbContext db, ILogger<AutomationRuleMessageHandler> logger) 
     : IMessageHandler<AutomationRuleMessageBody>

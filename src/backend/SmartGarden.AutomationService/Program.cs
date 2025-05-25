@@ -5,10 +5,10 @@ using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.AspNetCore;
 using Serilog;
-using SmartGarden.Automation;
 using SmartGarden.AutomationService;
 using SmartGarden.AutomationService.EntityFramework;
 using SmartGarden.AutomationService.EntityFramework.Seeder;
+using SmartGarden.AutomationService.MessageHandler;
 using SmartGarden.EntityFramework.Core;
 using SmartGarden.EntityFramework.Core.Seeder;
 using SmartGarden.Messaging;
@@ -30,14 +30,18 @@ builder.AddNpgsqlDbContext<AutomationServiceDbContext>("smartgarden-automation-s
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );
-builder.AddRabbitMQClient(connectionName: "messaging");
 
+// RabbitMQ
+builder.Services.AddSingleton<IMessagingProducer, RabbitMQMessagingProducer>();
+builder.AddRabbitMQClient(connectionName: "rabbitmq");
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
-// Automation
+
+
+// Quartz
 builder.Services.AddQuartz(o =>
 {
     var jobKey = new JobKey("Automation");
-    o.AddJob<AutomationService>(o => o.WithIdentity(jobKey));
+    o.AddJob<AutomationJob>(o => o.WithIdentity(jobKey));
 
     o.AddTrigger(op =>
     {
@@ -61,7 +65,10 @@ builder.Services.AddHostedService<DbInitializer<AutomationServiceDbContext>>();
 
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
 builder.Services.AddSingleton<IMessageHandler<AutomationRuleMessageBody>, AutomationRuleMessageHandler>();
+builder.Services.AddSingleton<IMessageHandler<ModuleRegisterMessageBody>, ModuleRegisterMessageHandler>();
+
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
 builder.Services.AddHostedService<MessagingListenerService<AutomationRuleMessage, AutomationRuleMessageBody>>();
+builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
 
 await builder.Build().RunAsync();

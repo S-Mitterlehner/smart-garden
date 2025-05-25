@@ -32,12 +32,12 @@ builder.Host.UseSerilog();
 
 // DB
 // builder.Services.RegisterDbContext(builder.Configuration);
-builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden"
+builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden-api"
     , s => {}
     , b => b.UseLazyLoadingProxies()
     );
 
-builder.AddRedisClient(connectionName: "state-cache");
+builder.AddRedisClient(connectionName: "redis-api");
 
 // Config
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
@@ -81,7 +81,7 @@ builder.Services.AddGraphQLServer()
     .AddInMemorySubscriptions();
 
 // RabbitMQ
-builder.AddRabbitMQClient(connectionName: "messaging");
+builder.AddRabbitMQClient(connectionName: "rabbitmq");
 builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();

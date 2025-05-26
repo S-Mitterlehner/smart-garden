@@ -41,7 +41,7 @@ export default function SensorProperties() {
                 Not Connected
               </Badge>
             ) : (
-              <Badge radius="sm" color="oklch(69.6% 0.17 162.48)">
+              <Badge radius="sm" color="emerald">
                 Connected
               </Badge>
             )}
@@ -82,7 +82,7 @@ export default function SensorProperties() {
         </div>
         <div className="mt-4 flex flex-row justify-end gap-2">
           <Tooltip label="No Changes" position="top" withArrow disabled={hasChanges}>
-            <Button variant="filled" color="oklch(69.6% 0.17 162.48)" disabled={!hasChanges} onClick={saveChanges}>
+            <Button variant="filled" disabled={!hasChanges} onClick={saveChanges}>
               Save
             </Button>
           </Tooltip>

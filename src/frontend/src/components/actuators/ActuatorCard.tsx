@@ -94,7 +94,6 @@ export default function ActuatorCard({
         <p>Please select the value for the action</p>
         <div className="mt-4 flex items-center justify-between gap-2">
           <Slider
-            color="oklch(69.6% 0.17 162.48)"
             className="w-full"
             min={currentAction?.min ?? 0}
             max={currentAction?.max ?? 100}
@@ -109,15 +108,14 @@ export default function ActuatorCard({
           <Button color="gray" onClick={() => setShowValueModal(false)}>
             Cancel
           </Button>
-          <Button color="oklch(69.6% 0.17 162.48)" onClick={() => executeAction(currentAction!, sliderValue)}>
-            Execute
-          </Button>
+          <Button onClick={() => executeAction(currentAction!, sliderValue)}>Execute</Button>
         </div>
       </Modal>
       <Menu shadow="md">
         <Menu.Target>
           <button className="w-full cursor-pointer text-left phone:w-auto">
             <Card
+              className="hover:bg-gray-50!"
               title={actuator.name}
               icon={getCardIcon()}
               right={

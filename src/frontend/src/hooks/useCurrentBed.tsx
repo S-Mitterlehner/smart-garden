@@ -20,7 +20,7 @@ export type BedValue = {
   isFetched: boolean;
   currentPlant: {
     value: PlantDto | null;
-    set: (plant: PlantDto) => void;
+    set: (plant: PlantDto) => Promise<void>;
   };
   sensors: SensorRefDto[];
   actuators: ActuatorRefDto[];
@@ -182,10 +182,11 @@ export function useBed(id: string) {
     isFetched: !loading && !!bed && plantFetched,
     currentPlant: {
       value: currentPlant,
-      set: (p) => {
-        setCurrentPlant({
+      set: async (p) => {
+        await setCurrentPlant({
           variables: { bedId: bed!.id, plantId: p.id },
         });
+        await refetch();
       },
     },
     sensors: bed?.sensors ?? [],

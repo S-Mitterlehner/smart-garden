@@ -1,7 +1,7 @@
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, split } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
@@ -42,10 +42,28 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const theme = createTheme({
+  colors: {
+    emerald: [
+      "#ecfdf5", // 50
+      "#d0fae5", // 100
+      "#a4f4cf", // 200
+      "#5ee9b5", // 300
+      "#00d492", // 400
+      "#00bc7d", // 500
+      "#009966", // 600
+      "#007a55", // 700
+      "#006045", // 800
+      "#004f3b", // 900
+    ],
+  },
+  primaryColor: "emerald",
+});
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppSettingsProvider>
-      <MantineProvider>
+      <MantineProvider theme={theme}>
         <Notifications />
         <ApolloProvider client={apolloClient}>
           <QueryClientProvider client={queryClient}>

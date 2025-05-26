@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Modal, NavLink, Table, TextInput, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { IconSearch, IconSeeding, IconX } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { PlantDto } from "../../__generated__/graphql";
 import usePlants from "../../hooks/usePlants";
@@ -12,7 +12,7 @@ export type PlantSelectorProps = {
 
 export default function PlantSelector({ selectedPlant, setSelectedPlant }: PlantSelectorProps) {
   const { plants } = usePlants();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { open, close }] = useDisclosure(false, { onClose: () => setPreviewPlant(null) });
   const [searchString, setSearchString] = useState("");
   const [previewPlant, setPreviewPlant] = useState<PlantDto | null>(null);
 
@@ -22,14 +22,26 @@ export default function PlantSelector({ selectedPlant, setSelectedPlant }: Plant
 
   const getPreview = () => {
     if (!previewPlant) {
-      return <div></div>;
+      return (
+        <div className="flex h-full min-h-96 w-full flex-col items-center justify-center gap-4 text-gray-500">
+          <IconSeeding className="h-16 w-16"></IconSeeding>
+          <p>Select a plant to see details</p>
+        </div>
+      );
     }
 
     return (
       <div className="flex h-full max-h-96 min-h-96 flex-col justify-between gap-4">
         <div className="flex max-h-[252px] flex-col gap-2 overflow-y-auto">
-          <h3 className="text-xl font-semibold">{previewPlant?.name}</h3>
-          <p className="text-sm">{previewPlant?.description}</p>
+          <div className="flex flex-row items-center gap-4">
+            <div>
+              <h3 className="text-xl font-semibold">{previewPlant?.name}</h3>
+              <p className="text-sm">{previewPlant?.description}</p>
+            </div>
+            <div>
+              <img className="ml-auto h-16 w-16 rounded-md" src={previewPlant?.imageUrl} alt={previewPlant?.name} />
+            </div>
+          </div>
           <Table>
             <Table.Thead>
               <Table.Tr>

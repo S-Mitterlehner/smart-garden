@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Json.Logic;
 using Json.More;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Quartz;
 using SmartGarden.AutomationService.EntityFramework;
 using SmartGarden.AutomationService.EntityFramework.Models;
+using SmartGarden.Messaging;
+using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 
@@ -16,8 +19,8 @@ namespace SmartGarden.AutomationService;
 
 public class AutomationJob(
     ILogger<AutomationJob> logger,
-    ActionExecutor executor,
     IMemoryCache cache,
+    IMessagingProducer messaging,
     IServiceProvider sp) 
     : IJob
 {
@@ -41,6 +44,40 @@ public class AutomationJob(
             return;
         }
 
+        var parameters = await GetParametersAsync(db);
+
+        foreach (var rule in rules)
+        {
+            try
+            {
+                var json = ReplaceTime(rule.ExpressionJson);
+                var expression = JsonNode.Parse(json);
+
+                var result = JsonLogic.Apply(expression, parameters)?.GetValue<bool>() ?? false;
+
+                logger.LogInformation("RuleCheck - {expression}: {IsSuccess} ({parameters})",
+                                      rule.ExpressionJson,
+                                      result,
+                                      parameters.AsJsonString());
+
+                if (result)
+                {
+                    foreach (var action in rule.Actions) 
+                        await ExecuteActionAsync(action);
+
+                    rule.LastActionRunAt = DateTime.UtcNow;
+                    await db.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error executing rule {ruleId}: {message}", rule.Id, ex.Message);
+            }
+        }
+    }
+
+    private async Task<JsonObject> GetParametersAsync(AutomationServiceDbContext db)
+    {
         var parameters = new JsonObject {{CURRENT_TIME, DateTime.UtcNow.TimeOfDay.Ticks}};
 
         var modules = await db.Get<ModuleRef>().GroupBy(x => x.ModuleKey).ToListAsync();
@@ -66,39 +103,27 @@ public class AutomationJob(
             }
         }
 
-        foreach (var rule in rules)
+        return parameters;
+    }
+
+    private async Task ExecuteActionAsync(AutomationRuleAction action)
+    {
+        var execution = new ActionExecutionMessageBody
         {
-            try
-            {
-                var json = ReplaceTime(rule.ExpressionJson);
-                var expression = JsonNode.Parse(json);
-
-                var result = JsonLogic.Apply(expression, parameters)?.GetValue<bool>() ?? false;
-
-                logger.LogInformation("RuleCheck - {expression}: {IsSuccess} ({parameters})",
-                                      rule.ExpressionJson,
-                                      result,
-                                      parameters.AsJsonString());
-
-                if (result)
-                {
-                    await executor.ExecuteActionsAsync(rule.Actions);
-
-                    rule.LastActionRunAt = DateTime.UtcNow;
-                    await db.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error executing rule {ruleId}: {message}", rule.Id, ex.Message);
-            }
-        }
+            ModuleKey = action.Module.ModuleKey, 
+            ModuleType = (int) action.Module.Type,
+            ActionKey = action.ActionKey, 
+            Value = action.Value
+        };
+        
+        await messaging.SendAsync(new ActionExecutionMessage(execution));
+    
+        logger.LogInformation("Action {actionKey} sent to RMQ for Connector {connector}/{type} with value {value}", action.ActionKey, action.Module.ModuleKey, action.Module.Type, action.Value);
     }
 
     private static string ReplaceTime(string json)
     {
         var matches = TimeRegex.Matches(json);
-
         foreach (Match match in matches)
         {
             var hour = match.Groups["hour"].Value;

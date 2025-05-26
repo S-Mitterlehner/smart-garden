@@ -2,25 +2,23 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Quartz;
-using Quartz.AspNetCore;
 using Serilog;
 using SmartGarden.AutomationService;
 using SmartGarden.AutomationService.EntityFramework;
 using SmartGarden.AutomationService.EntityFramework.Seeding;
 using SmartGarden.AutomationService.MessageHandler;
 using SmartGarden.EntityFramework.Core;
-using SmartGarden.EntityFramework.Core.Seeding;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Messaging.Models;
+using SmartGarden.Scheduling;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.OpenTelemetry()
-    .CreateLogger();
+             .MinimumLevel.Debug()
+             .Enrich.FromLogContext()
+             .WriteTo.Console()
+             .WriteTo.OpenTelemetry()
+             .CreateLogger();
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile("./appsettings.json");
@@ -40,31 +38,21 @@ builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("R
 
 
 // Quartz
-builder.Services.AddQuartz(o =>
+builder.Services.AddScheduler(b =>
 {
-    var jobKey = new JobKey("Automation");
-    o.AddJob<AutomationJob>(j => j.WithIdentity(jobKey));
-    o.AddTrigger(op =>
-    {
-        op.ForJob(jobKey)
-            .WithIdentity("AutomationTrigger")
-            //.WithCronSchedule("0 * * ? * * *")
-            .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever());
-    });
-});
-builder.Services.AddQuartzServer(options =>
-{
-    options.WaitForJobsToComplete = true;
+    b.AddJobAdvanced<AutomationJob>(TimeSpan.FromMinutes(1));
 });
 
 // Services
 builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<ActionExecutor>();
 
 // BackgroundServices
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
+builder.Services.AddSingleton<IMessageHandler<ModuleRegisterMessageBody>, ModuleRegisterMessageHandler>();
 builder.Services.AddSingleton<IMessageHandler<AutomationRuleMessageBody>, AutomationRuleMessageHandler>();
+
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
 builder.Services.AddHostedService<MessagingListenerService<AutomationRuleMessage, AutomationRuleMessageBody>>();
+builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
 
 await builder.Build().RunAsync();

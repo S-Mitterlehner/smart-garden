@@ -19,14 +19,12 @@
 		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
 		<PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0-dev-02302" />
-		<PackageReference Include="Quartz" Version="3.14.0" />
-		<PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
-		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
 		<PackageReference Include="JsonLogic" Version="5.4.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\SmartGarden.AutomationService.EntityFramework\SmartGarden.AutomationService.EntityFramework.csproj" />
 	  <ProjectReference Include="..\SmartGarden.Messaging\SmartGarden.Messaging.csproj" />
+	  <ProjectReference Include="..\SmartGarden.Scheduling\SmartGarden.Scheduling.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="appsettings.json">

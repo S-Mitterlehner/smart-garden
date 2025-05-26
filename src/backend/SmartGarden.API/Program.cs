@@ -1,9 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Quartz;
 using Serilog;
-using SmartGarden.API;
 using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Jobs;
@@ -18,6 +16,7 @@ using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Api;
 using SmartGarden.Modules.Service.Models;
+using SmartGarden.Scheduling;
 
 Log.Logger = new LoggerConfiguration()
              .MinimumLevel.Debug()
@@ -82,20 +81,21 @@ builder.Services.AddGraphQLServer()
 // RabbitMQ
 builder.AddRabbitMQClient(connectionName: "rabbitmq");
 builder.Services.AddMessaging(builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
+
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
-builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
+builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();
+
 builder.Services.AddSingleton<IMessageHandler<ModuleRegisterMessageBody>, RegisterModuleMessageHandler>();
+builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage, ModuleRegisterMessageBody>>();
 
 // Scheduled Services
-builder.Services.AddQuartz(o =>
+builder.Services.AddScheduler(b =>
 {
-    o.AddJobAdvanced<AutomationRuleSyncJob>(CronExpressions.EveryMinute);
+    b.AddJobAdvanced<AutomationRuleSyncJob>(TimeSpan.FromMinutes(5));
 });
 
 // -----
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

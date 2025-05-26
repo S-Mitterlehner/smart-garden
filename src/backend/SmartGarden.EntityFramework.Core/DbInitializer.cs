@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SmartGarden.EntityFramework.Core.Seeder;
+using SmartGarden.EntityFramework.Core.Seeding;
 
 namespace SmartGarden.EntityFramework.Core;
 

@@ -6,10 +6,10 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using SmartGarden.ConnectorService;
 using SmartGarden.ConnectorService.EntityFramework;
-using SmartGarden.ConnectorService.EntityFramework.Seeder;
+using SmartGarden.ConnectorService.EntityFramework.Seeding;
 using SmartGarden.ConnectorService.Services;
 using SmartGarden.EntityFramework.Core;
-using SmartGarden.EntityFramework.Core.Seeder;
+using SmartGarden.EntityFramework.Core.Seeding;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Messaging.Models;
@@ -33,6 +33,8 @@ builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("smartgarden-connection-s
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );
+builder.Services.AddDbInitializerWithJsonSeeder<ConnectionServiceSeedModel, ConnectionServiceDbContext>("./dev.seed.json");
+
 builder.AddRabbitMQClient(connectionName: "rabbitmq");
 
 builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
@@ -41,7 +43,6 @@ builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("R
 // Services
 builder.Services.AddSingleton<IServiceModuleManager, ServiceModuleManager>();
 builder.Services.AddSingleton<IModuleListener, RabbitMQModuleListener>();
-builder.Services.AddSingleton<ISeeder, DevSeeder>();
 builder.Services.AddSingleton<IMessageHandler<ActionExecutionMessageBody>, ActuatorExecutionMessageHandler>();
 builder.Services.AddSingleton<IMessagingProducer, RabbitMQMessagingProducer>();
 
@@ -51,7 +52,6 @@ builder.Services.AddMqttClient();
 
 // BackgroundServices
 builder.Services.AddHostedService<ConnectorManagingService>();
-builder.Services.AddHostedService<DbInitializer<ConnectionServiceDbContext>>();
 builder.Services.AddHostedService<MessagingListenerService<ActionExecutionMessage, ActionExecutionMessageBody>>();
 builder.Services.AddHostedService<ModuleInitializerHostedService>();
 

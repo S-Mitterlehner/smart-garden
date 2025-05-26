@@ -10,8 +10,8 @@ using SmartGarden.API.Jobs;
 using SmartGarden.API.Listener;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Core;
-using SmartGarden.EntityFramework.Core.Seeder;
-using SmartGarden.EntityFramework.Seeder;
+using SmartGarden.EntityFramework.Core.Seeding;
+using SmartGarden.EntityFramework.Seeding;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
@@ -36,6 +36,7 @@ builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden-api"
     , s => {}
     , b => b.UseLazyLoadingProxies()
     );
+builder.Services.AddDbInitializerWithJsonSeeder<ApiSeedModel, ApplicationDbContext>("../Seeds/dev.seed.json");
 
 builder.AddRedisClient(connectionName: "redis-api");
 
@@ -60,7 +61,6 @@ builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s =>
         s.GetRequiredService<SignalRSensorListener>(),
         s.GetRequiredService<GraphQlSensorListener>()));
 
-builder.Services.AddScoped<ISeeder, DevSeeder>();
 
 // SignalR
 builder.Services.AddSignalR()
@@ -93,9 +93,6 @@ builder.Services.AddQuartz(o =>
 {
     o.AddJobAdvanced<AutomationRuleSyncJob>(CronExpressions.EveryMinute);
 });
-
-// BackgroundServices 
-builder.Services.AddHostedService<DbInitializer<ApplicationDbContext>>();
 
 // -----
 builder.Services.AddControllers();

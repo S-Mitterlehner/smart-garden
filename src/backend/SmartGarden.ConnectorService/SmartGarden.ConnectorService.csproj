@@ -31,17 +31,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="appsettings.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="../Seeds/dev.seed.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>dev.seed.json</Link>
+        </Content>
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,10 @@
 ﻿using System.Linq.Expressions;
+using System.Text.Json.Serialization;
 
 namespace SmartGarden.Modules.Enums;
 
 [Flags]
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ModuleType
 {
     // Sensors

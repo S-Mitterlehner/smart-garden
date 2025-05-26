@@ -7,10 +7,10 @@ using Quartz.AspNetCore;
 using Serilog;
 using SmartGarden.AutomationService;
 using SmartGarden.AutomationService.EntityFramework;
-using SmartGarden.AutomationService.EntityFramework.Seeder;
+using SmartGarden.AutomationService.EntityFramework.Seeding;
 using SmartGarden.AutomationService.MessageHandler;
 using SmartGarden.EntityFramework.Core;
-using SmartGarden.EntityFramework.Core.Seeder;
+using SmartGarden.EntityFramework.Core.Seeding;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Messaging.Models;
@@ -26,10 +26,12 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile("./appsettings.json");
 builder.Logging.AddSerilog();
 
+// DB
 builder.AddNpgsqlDbContext<AutomationServiceDbContext>("smartgarden-automation-service"
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );
+builder.Services.AddDbInitializerWithJsonSeeder<AutomationServiceSeedModel, AutomationServiceDbContext>("./dev.seed.json");
 
 // RabbitMQ
 builder.Services.AddSingleton<IMessagingProducer, RabbitMQMessagingProducer>();
@@ -60,9 +62,6 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ActionExecutor>();
 
 // BackgroundServices
-builder.Services.AddSingleton<ISeeder, DevSeeder>();
-builder.Services.AddHostedService<DbInitializer<AutomationServiceDbContext>>();
-
 builder.Services.AddSingleton<IMessageHandler<ModuleStateMessageBody>, ModuleStateMessageHandler>();
 builder.Services.AddSingleton<IMessageHandler<AutomationRuleMessageBody>, AutomationRuleMessageHandler>();
 builder.Services.AddHostedService<MessagingListenerService<ModuleStateMessage, ModuleStateMessageBody>>();

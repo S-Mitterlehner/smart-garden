@@ -50,4 +50,10 @@
     <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="../Seeds/dev.seed.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>dev.seed.json</Link>
+    </Content>      
+  </ItemGroup>
 </Project>

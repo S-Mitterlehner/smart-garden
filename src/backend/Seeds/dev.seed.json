@@ -1,0 +1,143 @@
+{
+  "plantSensorConfigs": [
+    {
+      "id": "1b9c649b-55e1-422b-b86c-876c72fd2ea1",
+      "rangeFrom": 21,
+      "rangeTo": 29,
+      "moduleType": "Temperature"
+    },
+    {
+      "id": "13be42e3-d80c-4566-9b1c-8fce80fe8c38",
+      "rangeFrom": 60,
+      "rangeTo": 70,
+      "moduleType": "Humidity"
+    },
+    {
+      "id": "f549b5df-ca9c-49a6-9cb4-26ebd90ff88a",
+      "rangeFrom": 40,
+      "rangeTo": 70,
+      "moduleType": "Moisture"
+    }
+  ],
+  "plants": [
+    {
+      "id": "05c7919a-1225-4ee3-b5ea-ac720f1af14b",
+      "name": "Tomato",
+      "description": "Tomato is a fruit that is often used as a vegetable in cooking. It is rich in vitamins and antioxidants.",
+      "imageUrl": "/plants/tomato.svg",
+      "sensorConfigs": [
+        { "id": "1b9c649b-55e1-422b-b86c-876c72fd2ea1" },
+        { "id": "13be42e3-d80c-4566-9b1c-8fce80fe8c38" },
+        { "id": "f549b5df-ca9c-49a6-9cb4-26ebd90ff88a" }
+      ]
+    },
+    {
+      "id": "a1608fb0-0b18-4532-b5db-09b00f7975d8",
+      "name": "Carrot",
+      "description": "Carrot is a root vegetable that is often orange in color. It is rich in beta-carotene and other vitamins.",
+      "imageUrl": "/plants/carrot.svg"
+    },
+    {
+      "id": "ac500680-88ae-4edc-8cc9-85d1eacb4f3c",
+      "name": "Potato",
+      "description": "Potato is a starchy tuber that is often used as a vegetable in cooking. It is rich in carbohydrates and vitamins.",
+      "imageUrl": "/plants/potato.svg"
+    }
+  ],
+  "modules": [
+    {
+      "id": "f3948dbb-4c99-4173-86d6-3e24834639df",
+      "name": "Water Pump",
+      "description": "Water pump is a device that moves water from one place to another. It is often used in irrigation systems.",
+      "type": "Pump",
+      "order": 1,
+      "moduleKey": "sg-48ca435508f0",
+      "topic": "smart-garden/sg-48ca435508f0/waterpump"
+    },
+    {
+      "id": "6060f089-42a3-4e7d-9ef6-2557866023a4",
+      "name": "Hatch",
+      "description": "Hatch is a device that opens and closes to allow access to a space. It is often used in greenhouses.",
+      "type": "Hatch",
+      "order": 2,
+      "moduleKey": "sg-48ca435508f0",
+      "topic": "smart-garden/sg-48ca435508f0/hatch"
+    },
+    {
+      "id": "52ff96f1-71f4-433f-829c-db07394e1aba",
+      "name": "Temperature",
+      "description": "Temperature sensor is a device that measures the temperature of the environment. It is often used in weather stations.",
+      "type": "Temperature",
+      "moduleKey": "sg-48ca435508f0",
+      "order": 1,
+      "topic": "smart-garden/sg-48ca435508f0/temperature"
+    },
+    {
+      "id": "28525480-9434-4318-82f7-3d89cb231166",
+      "name": "Humidity",
+      "description": "Humidity sensor is a device that measures the humidity of the environment. It is often used in weather stations.",
+      "type": "Humidity",
+      "moduleKey": "sg-48ca435508f0",
+      "order": 2,
+      "topic": "smart-garden/sg-48ca435508f0/humidity"
+    },
+    {
+      "id": "bea18347-3611-4cd7-a257-c9518c85cad7",
+      "name": "Moisture",
+      "description": "Soil moisture sensor is a device that measures the water content in the soil.\nIt is commonly used in gardening to monitor soil conditions.",
+      "type": "Moisture",
+      "moduleKey": "sg-48ca435508f0",
+      "order": 2,
+      "topic": "smart-garden/sg-48ca435508f0/moisture"
+    }
+  ],
+  "beds": [
+    {
+      "id": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
+      "name": "Test Bed",
+      "description": "Test Bed",
+      "plantId": "05c7919a-1225-4ee3-b5ea-ac720f1af14b",
+      "modules": [
+        { "id": "52ff96f1-71f4-433f-829c-db07394e1aba" },
+        { "id": "28525480-9434-4318-82f7-3d89cb231166" },
+        { "id": "bea18347-3611-4cd7-a257-c9518c85cad7" },
+        { "id": "f3948dbb-4c99-4173-86d6-3e24834639df" },
+        { "id": "6060f089-42a3-4e7d-9ef6-2557866023a4" }
+      ]
+    }
+  ],
+  "automationRules": [
+    {
+      "id": "f2b0c4a1-3d8e-4b5e-8f6c-7a2d9f1c3b5e",
+      "name": "Watering",
+      "order": 1,
+      "bedId": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
+      "expressionJson": "{\n  \"<\": [\n    { \"var\": \"sg_48ca435508f0.Temperature\" },\n    30\n  ]\n}",
+      "isEnabled": false,
+      "coolDown": "00:05:00",
+      "actions": [
+        {
+          "moduleId": "f3948dbb-4c99-4173-86d6-3e24834639df",
+          "actionKey": "pump.run",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "2d954786-1209-41d3-82ae-bd3618c3d038",
+      "name": "Watering 2",
+      "order": 2,
+      "bedId": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
+      "expressionJson": "{\n  \"and\": [\n    { \">\": [{ \"var\": \"CurrentTime\" }, \"19:00:00\"] },\n    { \"<\": [{ \"var\": \"CurrentTime\" }, \"23:30:00\"] }\n  ]\n}",
+      "isEnabled": false,
+      "coolDown": "00:05:00",
+      "actions": [
+        {
+          "moduleId": "f3948dbb-4c99-4173-86d6-3e24834639df",
+          "actionKey": "pump.run",
+          "value": 10
+        }
+      ]
+    }
+  ]
+}

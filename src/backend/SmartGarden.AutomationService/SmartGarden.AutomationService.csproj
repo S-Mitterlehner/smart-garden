@@ -33,4 +33,10 @@
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
+    <ItemGroup>
+        <Content Include="../Seeds/dev.seed.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>dev.seed.json</Link>
+        </Content>
+    </ItemGroup>
 </Project>

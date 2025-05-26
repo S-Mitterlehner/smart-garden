@@ -5,7 +5,7 @@ using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 using StackExchange.Redis;
 
-namespace SmartGarden.Modules.Api;
+namespace SmartGarden.Modules.Api.Connectors;
 
 public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer redis, ILogger logger) : IApiModuleConnector
 {

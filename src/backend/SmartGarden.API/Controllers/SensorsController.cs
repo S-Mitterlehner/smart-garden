@@ -4,8 +4,7 @@ using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
-using SmartGarden.Modules;
-using SmartGarden.Modules.Sensors;
+using SmartGarden.Modules.Api;
 
 namespace SmartGarden.API.Controllers;
 

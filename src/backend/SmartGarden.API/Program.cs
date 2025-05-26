@@ -10,22 +10,21 @@ using SmartGarden.API.Jobs;
 using SmartGarden.API.Listener;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Core;
-using SmartGarden.EntityFramework.Core.Seeding;
 using SmartGarden.EntityFramework.Seeding;
 using SmartGarden.Modules.Actuators;
-using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Api;
+using SmartGarden.Modules.Service.Models;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.OpenTelemetry()
-    .CreateLogger();
+             .MinimumLevel.Debug()
+             .Enrich.FromLogContext()
+             .WriteTo.Console()
+             .WriteTo.OpenTelemetry()
+             .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();

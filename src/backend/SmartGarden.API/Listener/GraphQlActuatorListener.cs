@@ -1,6 +1,3 @@
-using System.Data.Common;
-using System.Linq;
-using System.Reflection;
 using HotChocolate.Subscriptions;
 using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.Modules;

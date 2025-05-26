@@ -1,11 +1,6 @@
 ﻿using SmartGarden.Modules.Models;
 
-namespace SmartGarden.Modules;
-
-public interface IApiModuleManager
-{
-    Task<IApiModuleConnector> GetConnectorAsync(IModuleRef reference);
-}
+namespace SmartGarden.Modules.Service;
 
 public interface IServiceModuleManager
 {

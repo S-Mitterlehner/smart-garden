@@ -7,6 +7,7 @@ using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
+using SmartGarden.Modules.Service;
 
 namespace SmartGarden.ConnectorService;
 

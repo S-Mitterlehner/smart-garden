@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
-using SmartGarden.Modules;
+using SmartGarden.Modules.Api;
 using SmartGarden.Modules.Enums;
-using SmartGarden.Modules.Sensors;
 
 namespace SmartGarden.API.GraphQL;
 

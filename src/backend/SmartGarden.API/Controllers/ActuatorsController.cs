@@ -7,8 +7,7 @@ using SmartGarden.EntityFramework.Models;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
-using SmartGarden.Modules.Enums;
-using SmartGarden.Modules.Models;
+using SmartGarden.Modules.Api;
 
 namespace SmartGarden.API.Controllers;
 

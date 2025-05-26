@@ -6,6 +6,7 @@ using SmartGarden.EntityFramework.Models;
 using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
+using SmartGarden.Modules.Api;
 using SmartGarden.Modules.Enums;
 using ActionType = SmartGarden.Modules.Enums.ActionType;
 

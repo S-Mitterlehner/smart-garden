@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using SmartGarden.Modules;
+using SmartGarden.Modules.Service;
 
 namespace SmartGarden.ConnectorService;
 

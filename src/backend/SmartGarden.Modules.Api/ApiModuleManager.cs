@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using SmartGarden.Modules.Enums;
 using System.Collections.Concurrent;
 using SmartGarden.Modules.Api.Connectors;
@@ -7,7 +6,7 @@ using SmartGarden.Modules.Models;
 
 namespace SmartGarden.Modules.Api;
 
-public class ApiModuleManager(IServiceProvider sp, IOptions<ModuleSettings> settings) : IApiModuleManager
+public class ApiModuleManager(IServiceProvider sp) : IApiModuleManager
 {
     private readonly ConcurrentDictionary<string, IApiModuleConnector> _connectors = new();
 

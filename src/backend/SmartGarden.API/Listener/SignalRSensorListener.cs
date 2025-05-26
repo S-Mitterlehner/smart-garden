@@ -1,6 +1,4 @@
-﻿using System.Data;
-using Microsoft.AspNetCore.SignalR;
-using SmartGarden.API.Dtos;
+﻿using Microsoft.AspNetCore.SignalR;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.API.Hubs;
 using SmartGarden.Modules.Enums;

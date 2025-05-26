@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SmartGarden.ConnectorService.EntityFramework;
 using SmartGarden.ConnectorService.EntityFramework.Models;
 using SmartGarden.Modules;
+using SmartGarden.Modules.Service;
 
 namespace SmartGarden.ConnectorService.Services;
 

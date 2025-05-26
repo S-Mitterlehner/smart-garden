@@ -1,4 +1,4 @@
-namespace SmartGarden.Modules.Models;
+namespace SmartGarden.Modules.Service.Models;
 
 public class ModuleSettings
 {

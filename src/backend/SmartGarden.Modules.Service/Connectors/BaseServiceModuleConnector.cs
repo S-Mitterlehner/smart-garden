@@ -7,7 +7,7 @@ using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Service.Models;
 using SmartGarden.Mqtt;
 
-namespace SmartGarden.Modules.Service;
+namespace SmartGarden.Modules.Service.Connectors;
 
 public abstract class BaseServiceModuleConnector(string key, string topic, IMqttClient mqttClient, IModuleListener listener) : IServiceModuleConnector
 {

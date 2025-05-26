@@ -16,6 +16,7 @@ using SmartGarden.Messaging.Models;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Models;
 using SmartGarden.Modules.Service;
+using SmartGarden.Modules.Service.Models;
 using SmartGarden.Mqtt;
 
 Log.Logger = new LoggerConfiguration()

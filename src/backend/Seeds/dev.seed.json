@@ -17,6 +17,42 @@
       "rangeFrom": 40,
       "rangeTo": 70,
       "moduleType": "Moisture"
+    },
+    {
+      "id": "a8e1b14b-d02c-42b5-84d4-1632d2cf223a",
+      "rangeFrom": 16,
+      "rangeTo": 21,
+      "moduleType": "Temperature"
+    },
+    {
+      "id": "f3be4f90-1c0d-4ee1-b46d-fba3e0197e35",
+      "rangeFrom": 60,
+      "rangeTo": 70,
+      "moduleType": "Humidity"
+    },
+    {
+      "id": "eedeece4-d1ef-4c56-9681-132634ec0412",
+      "rangeFrom": 60,
+      "rangeTo": 70,
+      "moduleType": "Moisture"
+    },
+    {
+      "id": "9128c18f-19c4-4db0-b6b5-8e44d9bb88fd",
+      "rangeFrom": 16,
+      "rangeTo": 22,
+      "moduleType": "Temperature"
+    },
+    {
+      "id": "b6127b13-7077-4a9c-8330-3c175eedbb7c",
+      "rangeFrom": 70,
+      "rangeTo": 80,
+      "moduleType": "Humidity"
+    },
+    {
+      "id": "c1e36ad1-1cbe-44eb-81ef-2acbd59b8dcb",
+      "rangeFrom": 60,
+      "rangeTo": 80,
+      "moduleType": "Moisture"
     }
   ],
   "plants": [
@@ -35,13 +71,23 @@
       "id": "a1608fb0-0b18-4532-b5db-09b00f7975d8",
       "name": "Carrot",
       "description": "Carrot is a root vegetable that is often orange in color. It is rich in beta-carotene and other vitamins.",
-      "imageUrl": "/plants/carrot.svg"
+      "imageUrl": "/plants/carrot.svg",
+      "moduleConfigs": [
+        { "id": "a8e1b14b-d02c-42b5-84d4-1632d2cf223a" },
+        { "id": "f3be4f90-1c0d-4ee1-b46d-fba3e0197e35" },
+        { "id": "eedeece4-d1ef-4c56-9681-132634ec0412" }
+      ]
     },
     {
       "id": "ac500680-88ae-4edc-8cc9-85d1eacb4f3c",
       "name": "Potato",
       "description": "Potato is a starchy tuber that is often used as a vegetable in cooking. It is rich in carbohydrates and vitamins.",
-      "imageUrl": "/plants/potato.svg"
+      "imageUrl": "/plants/potato.svg",
+      "moduleConfigs": [
+        { "id": "9128c18f-19c4-4db0-b6b5-8e44d9bb88fd" },
+        { "id": "b6127b13-7077-4a9c-8330-3c175eedbb7c" },
+        { "id": "c1e36ad1-1cbe-44eb-81ef-2acbd59b8dcb" }
+      ]
     }
   ],
   "modules": [

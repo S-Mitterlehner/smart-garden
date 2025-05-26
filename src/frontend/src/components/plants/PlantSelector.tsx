@@ -4,6 +4,7 @@ import { IconSearch, IconSeeding, IconX } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { PlantDto } from "../../__generated__/graphql";
 import usePlants from "../../hooks/usePlants";
+import { toNiceCasing } from "../../utils";
 
 export type PlantSelectorProps = {
   selectedPlant: PlantDto | null;
@@ -12,7 +13,12 @@ export type PlantSelectorProps = {
 
 export default function PlantSelector({ selectedPlant, setSelectedPlant }: PlantSelectorProps) {
   const { plants } = usePlants();
-  const [opened, { open, close }] = useDisclosure(false, { onClose: () => setPreviewPlant(null) });
+  const [opened, { open, close }] = useDisclosure(false, {
+    onClose: () => {
+      setPreviewPlant(null);
+      setSearchString("");
+    },
+  });
   const [searchString, setSearchString] = useState("");
   const [previewPlant, setPreviewPlant] = useState<PlantDto | null>(null);
 
@@ -54,7 +60,7 @@ export default function PlantSelector({ selectedPlant, setSelectedPlant }: Plant
             <Table.Tbody>
               {previewPlant.moduleConfigs.map((cfg, idx) => (
                 <Table.Tr key={idx}>
-                  <Table.Td>{cfg.moduleType}</Table.Td>
+                  <Table.Td>{toNiceCasing(cfg.moduleType)}</Table.Td>
                   <Table.Td w={"200px"} className="text-right">
                     {cfg.rangeFrom} - {cfg.rangeTo}
                   </Table.Td>

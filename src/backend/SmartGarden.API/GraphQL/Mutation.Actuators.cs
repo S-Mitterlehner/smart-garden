@@ -14,6 +14,7 @@ namespace SmartGarden.API.GraphQL;
 
 public partial class Mutation
 {
+    [Obsolete("Use Module instead")]
     public async Task<ActuatorRefDto?> UpdateActuatorRef([ID] Guid id, string? name, string? description,
                                                       [Service] ApplicationDbContext db)
     {
@@ -26,6 +27,7 @@ public partial class Mutation
         return ActuatorRefDto.FromEntity.Invoke(reference);
     }
 
+    [Obsolete("Use Module instead")]
     public async Task<bool> ExecuteActuatorAction([ID] Guid id, string actionKey, double? value,
                                                   [Service] ApplicationDbContext db, 
                                                   [Service] IApiModuleManager actuatorManager,
@@ -53,6 +55,7 @@ public partial class Mutation
         return true;
     }
 
+    [Obsolete("Use Module instead")]
     public async Task<ActuatorRefDto> AddActuatorToBed([ID] Guid bedId, [ID] Guid actuatorId,
                                                     [Service] ApplicationDbContext db)
     {
@@ -73,6 +76,7 @@ public partial class Mutation
         return ActuatorRefDto.FromEntity.Invoke(actuator);
     }
 
+    [Obsolete("Use Module instead")]
     public async Task<bool> RemoveActuatorFromBed([ID] Guid bedId, [ID] Guid actuatorId,
                                                   [Service] ApplicationDbContext db)
     {

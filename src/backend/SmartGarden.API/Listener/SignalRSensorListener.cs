@@ -7,6 +7,7 @@ using SmartGarden.Modules.Sensors.Models;
 
 namespace SmartGarden.API.Listener;
 
+[Obsolete("Use SignalRModuleListener instead")]
 public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<SignalRSensorListener> logger) : ISensorListener
 {
     public const string MEASUREMENT_MADE = "Sensor_Measurement";

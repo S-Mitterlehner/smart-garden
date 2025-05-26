@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\NewFolder\**" />
+    <Content Remove="Dtos\NewFolder\**" />
+    <EmbeddedResource Remove="Dtos\NewFolder\**" />
+    <None Remove="Dtos\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.2.1" />
     <PackageReference Include="Aspire.RabbitMQ.Client.v7" Version="9.2.1" />
     <PackageReference Include="Aspire.StackExchange.Redis" Version="9.3.0" />
@@ -43,7 +50,6 @@
     <ProjectReference Include="..\SmartGarden.Messaging.Messages\SmartGarden.Messaging.Messages.csproj" />
     <ProjectReference Include="..\SmartGarden.Messaging\SmartGarden.Messaging.csproj" />
     <ProjectReference Include="..\SmartGarden.Modules.Api\SmartGarden.Modules.Api.csproj" />
-    <ProjectReference Include="..\SmartGarden.Modules.Service\SmartGarden.Modules.Service.csproj" />
     <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
     <ProjectReference Include="..\SmartGarden.Scheduling\SmartGarden.Scheduling.csproj" />
   </ItemGroup>

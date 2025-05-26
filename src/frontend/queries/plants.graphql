@@ -4,8 +4,8 @@ query getPlants {
     name
     description
     imageUrl
-    sensorConfigs {
-      sensorType
+    moduleConfigs {
+      moduleType
       rangeFrom
       rangeTo
     }
@@ -18,8 +18,8 @@ query getPlantById($id: UUID!) {
     name
     description
     imageUrl
-    sensorConfigs {
-      sensorType
+    moduleConfigs {
+      moduleType
       rangeFrom
       rangeTo
     }

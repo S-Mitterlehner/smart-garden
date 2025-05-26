@@ -1,14 +1,8 @@
 import { Button, Drawer, Menu, Modal, Slider, Tooltip } from "@mantine/core";
 import { IconListDetails, IconPlayerPlay, IconPlayerStop, IconStopwatch, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
-import {
-  ActionIcons,
-  ActionType,
-  ActuatorActionDto,
-  ActuatorRefDto,
-  ConnectionState,
-} from "../../__generated__/graphql";
-import { useActuatorContext } from "../../hooks/useActuator";
+import { ActionIcons, ActionType, ConnectionState, ModuleActionDto, ModuleRefDto } from "../../__generated__/graphql";
+import { useModuleContext } from "../../hooks/useModule";
 import { getTimeString } from "../../utils";
 import Card from "../Card";
 import { getTypeIconCircle } from "../sensors/utils";
@@ -18,14 +12,14 @@ import ActuatorStateIndicator from "./ActuatorStateIndicator";
 export default function ActuatorCard({
   onMenuAction = () => {},
 }: {
-  onMenuAction?: (actuator: ActuatorRefDto, action: string, actionData?: unknown) => void;
+  onMenuAction?: (actuator: ModuleRefDto, action: string, actionData?: unknown) => void;
 }) {
-  const { actuator, state, connectionState, actions, canDoAction, startAction } = useActuatorContext();
+  const { module: actuator, state, connectionState, actions, canDoAction, startAction } = useModuleContext();
 
   const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
   const [showValueModal, setShowValueModal] = useState(false);
   const [sliderValue, setSliderValue] = useState<number | undefined>(undefined);
-  const [currentAction, setCurrentAction] = useState<ActuatorActionDto | null>(null);
+  const [currentAction, setCurrentAction] = useState<ModuleActionDto | null>(null);
 
   const getIcon = (icon: ActionIcons) => {
     switch (icon) {
@@ -40,7 +34,7 @@ export default function ActuatorCard({
     }
   };
 
-  const executeAction = (action: ActuatorActionDto, value: number | undefined) => {
+  const executeAction = (action: ModuleActionDto, value: number | undefined) => {
     if (!action.isAllowed) return;
 
     setCurrentAction(action);
@@ -153,7 +147,7 @@ export default function ActuatorCard({
             View Actuator Details
           </Menu.Item>
           <Menu.Item
-            onClick={() => onMenuAction(actuator as ActuatorRefDto, "remove")}
+            onClick={() => onMenuAction(actuator as ModuleRefDto, "remove")}
             color="red"
             leftSection={<IconTrash className="h-4 w-4" />}
           >

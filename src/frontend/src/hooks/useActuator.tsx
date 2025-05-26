@@ -8,9 +8,9 @@ import {
   ConnectionState,
   ModuleType,
   StateType,
-  useExecuteActionMutation,
+  useExecuteActuatorActionMutation,
   useGetActuatorByIdQuery,
-  useListenStateChangeSubscription,
+  useListenActuatorStateChangeSubscription,
   useUpdateActuatorMutation,
 } from "../__generated__/graphql";
 import { SocketType, useAppSettingsContext } from "./useAppSettings";
@@ -55,10 +55,10 @@ export function useActuator(actuatorId: string): ActuatorValue {
     variables: { id: actuatorId },
   });
 
-  const [execute] = useExecuteActionMutation();
+  const [execute] = useExecuteActuatorActionMutation();
   const [update] = useUpdateActuatorMutation();
 
-  const { data: { onActuatorStateChanged: state } = {} } = useListenStateChangeSubscription({
+  const { data: { onActuatorStateChanged: state } = {} } = useListenActuatorStateChangeSubscription({
     variables: {
       key: actuator?.key ?? "",
       type: actuator?.type ?? ModuleType.Temperature,

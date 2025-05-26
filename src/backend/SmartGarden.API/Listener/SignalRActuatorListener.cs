@@ -7,6 +7,7 @@ using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.Listener;
 
+[Obsolete("Use SignalRModuleListener instead")]
 public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<SignalRSensorListener> logger) : IActuatorListener
 {
     public const string STATE_CHANGED = "Actuator_State";

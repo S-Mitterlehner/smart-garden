@@ -3,6 +3,7 @@ using SmartGarden.Modules.Sensors.Models;
 
 namespace SmartGarden.API.Listener;
 
+[Obsolete("Use GraphQlModuleListener instead")]
 public class SensorListenerComposite(params ISensorListener[] sensorListeners) : ISensorListener
 {
     public async Task PublishMeasurementAsync(SensorData data)

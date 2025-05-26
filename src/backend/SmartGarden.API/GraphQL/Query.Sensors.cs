@@ -11,6 +11,7 @@ namespace SmartGarden.API.GraphQL;
 public partial class Query
 {
     [UseFiltering]
+    [Obsolete("Use GetModule instead")]
     public async Task<IEnumerable<SensorRefDto>> GetSensors([Service] ApplicationDbContext db)
         => await db.Get<ModuleRef>()
             .Where(x => ModuleTypeExpressions.IsSensor.Invoke(x.Type))
@@ -18,6 +19,7 @@ public partial class Query
             .ToListAsync();
 
     [UseFiltering]
+    [Obsolete("Use GetModule instead")]
     public async Task<IEnumerable<SensorDto>> GetSensors(
         [Service] ApplicationDbContext db, [Service] IApiModuleManager moduleManager)
     {
@@ -44,6 +46,7 @@ public partial class Query
     }
 
     [UseFiltering]
+    [Obsolete("Use GetModule instead")]
     public async Task<SensorDto?> GetSensor(Guid id,
                                             [Service] ApplicationDbContext db, [Service] IApiModuleManager moduleManager)
     {

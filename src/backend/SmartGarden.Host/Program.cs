@@ -31,7 +31,7 @@ var frontend = builder.AddNpmApp(
         "frontend",
         "../../frontend",
         "dev")
-    //.WithExplicitStart()
+    .WithExplicitStart()
     .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
     .WithExternalHttpEndpoints();
 

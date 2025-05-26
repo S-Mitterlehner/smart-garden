@@ -29,7 +29,7 @@ export default function PlantSelector({ selectedPlant, setSelectedPlant }: Plant
         </div>
       );
     }
-
+    // TODO: make phone ready
     return (
       <div className="flex h-full max-h-96 min-h-96 flex-col justify-between gap-4">
         <div className="flex max-h-[252px] flex-col gap-2 overflow-y-auto">
@@ -52,9 +52,9 @@ export default function PlantSelector({ selectedPlant, setSelectedPlant }: Plant
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {previewPlant.sensorConfigs.map((cfg) => (
-                <Table.Tr>
-                  <Table.Td>{cfg.sensorType}</Table.Td>
+              {previewPlant.moduleConfigs.map((cfg, idx) => (
+                <Table.Tr key={idx}>
+                  <Table.Td>{cfg.moduleType}</Table.Td>
                   <Table.Td w={"200px"} className="text-right">
                     {cfg.rangeFrom} - {cfg.rangeTo}
                   </Table.Td>
@@ -80,8 +80,8 @@ export default function PlantSelector({ selectedPlant, setSelectedPlant }: Plant
 
   return (
     <>
-      <Modal opened={opened} onClose={close} withCloseButton={false} size={"xl"} h={"45rem"}>
-        <div className="emer grid grid-cols-[1fr_2fr] gap-4">
+      <Modal opened={opened} onClose={close} withCloseButton={false} size={"xl"}>
+        <div className="grid grid-cols-[1fr_2fr] gap-4">
           <div className="col-span-2">
             <TextInput
               leftSection={<IconSearch />}

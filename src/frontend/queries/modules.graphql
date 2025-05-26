@@ -1,0 +1,99 @@
+query getModules($type: ModuleTypeGroup!) {
+  modules(typeGroup: $type) {
+    id
+    name
+    description
+    key
+    type
+    group
+    isActuator
+    isSensor
+  }
+}
+
+query getModuleById($id: UUID!) {
+  module(id: $id) {
+    id
+    key
+    name
+    description
+    type
+    group
+    isActuator
+    isSensor
+    state {
+      moduleKey
+      moduleType
+      connectionState
+      stateType
+      state
+      value
+      min
+      max
+      unit
+      lastUpdate
+      actions {
+        key
+        name
+        description
+        type
+        isAllowed
+        icon
+        currentValue
+        min
+        max
+        increment
+        unit
+      }
+    }
+  }
+}
+
+mutation updateModule($id: ID!, $name: String, $description: String) {
+  updateModuleRef(input: { id: $id, name: $name, description: $description }) {
+    moduleRefDto {
+      id
+      name
+      description
+      key
+      type
+      group
+      isActuator
+      isSensor
+    }
+  }
+}
+
+mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
+  executeModuleAction(input: { id: $id, actionKey: $actionKey, value: $value }) {
+    boolean
+  }
+}
+
+subscription listenStateChange($key: String!, $type: ModuleType!) {
+  onModuleStateChanged(key: $key, type: $type) {
+    moduleKey
+    moduleType
+    connectionState
+    lastUpdate
+    max
+    min
+    state
+    stateType
+    unit
+    value
+    actions {
+      currentValue
+      description
+      icon
+      increment
+      isAllowed
+      key
+      max
+      min
+      name
+      type
+      unit
+    }
+  }
+}

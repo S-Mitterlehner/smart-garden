@@ -156,6 +156,16 @@ export type AddActuatorToBedPayload = {
   actuatorRefDto?: Maybe<ActuatorRefDto>;
 };
 
+export type AddModuleToBedInput = {
+  bedId: Scalars['ID']['input'];
+  moduleId: Scalars['ID']['input'];
+};
+
+export type AddModuleToBedPayload = {
+  __typename?: 'AddModuleToBedPayload';
+  moduleRefDto?: Maybe<ModuleRefDto>;
+};
+
 export type AddSensorToBedInput = {
   bedId: Scalars['ID']['input'];
   sensorId: Scalars['ID']['input'];
@@ -223,25 +233,23 @@ export type AutomationSelectValueDto = {
 
 export type BedDto = {
   __typename?: 'BedDto';
-  actuators: Array<ActuatorRefDto>;
   description: Scalars['String']['output'];
   id: Scalars['UUID']['output'];
+  modules: Array<ModuleRefDto>;
   name: Scalars['String']['output'];
   plant: PlantRefDto;
   rules: Array<AutomationRuleDto>;
-  sensors: Array<SensorRefDto>;
 };
 
 export type BedDtoFilterInput = {
-  actuators?: InputMaybe<ListFilterInputTypeOfActuatorRefDtoFilterInput>;
   and?: InputMaybe<Array<BedDtoFilterInput>>;
   description?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
+  modules?: InputMaybe<ListFilterInputTypeOfModuleRefDtoFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<BedDtoFilterInput>>;
   plant?: InputMaybe<PlantRefDtoFilterInput>;
   rules?: InputMaybe<ListFilterInputTypeOfAutomationRuleDtoFilterInput>;
-  sensors?: InputMaybe<ListFilterInputTypeOfSensorRefDtoFilterInput>;
 };
 
 export type BooleanOperationFilterInput = {
@@ -287,6 +295,17 @@ export type ExecuteActuatorActionPayload = {
   boolean?: Maybe<Scalars['Boolean']['output']>;
 };
 
+export type ExecuteModuleActionInput = {
+  actionKey: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  value?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type ExecuteModuleActionPayload = {
+  __typename?: 'ExecuteModuleActionPayload';
+  boolean?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type FloatOperationFilterInput = {
   eq?: InputMaybe<Scalars['Float']['input']>;
   gt?: InputMaybe<Scalars['Float']['input']>;
@@ -324,13 +343,6 @@ export type ListFilterInputTypeOfActuatorActionDtoFilterInput = {
   some?: InputMaybe<ActuatorActionDtoFilterInput>;
 };
 
-export type ListFilterInputTypeOfActuatorRefDtoFilterInput = {
-  all?: InputMaybe<ActuatorRefDtoFilterInput>;
-  any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<ActuatorRefDtoFilterInput>;
-  some?: InputMaybe<ActuatorRefDtoFilterInput>;
-};
-
 export type ListFilterInputTypeOfAutomationRuleActionDtoFilterInput = {
   all?: InputMaybe<AutomationRuleActionDtoFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
@@ -345,18 +357,139 @@ export type ListFilterInputTypeOfAutomationRuleDtoFilterInput = {
   some?: InputMaybe<AutomationRuleDtoFilterInput>;
 };
 
-export type ListFilterInputTypeOfPlantSensorConfigDtoFilterInput = {
-  all?: InputMaybe<PlantSensorConfigDtoFilterInput>;
+export type ListFilterInputTypeOfModuleActionDtoFilterInput = {
+  all?: InputMaybe<ModuleActionDtoFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<PlantSensorConfigDtoFilterInput>;
-  some?: InputMaybe<PlantSensorConfigDtoFilterInput>;
+  none?: InputMaybe<ModuleActionDtoFilterInput>;
+  some?: InputMaybe<ModuleActionDtoFilterInput>;
 };
 
-export type ListFilterInputTypeOfSensorRefDtoFilterInput = {
-  all?: InputMaybe<SensorRefDtoFilterInput>;
+export type ListFilterInputTypeOfModuleRefDtoFilterInput = {
+  all?: InputMaybe<ModuleRefDtoFilterInput>;
   any?: InputMaybe<Scalars['Boolean']['input']>;
-  none?: InputMaybe<SensorRefDtoFilterInput>;
-  some?: InputMaybe<SensorRefDtoFilterInput>;
+  none?: InputMaybe<ModuleRefDtoFilterInput>;
+  some?: InputMaybe<ModuleRefDtoFilterInput>;
+};
+
+export type ListFilterInputTypeOfPlantModuleConfigDtoFilterInput = {
+  all?: InputMaybe<PlantModuleConfigDtoFilterInput>;
+  any?: InputMaybe<Scalars['Boolean']['input']>;
+  none?: InputMaybe<PlantModuleConfigDtoFilterInput>;
+  some?: InputMaybe<PlantModuleConfigDtoFilterInput>;
+};
+
+export type ModuleActionDto = {
+  __typename?: 'ModuleActionDto';
+  currentValue?: Maybe<Scalars['Float']['output']>;
+  description: Scalars['String']['output'];
+  icon: ActionIcons;
+  increment?: Maybe<Scalars['Float']['output']>;
+  isAllowed: Scalars['Boolean']['output'];
+  key: Scalars['String']['output'];
+  max?: Maybe<Scalars['Float']['output']>;
+  min?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  type: ActionType;
+  unit?: Maybe<Scalars['String']['output']>;
+};
+
+export type ModuleActionDtoFilterInput = {
+  and?: InputMaybe<Array<ModuleActionDtoFilterInput>>;
+  currentValue?: InputMaybe<FloatOperationFilterInput>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  icon?: InputMaybe<ActionIconsOperationFilterInput>;
+  increment?: InputMaybe<FloatOperationFilterInput>;
+  isAllowed?: InputMaybe<BooleanOperationFilterInput>;
+  key?: InputMaybe<StringOperationFilterInput>;
+  max?: InputMaybe<FloatOperationFilterInput>;
+  min?: InputMaybe<FloatOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<ModuleActionDtoFilterInput>>;
+  type?: InputMaybe<ActionTypeOperationFilterInput>;
+  unit?: InputMaybe<StringOperationFilterInput>;
+};
+
+export type ModuleDto = {
+  __typename?: 'ModuleDto';
+  description: Scalars['String']['output'];
+  group: ModuleTypeGroup;
+  id: Scalars['UUID']['output'];
+  isActuator: Scalars['Boolean']['output'];
+  isSensor: Scalars['Boolean']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  state: ModuleStateDto;
+  type: ModuleType;
+};
+
+export type ModuleDtoFilterInput = {
+  and?: InputMaybe<Array<ModuleDtoFilterInput>>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  group?: InputMaybe<ModuleTypeGroupOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  isActuator?: InputMaybe<BooleanOperationFilterInput>;
+  isSensor?: InputMaybe<BooleanOperationFilterInput>;
+  key?: InputMaybe<StringOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<ModuleDtoFilterInput>>;
+  state?: InputMaybe<ModuleStateDtoFilterInput>;
+  type?: InputMaybe<ModuleTypeOperationFilterInput>;
+};
+
+export type ModuleRefDto = {
+  __typename?: 'ModuleRefDto';
+  description: Scalars['String']['output'];
+  group: ModuleTypeGroup;
+  id: Scalars['UUID']['output'];
+  isActuator: Scalars['Boolean']['output'];
+  isSensor: Scalars['Boolean']['output'];
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  type: ModuleType;
+};
+
+export type ModuleRefDtoFilterInput = {
+  and?: InputMaybe<Array<ModuleRefDtoFilterInput>>;
+  description?: InputMaybe<StringOperationFilterInput>;
+  group?: InputMaybe<ModuleTypeGroupOperationFilterInput>;
+  id?: InputMaybe<UuidOperationFilterInput>;
+  isActuator?: InputMaybe<BooleanOperationFilterInput>;
+  isSensor?: InputMaybe<BooleanOperationFilterInput>;
+  key?: InputMaybe<StringOperationFilterInput>;
+  name?: InputMaybe<StringOperationFilterInput>;
+  or?: InputMaybe<Array<ModuleRefDtoFilterInput>>;
+  type?: InputMaybe<ModuleTypeOperationFilterInput>;
+};
+
+export type ModuleStateDto = {
+  __typename?: 'ModuleStateDto';
+  actions: Array<ModuleActionDto>;
+  connectionState: ConnectionState;
+  lastUpdate: Scalars['DateTime']['output'];
+  max?: Maybe<Scalars['Float']['output']>;
+  min?: Maybe<Scalars['Float']['output']>;
+  moduleKey: Scalars['String']['output'];
+  moduleType: ModuleType;
+  state?: Maybe<Scalars['String']['output']>;
+  stateType: StateType;
+  unit?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ModuleStateDtoFilterInput = {
+  actions?: InputMaybe<ListFilterInputTypeOfModuleActionDtoFilterInput>;
+  and?: InputMaybe<Array<ModuleStateDtoFilterInput>>;
+  connectionState?: InputMaybe<ConnectionStateOperationFilterInput>;
+  lastUpdate?: InputMaybe<DateTimeOperationFilterInput>;
+  max?: InputMaybe<FloatOperationFilterInput>;
+  min?: InputMaybe<FloatOperationFilterInput>;
+  moduleKey?: InputMaybe<StringOperationFilterInput>;
+  moduleType?: InputMaybe<ModuleTypeOperationFilterInput>;
+  or?: InputMaybe<Array<ModuleStateDtoFilterInput>>;
+  state?: InputMaybe<StringOperationFilterInput>;
+  stateType?: InputMaybe<StateTypeOperationFilterInput>;
+  unit?: InputMaybe<StringOperationFilterInput>;
+  value?: InputMaybe<FloatOperationFilterInput>;
 };
 
 export enum ModuleType {
@@ -367,6 +500,18 @@ export enum ModuleType {
   Temperature = 'TEMPERATURE'
 }
 
+export enum ModuleTypeGroup {
+  Actuator = 'ACTUATOR',
+  Sensor = 'SENSOR'
+}
+
+export type ModuleTypeGroupOperationFilterInput = {
+  eq?: InputMaybe<ModuleTypeGroup>;
+  in?: InputMaybe<Array<ModuleTypeGroup>>;
+  neq?: InputMaybe<ModuleTypeGroup>;
+  nin?: InputMaybe<Array<ModuleTypeGroup>>;
+};
+
 export type ModuleTypeOperationFilterInput = {
   eq?: InputMaybe<ModuleType>;
   in?: InputMaybe<Array<ModuleType>>;
@@ -376,19 +521,35 @@ export type ModuleTypeOperationFilterInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** @deprecated Use Module instead */
   addActuatorToBed: AddActuatorToBedPayload;
+  addModuleToBed: AddModuleToBedPayload;
+  /** @deprecated Use Module instead */
   addSensorToBed: AddSensorToBedPayload;
+  /** @deprecated Use Module instead */
   executeActuatorAction: ExecuteActuatorActionPayload;
+  executeModuleAction: ExecuteModuleActionPayload;
+  /** @deprecated Use Module instead */
   removeActuatorFromBed: RemoveActuatorFromBedPayload;
+  removeModuleFromBed: RemoveModuleFromBedPayload;
+  /** @deprecated Use Module instead */
   removeSensorFromBed: RemoveSensorFromBedPayload;
   setPlantToBed: SetPlantToBedPayload;
+  /** @deprecated Use Module instead */
   updateActuatorRef: UpdateActuatorRefPayload;
+  updateModuleRef: UpdateModuleRefPayload;
+  /** @deprecated Use Module instead */
   updateSensorRef: UpdateSensorRefPayload;
 };
 
 
 export type MutationAddActuatorToBedArgs = {
   input: AddActuatorToBedInput;
+};
+
+
+export type MutationAddModuleToBedArgs = {
+  input: AddModuleToBedInput;
 };
 
 
@@ -402,8 +563,18 @@ export type MutationExecuteActuatorActionArgs = {
 };
 
 
+export type MutationExecuteModuleActionArgs = {
+  input: ExecuteModuleActionInput;
+};
+
+
 export type MutationRemoveActuatorFromBedArgs = {
   input: RemoveActuatorFromBedInput;
+};
+
+
+export type MutationRemoveModuleFromBedArgs = {
+  input: RemoveModuleFromBedInput;
 };
 
 
@@ -419,6 +590,11 @@ export type MutationSetPlantToBedArgs = {
 
 export type MutationUpdateActuatorRefArgs = {
   input: UpdateActuatorRefInput;
+};
+
+
+export type MutationUpdateModuleRefArgs = {
+  input: UpdateModuleRefInput;
 };
 
 
@@ -442,8 +618,8 @@ export type PlantDto = {
   description: Scalars['String']['output'];
   id: Scalars['UUID']['output'];
   imageUrl: Scalars['String']['output'];
+  moduleConfigs: Array<PlantModuleConfigDto>;
   name: Scalars['String']['output'];
-  sensorConfigs: Array<PlantSensorConfigDto>;
 };
 
 export type PlantDtoFilterInput = {
@@ -451,9 +627,24 @@ export type PlantDtoFilterInput = {
   description?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
   imageUrl?: InputMaybe<StringOperationFilterInput>;
+  moduleConfigs?: InputMaybe<ListFilterInputTypeOfPlantModuleConfigDtoFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<PlantDtoFilterInput>>;
-  sensorConfigs?: InputMaybe<ListFilterInputTypeOfPlantSensorConfigDtoFilterInput>;
+};
+
+export type PlantModuleConfigDto = {
+  __typename?: 'PlantModuleConfigDto';
+  moduleType: ModuleType;
+  rangeFrom: Scalars['Float']['output'];
+  rangeTo: Scalars['Float']['output'];
+};
+
+export type PlantModuleConfigDtoFilterInput = {
+  and?: InputMaybe<Array<PlantModuleConfigDtoFilterInput>>;
+  moduleType?: InputMaybe<ModuleTypeOperationFilterInput>;
+  or?: InputMaybe<Array<PlantModuleConfigDtoFilterInput>>;
+  rangeFrom?: InputMaybe<FloatOperationFilterInput>;
+  rangeTo?: InputMaybe<FloatOperationFilterInput>;
 };
 
 export type PlantRefDto = {
@@ -467,33 +658,24 @@ export type PlantRefDtoFilterInput = {
   or?: InputMaybe<Array<PlantRefDtoFilterInput>>;
 };
 
-export type PlantSensorConfigDto = {
-  __typename?: 'PlantSensorConfigDto';
-  rangeFrom: Scalars['Float']['output'];
-  rangeTo: Scalars['Float']['output'];
-  sensorType: ModuleType;
-};
-
-export type PlantSensorConfigDtoFilterInput = {
-  and?: InputMaybe<Array<PlantSensorConfigDtoFilterInput>>;
-  or?: InputMaybe<Array<PlantSensorConfigDtoFilterInput>>;
-  rangeFrom?: InputMaybe<FloatOperationFilterInput>;
-  rangeTo?: InputMaybe<FloatOperationFilterInput>;
-  sensorType?: InputMaybe<ModuleTypeOperationFilterInput>;
-};
-
 export type Query = {
   __typename?: 'Query';
+  /** @deprecated Use GetModule instead */
   actuator?: Maybe<ActuatorDto>;
+  /** @deprecated Use GetModules instead */
   actuators: Array<ActuatorRefDto>;
   automationConfig?: Maybe<AutomationConfigDto>;
   bed?: Maybe<BedDto>;
   beds: Array<BedDto>;
+  module?: Maybe<ModuleDto>;
+  modules: Array<ModuleRefDto>;
   plant?: Maybe<PlantDto>;
   plants: Array<PlantDto>;
   rule?: Maybe<AutomationRuleDto>;
   rules: Array<AutomationRuleDto>;
+  /** @deprecated Use GetModule instead */
   sensor?: Maybe<SensorDto>;
+  /** @deprecated Use GetModule instead */
   sensors: Array<SensorRefDto>;
 };
 
@@ -522,6 +704,18 @@ export type QueryBedArgs = {
 
 export type QueryBedsArgs = {
   where?: InputMaybe<BedDtoFilterInput>;
+};
+
+
+export type QueryModuleArgs = {
+  id: Scalars['UUID']['input'];
+  where?: InputMaybe<ModuleDtoFilterInput>;
+};
+
+
+export type QueryModulesArgs = {
+  typeGroup: ModuleTypeGroup;
+  where?: InputMaybe<ModuleRefDtoFilterInput>;
 };
 
 
@@ -563,6 +757,16 @@ export type RemoveActuatorFromBedInput = {
 
 export type RemoveActuatorFromBedPayload = {
   __typename?: 'RemoveActuatorFromBedPayload';
+  boolean?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type RemoveModuleFromBedInput = {
+  bedId: Scalars['ID']['input'];
+  moduleId: Scalars['ID']['input'];
+};
+
+export type RemoveModuleFromBedPayload = {
+  __typename?: 'RemoveModuleFromBedPayload';
   boolean?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -673,12 +877,21 @@ export type StringOperationFilterInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  /** @deprecated use module instead */
   onActuatorStateChanged: ActuatorStateDto;
+  onModuleStateChanged: ModuleStateDto;
+  /** @deprecated use module instead */
   onSensorMeasurement: SensorDataDto;
 };
 
 
 export type SubscriptionOnActuatorStateChangedArgs = {
+  key: Scalars['String']['input'];
+  type: ModuleType;
+};
+
+
+export type SubscriptionOnModuleStateChangedArgs = {
   key: Scalars['String']['input'];
   type: ModuleType;
 };
@@ -698,6 +911,17 @@ export type UpdateActuatorRefInput = {
 export type UpdateActuatorRefPayload = {
   __typename?: 'UpdateActuatorRefPayload';
   actuatorRefDto?: Maybe<ActuatorRefDto>;
+};
+
+export type UpdateModuleRefInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateModuleRefPayload = {
+  __typename?: 'UpdateModuleRefPayload';
+  moduleRefDto?: Maybe<ModuleRefDto>;
 };
 
 export type UpdateSensorRefInput = {
@@ -747,29 +971,29 @@ export type UpdateActuatorMutationVariables = Exact<{
 
 export type UpdateActuatorMutation = { __typename?: 'Mutation', updateActuatorRef: { __typename?: 'UpdateActuatorRefPayload', actuatorRefDto?: { __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: ModuleType } | null } };
 
-export type ExecuteActionMutationVariables = Exact<{
+export type ExecuteActuatorActionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
   actionKey: Scalars['String']['input'];
   value?: InputMaybe<Scalars['Float']['input']>;
 }>;
 
 
-export type ExecuteActionMutation = { __typename?: 'Mutation', executeActuatorAction: { __typename?: 'ExecuteActuatorActionPayload', boolean?: boolean | null } };
+export type ExecuteActuatorActionMutation = { __typename?: 'Mutation', executeActuatorAction: { __typename?: 'ExecuteActuatorActionPayload', boolean?: boolean | null } };
 
-export type ListenStateChangeSubscriptionVariables = Exact<{
+export type ListenActuatorStateChangeSubscriptionVariables = Exact<{
   key: Scalars['String']['input'];
   type: ModuleType;
 }>;
 
 
-export type ListenStateChangeSubscription = { __typename?: 'Subscription', onActuatorStateChanged: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: ModuleType, connectionState: ConnectionState, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: StateType, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ActuatorActionDto', currentValue?: number | null, description: string, icon: ActionIcons, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: ActionType, unit?: string | null }> } };
+export type ListenActuatorStateChangeSubscription = { __typename?: 'Subscription', onActuatorStateChanged: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: ModuleType, connectionState: ConnectionState, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: StateType, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ActuatorActionDto', currentValue?: number | null, description: string, icon: ActionIcons, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: ActionType, unit?: string | null }> } };
 
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, sensors: Array<{ __typename?: 'SensorRefDto', id: any, name: string, description: string, key?: string | null, type: ModuleType }>, actuators: Array<{ __typename?: 'ActuatorRefDto', id: any, name: string, description: string, key: string, type: ModuleType }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: ModuleType, actionKey: string, value?: number | null, order: number }> }> } | null };
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: ModuleType, actionKey: string, value?: number | null, order: number }> }> } | null };
 
 export type SetCurrentPlantMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -779,49 +1003,73 @@ export type SetCurrentPlantMutationVariables = Exact<{
 
 export type SetCurrentPlantMutation = { __typename?: 'Mutation', setPlantToBed: { __typename?: 'SetPlantToBedPayload', bedDto?: { __typename?: 'BedDto', id: any } | null } };
 
-export type AddSensorToBedMutationVariables = Exact<{
+export type AddModuleToBedMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
-  sensorId: Scalars['ID']['input'];
+  moduleId: Scalars['ID']['input'];
 }>;
 
 
-export type AddSensorToBedMutation = { __typename?: 'Mutation', addSensorToBed: { __typename?: 'AddSensorToBedPayload', sensorRefDto?: { __typename?: 'SensorRefDto', id: any } | null } };
+export type AddModuleToBedMutation = { __typename?: 'Mutation', addModuleToBed: { __typename?: 'AddModuleToBedPayload', moduleRefDto?: { __typename?: 'ModuleRefDto', id: any } | null } };
 
-export type RemoveSensorFromBedMutationVariables = Exact<{
+export type RemoveModuleFromBedMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
-  sensorId: Scalars['ID']['input'];
+  moduleId: Scalars['ID']['input'];
 }>;
 
 
-export type RemoveSensorFromBedMutation = { __typename?: 'Mutation', removeSensorFromBed: { __typename?: 'RemoveSensorFromBedPayload', boolean?: boolean | null } };
+export type RemoveModuleFromBedMutation = { __typename?: 'Mutation', removeModuleFromBed: { __typename?: 'RemoveModuleFromBedPayload', boolean?: boolean | null } };
 
-export type AddActuatorToBedMutationVariables = Exact<{
-  bedId: Scalars['ID']['input'];
-  actuatorId: Scalars['ID']['input'];
+export type GetModulesQueryVariables = Exact<{
+  type: ModuleTypeGroup;
 }>;
 
 
-export type AddActuatorToBedMutation = { __typename?: 'Mutation', addActuatorToBed: { __typename?: 'AddActuatorToBedPayload', actuatorRefDto?: { __typename?: 'ActuatorRefDto', id: any } | null } };
+export type GetModulesQuery = { __typename?: 'Query', modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean }> };
 
-export type RemoveActuatorFromBedMutationVariables = Exact<{
-  bedId: Scalars['ID']['input'];
-  actuatorId: Scalars['ID']['input'];
+export type GetModuleByIdQueryVariables = Exact<{
+  id: Scalars['UUID']['input'];
 }>;
 
 
-export type RemoveActuatorFromBedMutation = { __typename?: 'Mutation', removeActuatorFromBed: { __typename?: 'RemoveActuatorFromBedPayload', boolean?: boolean | null } };
+export type GetModuleByIdQuery = { __typename?: 'Query', module?: { __typename?: 'ModuleDto', id: any, key: string, name: string, description: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean, state: { __typename?: 'ModuleStateDto', moduleKey: string, moduleType: ModuleType, connectionState: ConnectionState, stateType: StateType, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ModuleActionDto', key: string, name: string, description: string, type: ActionType, isAllowed: boolean, icon: ActionIcons, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
+
+export type UpdateModuleMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateModuleMutation = { __typename?: 'Mutation', updateModuleRef: { __typename?: 'UpdateModuleRefPayload', moduleRefDto?: { __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean } | null } };
+
+export type ExecuteActionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  actionKey: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['Float']['input']>;
+}>;
+
+
+export type ExecuteActionMutation = { __typename?: 'Mutation', executeModuleAction: { __typename?: 'ExecuteModuleActionPayload', boolean?: boolean | null } };
+
+export type ListenStateChangeSubscriptionVariables = Exact<{
+  key: Scalars['String']['input'];
+  type: ModuleType;
+}>;
+
+
+export type ListenStateChangeSubscription = { __typename?: 'Subscription', onModuleStateChanged: { __typename?: 'ModuleStateDto', moduleKey: string, moduleType: ModuleType, connectionState: ConnectionState, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: StateType, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ModuleActionDto', currentValue?: number | null, description: string, icon: ActionIcons, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: ActionType, unit?: string | null }> } };
 
 export type GetPlantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPlantsQuery = { __typename?: 'Query', plants: Array<{ __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: ModuleType, rangeFrom: number, rangeTo: number }> }> };
+export type GetPlantsQuery = { __typename?: 'Query', plants: Array<{ __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, moduleConfigs: Array<{ __typename?: 'PlantModuleConfigDto', moduleType: ModuleType, rangeFrom: number, rangeTo: number }> }> };
 
 export type GetPlantByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetPlantByIdQuery = { __typename?: 'Query', plant?: { __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, sensorConfigs: Array<{ __typename?: 'PlantSensorConfigDto', sensorType: ModuleType, rangeFrom: number, rangeTo: number }> } | null };
+export type GetPlantByIdQuery = { __typename?: 'Query', plant?: { __typename?: 'PlantDto', id: any, name: string, description: string, imageUrl: string, moduleConfigs: Array<{ __typename?: 'PlantModuleConfigDto', moduleType: ModuleType, rangeFrom: number, rangeTo: number }> } | null };
 
 export type GetSensorsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1006,27 +1254,27 @@ export function useUpdateActuatorMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateActuatorMutationHookResult = ReturnType<typeof useUpdateActuatorMutation>;
 export type UpdateActuatorMutationResult = Apollo.MutationResult<UpdateActuatorMutation>;
 export type UpdateActuatorMutationOptions = Apollo.BaseMutationOptions<UpdateActuatorMutation, UpdateActuatorMutationVariables>;
-export const ExecuteActionDocument = gql`
-    mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
+export const ExecuteActuatorActionDocument = gql`
+    mutation executeActuatorAction($id: ID!, $actionKey: String!, $value: Float) {
   executeActuatorAction(input: {id: $id, actionKey: $actionKey, value: $value}) {
     boolean
   }
 }
     `;
-export type ExecuteActionMutationFn = Apollo.MutationFunction<ExecuteActionMutation, ExecuteActionMutationVariables>;
+export type ExecuteActuatorActionMutationFn = Apollo.MutationFunction<ExecuteActuatorActionMutation, ExecuteActuatorActionMutationVariables>;
 
 /**
- * __useExecuteActionMutation__
+ * __useExecuteActuatorActionMutation__
  *
- * To run a mutation, you first call `useExecuteActionMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useExecuteActionMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useExecuteActuatorActionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useExecuteActuatorActionMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [executeActionMutation, { data, loading, error }] = useExecuteActionMutation({
+ * const [executeActuatorActionMutation, { data, loading, error }] = useExecuteActuatorActionMutation({
  *   variables: {
  *      id: // value for 'id'
  *      actionKey: // value for 'actionKey'
@@ -1034,15 +1282,15 @@ export type ExecuteActionMutationFn = Apollo.MutationFunction<ExecuteActionMutat
  *   },
  * });
  */
-export function useExecuteActionMutation(baseOptions?: Apollo.MutationHookOptions<ExecuteActionMutation, ExecuteActionMutationVariables>) {
+export function useExecuteActuatorActionMutation(baseOptions?: Apollo.MutationHookOptions<ExecuteActuatorActionMutation, ExecuteActuatorActionMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ExecuteActionMutation, ExecuteActionMutationVariables>(ExecuteActionDocument, options);
+        return Apollo.useMutation<ExecuteActuatorActionMutation, ExecuteActuatorActionMutationVariables>(ExecuteActuatorActionDocument, options);
       }
-export type ExecuteActionMutationHookResult = ReturnType<typeof useExecuteActionMutation>;
-export type ExecuteActionMutationResult = Apollo.MutationResult<ExecuteActionMutation>;
-export type ExecuteActionMutationOptions = Apollo.BaseMutationOptions<ExecuteActionMutation, ExecuteActionMutationVariables>;
-export const ListenStateChangeDocument = gql`
-    subscription listenStateChange($key: String!, $type: ModuleType!) {
+export type ExecuteActuatorActionMutationHookResult = ReturnType<typeof useExecuteActuatorActionMutation>;
+export type ExecuteActuatorActionMutationResult = Apollo.MutationResult<ExecuteActuatorActionMutation>;
+export type ExecuteActuatorActionMutationOptions = Apollo.BaseMutationOptions<ExecuteActuatorActionMutation, ExecuteActuatorActionMutationVariables>;
+export const ListenActuatorStateChangeDocument = gql`
+    subscription listenActuatorStateChange($key: String!, $type: ModuleType!) {
   onActuatorStateChanged(key: $key, type: $type) {
     actuatorKey
     actuatorType
@@ -1072,28 +1320,28 @@ export const ListenStateChangeDocument = gql`
     `;
 
 /**
- * __useListenStateChangeSubscription__
+ * __useListenActuatorStateChangeSubscription__
  *
- * To run a query within a React component, call `useListenStateChangeSubscription` and pass it any options that fit your needs.
- * When your component renders, `useListenStateChangeSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useListenActuatorStateChangeSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useListenActuatorStateChangeSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useListenStateChangeSubscription({
+ * const { data, loading, error } = useListenActuatorStateChangeSubscription({
  *   variables: {
  *      key: // value for 'key'
  *      type: // value for 'type'
  *   },
  * });
  */
-export function useListenStateChangeSubscription(baseOptions: Apollo.SubscriptionHookOptions<ListenStateChangeSubscription, ListenStateChangeSubscriptionVariables> & ({ variables: ListenStateChangeSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useListenActuatorStateChangeSubscription(baseOptions: Apollo.SubscriptionHookOptions<ListenActuatorStateChangeSubscription, ListenActuatorStateChangeSubscriptionVariables> & ({ variables: ListenActuatorStateChangeSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<ListenStateChangeSubscription, ListenStateChangeSubscriptionVariables>(ListenStateChangeDocument, options);
+        return Apollo.useSubscription<ListenActuatorStateChangeSubscription, ListenActuatorStateChangeSubscriptionVariables>(ListenActuatorStateChangeDocument, options);
       }
-export type ListenStateChangeSubscriptionHookResult = ReturnType<typeof useListenStateChangeSubscription>;
-export type ListenStateChangeSubscriptionResult = Apollo.SubscriptionResult<ListenStateChangeSubscription>;
+export type ListenActuatorStateChangeSubscriptionHookResult = ReturnType<typeof useListenActuatorStateChangeSubscription>;
+export type ListenActuatorStateChangeSubscriptionResult = Apollo.SubscriptionResult<ListenActuatorStateChangeSubscription>;
 export const GetBedByIdDocument = gql`
     query getBedById($id: UUID!) {
   bed(id: $id) {
@@ -1103,19 +1351,15 @@ export const GetBedByIdDocument = gql`
     plant {
       id
     }
-    sensors {
+    modules {
       id
       name
       description
       key
       type
-    }
-    actuators {
-      id
-      name
-      description
-      key
-      type
+      group
+      isActuator
+      isSensor
     }
     rules {
       id
@@ -1204,146 +1448,327 @@ export function useSetCurrentPlantMutation(baseOptions?: Apollo.MutationHookOpti
 export type SetCurrentPlantMutationHookResult = ReturnType<typeof useSetCurrentPlantMutation>;
 export type SetCurrentPlantMutationResult = Apollo.MutationResult<SetCurrentPlantMutation>;
 export type SetCurrentPlantMutationOptions = Apollo.BaseMutationOptions<SetCurrentPlantMutation, SetCurrentPlantMutationVariables>;
-export const AddSensorToBedDocument = gql`
-    mutation addSensorToBed($bedId: ID!, $sensorId: ID!) {
-  addSensorToBed(input: {bedId: $bedId, sensorId: $sensorId}) {
-    sensorRefDto {
+export const AddModuleToBedDocument = gql`
+    mutation addModuleToBed($bedId: ID!, $moduleId: ID!) {
+  addModuleToBed(input: {bedId: $bedId, moduleId: $moduleId}) {
+    moduleRefDto {
       id
     }
   }
 }
     `;
-export type AddSensorToBedMutationFn = Apollo.MutationFunction<AddSensorToBedMutation, AddSensorToBedMutationVariables>;
+export type AddModuleToBedMutationFn = Apollo.MutationFunction<AddModuleToBedMutation, AddModuleToBedMutationVariables>;
 
 /**
- * __useAddSensorToBedMutation__
+ * __useAddModuleToBedMutation__
  *
- * To run a mutation, you first call `useAddSensorToBedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddSensorToBedMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useAddModuleToBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddModuleToBedMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [addSensorToBedMutation, { data, loading, error }] = useAddSensorToBedMutation({
+ * const [addModuleToBedMutation, { data, loading, error }] = useAddModuleToBedMutation({
  *   variables: {
  *      bedId: // value for 'bedId'
- *      sensorId: // value for 'sensorId'
+ *      moduleId: // value for 'moduleId'
  *   },
  * });
  */
-export function useAddSensorToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddSensorToBedMutation, AddSensorToBedMutationVariables>) {
+export function useAddModuleToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddModuleToBedMutation, AddModuleToBedMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddSensorToBedMutation, AddSensorToBedMutationVariables>(AddSensorToBedDocument, options);
+        return Apollo.useMutation<AddModuleToBedMutation, AddModuleToBedMutationVariables>(AddModuleToBedDocument, options);
       }
-export type AddSensorToBedMutationHookResult = ReturnType<typeof useAddSensorToBedMutation>;
-export type AddSensorToBedMutationResult = Apollo.MutationResult<AddSensorToBedMutation>;
-export type AddSensorToBedMutationOptions = Apollo.BaseMutationOptions<AddSensorToBedMutation, AddSensorToBedMutationVariables>;
-export const RemoveSensorFromBedDocument = gql`
-    mutation removeSensorFromBed($bedId: ID!, $sensorId: ID!) {
-  removeSensorFromBed(input: {bedId: $bedId, sensorId: $sensorId}) {
+export type AddModuleToBedMutationHookResult = ReturnType<typeof useAddModuleToBedMutation>;
+export type AddModuleToBedMutationResult = Apollo.MutationResult<AddModuleToBedMutation>;
+export type AddModuleToBedMutationOptions = Apollo.BaseMutationOptions<AddModuleToBedMutation, AddModuleToBedMutationVariables>;
+export const RemoveModuleFromBedDocument = gql`
+    mutation removeModuleFromBed($bedId: ID!, $moduleId: ID!) {
+  removeModuleFromBed(input: {bedId: $bedId, moduleId: $moduleId}) {
     boolean
   }
 }
     `;
-export type RemoveSensorFromBedMutationFn = Apollo.MutationFunction<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>;
+export type RemoveModuleFromBedMutationFn = Apollo.MutationFunction<RemoveModuleFromBedMutation, RemoveModuleFromBedMutationVariables>;
 
 /**
- * __useRemoveSensorFromBedMutation__
+ * __useRemoveModuleFromBedMutation__
  *
- * To run a mutation, you first call `useRemoveSensorFromBedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRemoveSensorFromBedMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useRemoveModuleFromBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveModuleFromBedMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [removeSensorFromBedMutation, { data, loading, error }] = useRemoveSensorFromBedMutation({
+ * const [removeModuleFromBedMutation, { data, loading, error }] = useRemoveModuleFromBedMutation({
  *   variables: {
  *      bedId: // value for 'bedId'
- *      sensorId: // value for 'sensorId'
+ *      moduleId: // value for 'moduleId'
  *   },
  * });
  */
-export function useRemoveSensorFromBedMutation(baseOptions?: Apollo.MutationHookOptions<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>) {
+export function useRemoveModuleFromBedMutation(baseOptions?: Apollo.MutationHookOptions<RemoveModuleFromBedMutation, RemoveModuleFromBedMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>(RemoveSensorFromBedDocument, options);
+        return Apollo.useMutation<RemoveModuleFromBedMutation, RemoveModuleFromBedMutationVariables>(RemoveModuleFromBedDocument, options);
       }
-export type RemoveSensorFromBedMutationHookResult = ReturnType<typeof useRemoveSensorFromBedMutation>;
-export type RemoveSensorFromBedMutationResult = Apollo.MutationResult<RemoveSensorFromBedMutation>;
-export type RemoveSensorFromBedMutationOptions = Apollo.BaseMutationOptions<RemoveSensorFromBedMutation, RemoveSensorFromBedMutationVariables>;
-export const AddActuatorToBedDocument = gql`
-    mutation addActuatorToBed($bedId: ID!, $actuatorId: ID!) {
-  addActuatorToBed(input: {bedId: $bedId, actuatorId: $actuatorId}) {
-    actuatorRefDto {
-      id
+export type RemoveModuleFromBedMutationHookResult = ReturnType<typeof useRemoveModuleFromBedMutation>;
+export type RemoveModuleFromBedMutationResult = Apollo.MutationResult<RemoveModuleFromBedMutation>;
+export type RemoveModuleFromBedMutationOptions = Apollo.BaseMutationOptions<RemoveModuleFromBedMutation, RemoveModuleFromBedMutationVariables>;
+export const GetModulesDocument = gql`
+    query getModules($type: ModuleTypeGroup!) {
+  modules(typeGroup: $type) {
+    id
+    name
+    description
+    key
+    type
+    group
+    isActuator
+    isSensor
+  }
+}
+    `;
+
+/**
+ * __useGetModulesQuery__
+ *
+ * To run a query within a React component, call `useGetModulesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetModulesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetModulesQuery({
+ *   variables: {
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useGetModulesQuery(baseOptions: Apollo.QueryHookOptions<GetModulesQuery, GetModulesQueryVariables> & ({ variables: GetModulesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetModulesQuery, GetModulesQueryVariables>(GetModulesDocument, options);
+      }
+export function useGetModulesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetModulesQuery, GetModulesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetModulesQuery, GetModulesQueryVariables>(GetModulesDocument, options);
+        }
+export function useGetModulesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetModulesQuery, GetModulesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetModulesQuery, GetModulesQueryVariables>(GetModulesDocument, options);
+        }
+export type GetModulesQueryHookResult = ReturnType<typeof useGetModulesQuery>;
+export type GetModulesLazyQueryHookResult = ReturnType<typeof useGetModulesLazyQuery>;
+export type GetModulesSuspenseQueryHookResult = ReturnType<typeof useGetModulesSuspenseQuery>;
+export type GetModulesQueryResult = Apollo.QueryResult<GetModulesQuery, GetModulesQueryVariables>;
+export const GetModuleByIdDocument = gql`
+    query getModuleById($id: UUID!) {
+  module(id: $id) {
+    id
+    key
+    name
+    description
+    type
+    group
+    isActuator
+    isSensor
+    state {
+      moduleKey
+      moduleType
+      connectionState
+      stateType
+      state
+      value
+      min
+      max
+      unit
+      lastUpdate
+      actions {
+        key
+        name
+        description
+        type
+        isAllowed
+        icon
+        currentValue
+        min
+        max
+        increment
+        unit
+      }
     }
   }
 }
     `;
-export type AddActuatorToBedMutationFn = Apollo.MutationFunction<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>;
 
 /**
- * __useAddActuatorToBedMutation__
+ * __useGetModuleByIdQuery__
  *
- * To run a mutation, you first call `useAddActuatorToBedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddActuatorToBedMutation` returns a tuple that includes:
+ * To run a query within a React component, call `useGetModuleByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetModuleByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetModuleByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetModuleByIdQuery(baseOptions: Apollo.QueryHookOptions<GetModuleByIdQuery, GetModuleByIdQueryVariables> & ({ variables: GetModuleByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetModuleByIdQuery, GetModuleByIdQueryVariables>(GetModuleByIdDocument, options);
+      }
+export function useGetModuleByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetModuleByIdQuery, GetModuleByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetModuleByIdQuery, GetModuleByIdQueryVariables>(GetModuleByIdDocument, options);
+        }
+export function useGetModuleByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetModuleByIdQuery, GetModuleByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetModuleByIdQuery, GetModuleByIdQueryVariables>(GetModuleByIdDocument, options);
+        }
+export type GetModuleByIdQueryHookResult = ReturnType<typeof useGetModuleByIdQuery>;
+export type GetModuleByIdLazyQueryHookResult = ReturnType<typeof useGetModuleByIdLazyQuery>;
+export type GetModuleByIdSuspenseQueryHookResult = ReturnType<typeof useGetModuleByIdSuspenseQuery>;
+export type GetModuleByIdQueryResult = Apollo.QueryResult<GetModuleByIdQuery, GetModuleByIdQueryVariables>;
+export const UpdateModuleDocument = gql`
+    mutation updateModule($id: ID!, $name: String, $description: String) {
+  updateModuleRef(input: {id: $id, name: $name, description: $description}) {
+    moduleRefDto {
+      id
+      name
+      description
+      key
+      type
+      group
+      isActuator
+      isSensor
+    }
+  }
+}
+    `;
+export type UpdateModuleMutationFn = Apollo.MutationFunction<UpdateModuleMutation, UpdateModuleMutationVariables>;
+
+/**
+ * __useUpdateModuleMutation__
+ *
+ * To run a mutation, you first call `useUpdateModuleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateModuleMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [addActuatorToBedMutation, { data, loading, error }] = useAddActuatorToBedMutation({
+ * const [updateModuleMutation, { data, loading, error }] = useUpdateModuleMutation({
  *   variables: {
- *      bedId: // value for 'bedId'
- *      actuatorId: // value for 'actuatorId'
+ *      id: // value for 'id'
+ *      name: // value for 'name'
+ *      description: // value for 'description'
  *   },
  * });
  */
-export function useAddActuatorToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>) {
+export function useUpdateModuleMutation(baseOptions?: Apollo.MutationHookOptions<UpdateModuleMutation, UpdateModuleMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>(AddActuatorToBedDocument, options);
+        return Apollo.useMutation<UpdateModuleMutation, UpdateModuleMutationVariables>(UpdateModuleDocument, options);
       }
-export type AddActuatorToBedMutationHookResult = ReturnType<typeof useAddActuatorToBedMutation>;
-export type AddActuatorToBedMutationResult = Apollo.MutationResult<AddActuatorToBedMutation>;
-export type AddActuatorToBedMutationOptions = Apollo.BaseMutationOptions<AddActuatorToBedMutation, AddActuatorToBedMutationVariables>;
-export const RemoveActuatorFromBedDocument = gql`
-    mutation removeActuatorFromBed($bedId: ID!, $actuatorId: ID!) {
-  removeActuatorFromBed(input: {bedId: $bedId, actuatorId: $actuatorId}) {
+export type UpdateModuleMutationHookResult = ReturnType<typeof useUpdateModuleMutation>;
+export type UpdateModuleMutationResult = Apollo.MutationResult<UpdateModuleMutation>;
+export type UpdateModuleMutationOptions = Apollo.BaseMutationOptions<UpdateModuleMutation, UpdateModuleMutationVariables>;
+export const ExecuteActionDocument = gql`
+    mutation executeAction($id: ID!, $actionKey: String!, $value: Float) {
+  executeModuleAction(input: {id: $id, actionKey: $actionKey, value: $value}) {
     boolean
   }
 }
     `;
-export type RemoveActuatorFromBedMutationFn = Apollo.MutationFunction<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>;
+export type ExecuteActionMutationFn = Apollo.MutationFunction<ExecuteActionMutation, ExecuteActionMutationVariables>;
 
 /**
- * __useRemoveActuatorFromBedMutation__
+ * __useExecuteActionMutation__
  *
- * To run a mutation, you first call `useRemoveActuatorFromBedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRemoveActuatorFromBedMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useExecuteActionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useExecuteActionMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [removeActuatorFromBedMutation, { data, loading, error }] = useRemoveActuatorFromBedMutation({
+ * const [executeActionMutation, { data, loading, error }] = useExecuteActionMutation({
  *   variables: {
- *      bedId: // value for 'bedId'
- *      actuatorId: // value for 'actuatorId'
+ *      id: // value for 'id'
+ *      actionKey: // value for 'actionKey'
+ *      value: // value for 'value'
  *   },
  * });
  */
-export function useRemoveActuatorFromBedMutation(baseOptions?: Apollo.MutationHookOptions<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>) {
+export function useExecuteActionMutation(baseOptions?: Apollo.MutationHookOptions<ExecuteActionMutation, ExecuteActionMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>(RemoveActuatorFromBedDocument, options);
+        return Apollo.useMutation<ExecuteActionMutation, ExecuteActionMutationVariables>(ExecuteActionDocument, options);
       }
-export type RemoveActuatorFromBedMutationHookResult = ReturnType<typeof useRemoveActuatorFromBedMutation>;
-export type RemoveActuatorFromBedMutationResult = Apollo.MutationResult<RemoveActuatorFromBedMutation>;
-export type RemoveActuatorFromBedMutationOptions = Apollo.BaseMutationOptions<RemoveActuatorFromBedMutation, RemoveActuatorFromBedMutationVariables>;
+export type ExecuteActionMutationHookResult = ReturnType<typeof useExecuteActionMutation>;
+export type ExecuteActionMutationResult = Apollo.MutationResult<ExecuteActionMutation>;
+export type ExecuteActionMutationOptions = Apollo.BaseMutationOptions<ExecuteActionMutation, ExecuteActionMutationVariables>;
+export const ListenStateChangeDocument = gql`
+    subscription listenStateChange($key: String!, $type: ModuleType!) {
+  onModuleStateChanged(key: $key, type: $type) {
+    moduleKey
+    moduleType
+    connectionState
+    lastUpdate
+    max
+    min
+    state
+    stateType
+    unit
+    value
+    actions {
+      currentValue
+      description
+      icon
+      increment
+      isAllowed
+      key
+      max
+      min
+      name
+      type
+      unit
+    }
+  }
+}
+    `;
+
+/**
+ * __useListenStateChangeSubscription__
+ *
+ * To run a query within a React component, call `useListenStateChangeSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useListenStateChangeSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListenStateChangeSubscription({
+ *   variables: {
+ *      key: // value for 'key'
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useListenStateChangeSubscription(baseOptions: Apollo.SubscriptionHookOptions<ListenStateChangeSubscription, ListenStateChangeSubscriptionVariables> & ({ variables: ListenStateChangeSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ListenStateChangeSubscription, ListenStateChangeSubscriptionVariables>(ListenStateChangeDocument, options);
+      }
+export type ListenStateChangeSubscriptionHookResult = ReturnType<typeof useListenStateChangeSubscription>;
+export type ListenStateChangeSubscriptionResult = Apollo.SubscriptionResult<ListenStateChangeSubscription>;
 export const GetPlantsDocument = gql`
     query getPlants {
   plants {
@@ -1351,8 +1776,8 @@ export const GetPlantsDocument = gql`
     name
     description
     imageUrl
-    sensorConfigs {
-      sensorType
+    moduleConfigs {
+      moduleType
       rangeFrom
       rangeTo
     }
@@ -1398,8 +1823,8 @@ export const GetPlantByIdDocument = gql`
     name
     description
     imageUrl
-    sensorConfigs {
-      sensorType
+    moduleConfigs {
+      moduleType
       rangeFrom
       rangeTo
     }

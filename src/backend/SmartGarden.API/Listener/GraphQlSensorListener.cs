@@ -6,6 +6,7 @@ using SmartGarden.Modules.Sensors.Models;
 
 namespace SmartGarden.API.Listener;
 
+[Obsolete("Use GraphQlModuleListener instead")]
 public class GraphQlSensorListener(ITopicEventSender eventSender, ILogger<GraphQlSensorListener> logger) : ISensorListener
 {
     public static string GetTopic(string key, ModuleType type) => $"Sensor_Measurement_{key}_{type}";

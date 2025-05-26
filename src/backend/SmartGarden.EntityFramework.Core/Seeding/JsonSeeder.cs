@@ -8,11 +8,11 @@ using SmartGarden.EntityFramework.Core.Models;
 
 namespace SmartGarden.EntityFramework.Core.Seeding;
 
-public class JsonSeeder<TSeedModel, TContext>(string path, TContext db, ILogger<JsonSeeder<TSeedModel, TContext>> logger) : ISeeder where TContext : BaseDbContext
+public class JsonSeeder<TSeedModel, TContext>(string path, TContext db, ILogger<JsonSeeder<TSeedModel, TContext>> logger) : BaseSeeder(db) where TContext : BaseDbContext
 {
     private readonly Dictionary<Guid, BaseEntity> _entities = new();
 
-    public async Task SeedAsync()
+    protected override async Task Initialize()
     {
         logger.LogTrace("Start Seeding from Json-File {path}", path);
         var strategy = db.Database.CreateExecutionStrategy();
@@ -48,13 +48,14 @@ public class JsonSeeder<TSeedModel, TContext>(string path, TContext db, ILogger<
                         if (value is IEnumerable list && value.GetType().IsGenericType)
                         {
                             var elementType = value.GetType().GetGenericArguments()[0];
-
                             if (!elementType.IsAssignableTo(typeof(BaseEntity))) continue;
+
+                            await LoadExistingByType(elementType);
 
                             foreach (var item in list)
                             {
                                 ReplaceChildren(item);
-
+                                
                                 if (item is not BaseEntity entity) continue;
 
                                 _entities.Add(entity.Id, entity);
@@ -78,6 +79,15 @@ public class JsonSeeder<TSeedModel, TContext>(string path, TContext db, ILogger<
         catch (Exception ex)
         {
             logger.LogCritical(ex, "Seeding failed critically for path {path}: {exception}", path, ex.Message);
+        }
+    }
+
+    private async Task LoadExistingByType(Type elementType)
+    {
+        var existingEntities = await db.Set(elementType).Cast<BaseEntity>().ToListAsync();
+        foreach (var entity in existingEntities)
+        {
+            _entities.Add(entity.Id, entity);
         }
     }
 

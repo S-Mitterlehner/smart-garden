@@ -4,16 +4,16 @@ using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.Dtos;
 
-public class PlantSensorConfigDto
+public class PlantModuleConfigDto
 {
-    public ModuleType SensorType { get; set; }
+    public ModuleType ModuleType { get; set; }
     public double RangeFrom { get; set; }
     public double RangeTo { get; set; }
 
-    public static Expression<Func<PlantSensorConfig, PlantSensorConfigDto>> FromEntity => c => new PlantSensorConfigDto
+    public static Expression<Func<PlantModuleConfig, PlantModuleConfigDto>> FromEntity => c => new PlantModuleConfigDto
     {
         RangeFrom = c.RangeFrom,
         RangeTo = c.RangeTo,
-        SensorType = c.ModuleType
+        ModuleType = c.ModuleType
     };
 }

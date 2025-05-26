@@ -9,7 +9,7 @@ public class ApplicationDbContext(DbContextOptions options) : BaseDbContext(opti
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Plant>();
-        modelBuilder.Entity<PlantSensorConfig>();
+        modelBuilder.Entity<PlantModuleConfig>();
         modelBuilder.Entity<ModuleRef>();
 
         modelBuilder.Entity<AutomationRule>();

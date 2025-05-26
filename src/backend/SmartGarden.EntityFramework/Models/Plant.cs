@@ -7,5 +7,5 @@ public class Plant : BaseEntityWithOrder
     public string Name { get; set; }
     public string Description { get; set; }
     public string ImageUrl { get; set; }
-    public virtual List<PlantSensorConfig> SensorConfigs { get; set; } = new();
+    public virtual List<PlantModuleConfig> ModuleConfigs { get; set; } = new();
 }

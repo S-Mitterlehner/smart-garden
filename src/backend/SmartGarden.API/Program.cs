@@ -15,7 +15,6 @@ using SmartGarden.Messaging;
 using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Api;
-using SmartGarden.Modules.Service.Models;
 using SmartGarden.Scheduling;
 
 Log.Logger = new LoggerConfiguration()
@@ -38,13 +37,19 @@ builder.Services.AddDbInitializerWithJsonSeeder<ApiSeedModel, ApplicationDbConte
 
 builder.AddRedisClient(connectionName: "redis-api");
 
-// Config
-builder.Services.Configure<ModuleSettings>(builder.Configuration.GetSection("Modules"));
-
 // Services
 builder.Services.AddSingleton<IApiModuleManager, ApiModuleManager>();
-builder.Services.AddSingleton<IModuleListener, LegacyModuleListenerProxy>();
 
+builder.Services.AddSingleton<GraphQlModuleListener>();
+builder.Services.AddSingleton<SignalRModuleListener>();
+builder.Services.AddSingleton<LegacyModuleListenerProxy>();
+builder.Services.AddSingleton<IModuleListener>(sp => new ModuleListenerComposite(
+                                                   sp.GetRequiredService<ILogger<ModuleListenerComposite>>()
+                                                   , sp.GetRequiredService<GraphQlModuleListener>()
+                                                   , sp.GetRequiredService<SignalRModuleListener>()
+                                                   , sp.GetRequiredService<LegacyModuleListenerProxy>()));
+
+// Legacy
 builder.Services.AddSingleton<SignalRActuatorListener>();
 builder.Services.AddSingleton<GraphQlActuatorListener>();
 builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
@@ -132,5 +137,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<SensorHub>("/sockets/sensor");
 app.MapHub<ActuatorHub>("/sockets/actuator");
+app.MapHub<ModuleHub>("/sockets/module");
 
 app.Run();

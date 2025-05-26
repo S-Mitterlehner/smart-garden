@@ -28,12 +28,12 @@ export default function SensorSection() {
 
   const getSensorConfig = (sensorType: ModuleType) => {
     const defaultConfig: PlantSensorConfigDto = {
-      sensorType: sensorType,
+      moduleType: sensorType,
       rangeFrom: -1,
       rangeTo: -1,
     };
 
-    const sensorConfig = currentPlant?.value?.sensorConfigs?.find((config) => config.sensorType === sensorType);
+    const sensorConfig = currentPlant?.value?.sensorConfigs?.find((config) => config.moduleType === sensorType);
 
     if (!sensorConfig) return defaultConfig;
     return sensorConfig;

@@ -1,10 +1,10 @@
-import { ActuatorRefDto } from "../../__generated__/graphql";
+import { ModuleRefDto } from "../../__generated__/graphql";
 import { getTypeIconCircle } from "../sensors/utils";
 
 export type ActuatorListProps = {
-  Actuators: ActuatorRefDto[];
-  disabledActuators?: ActuatorRefDto[];
-  onSelectActuator?: (Actuator: ActuatorRefDto) => void;
+  Actuators: ModuleRefDto[];
+  disabledActuators?: ModuleRefDto[];
+  onSelectActuator?: (Actuator: ModuleRefDto) => void;
 };
 
 export default function ActuatorList({

@@ -2,10 +2,10 @@ import { ActionIcon, Drawer, Loader } from "@mantine/core";
 import { IconAutomaticGearbox } from "@tabler/icons-react";
 import { useState } from "react";
 import { useParams } from "react-router";
-import ActuatorSection from "../components/actuators/ActuatorSection";
+import { ModuleTypeGroup } from "../__generated__/graphql";
 import { RuleList } from "../components/automation/RuleEditor";
+import ModuleSection from "../components/modules/ModuleSection";
 import PlantSelector from "../components/plants/PlantSelector";
-import SensorSection from "../components/sensors/SensorSection";
 import { AutomationProvider } from "../hooks/useAutomation";
 import { BedProvider, useBedContext } from "../hooks/useCurrentBed";
 
@@ -53,8 +53,10 @@ export function BedPageContent() {
           </div>
         </div>
 
-        <SensorSection />
-        <ActuatorSection />
+        {/* <SensorSection /> */}
+        {/* <ActuatorSection /> */}
+        <ModuleSection type={ModuleTypeGroup.Sensor} />
+        <ModuleSection type={ModuleTypeGroup.Actuator} />
       </div>
 
       <Drawer opened={showRulesDrawer} position="right" size="xl" radius={15} onClose={() => setShowRulesDrawer(false)}>

@@ -15,6 +15,7 @@ public partial class Query
     {
         var plant = await db.Get<Plant>().FirstOrDefaultAsync(x => x.Id == id);
         if (plant is null) return null;
+
         return PlantDto.FromEntity.Compile().Invoke(plant);
     }
 }

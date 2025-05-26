@@ -7,12 +7,12 @@ import {
   IconWind,
   IconWindOff,
 } from "@tabler/icons-react";
-import { ActuatorStateDto, ConnectionState, StateType } from "../../__generated__/graphql";
-import { ActuatorStateStrings } from "../../models/actuator";
+import { ActuatorStateDto, ConnectionState, ModuleStateDto, StateType } from "../../__generated__/graphql";
+import { ModuleStateStrings } from "../../models/module";
 import Gauge from "../Gauge";
 
 export type ActuatorStateProps = {
-  state: ActuatorStateDto | null;
+  state: ActuatorStateDto | ModuleStateDto | null;
   connectionState?: ConnectionState;
 };
 
@@ -45,13 +45,13 @@ export default function ActuatorStateIndicator({ state, connectionState }: Actua
 
     const getIndicator = () => {
       switch (state.state) {
-        case ActuatorStateStrings.Open:
+        case ModuleStateStrings.Open:
           return <IconWind className="h-24 w-24 text-green-50" />;
-        case ActuatorStateStrings.Closed:
+        case ModuleStateStrings.Closed:
           return <IconWindOff className="h-24 w-24 text-red-500" />;
-        case ActuatorStateStrings.Running:
+        case ModuleStateStrings.Running:
           return <IconSettings className="h-24 w-24 animate-spin-slow text-green-500" />;
-        case ActuatorStateStrings.Stopped:
+        case ModuleStateStrings.Stopped:
           return <IconSettingsPause className="h-24 w-24 text-red-500" />;
       }
     };

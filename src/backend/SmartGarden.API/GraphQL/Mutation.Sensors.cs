@@ -8,6 +8,7 @@ namespace SmartGarden.API.GraphQL;
 
 public partial class Mutation
 {
+    [Obsolete("Use Module instead")]
     public async Task<SensorRefDto> AddSensorToBed([ID] Guid bedId, [ID] Guid sensorId,
                                                 [Service] ApplicationDbContext db)
     {
@@ -24,6 +25,7 @@ public partial class Mutation
         return SensorRefDto.FromEntity.Invoke(sensor);
     }
 
+    [Obsolete("Use Module instead")]
     public async Task<bool> RemoveSensorFromBed([ID] Guid bedId, [ID] Guid sensorId,
                                                 [Service] ApplicationDbContext db)
     {
@@ -38,6 +40,7 @@ public partial class Mutation
         return true;
     }
 
+    [Obsolete("Use Module instead")]
     public async Task<SensorRefDto> UpdateSensorRef([ID] Guid id, string? name, string? description,
                                                     [Service] ApplicationDbContext db)
     {

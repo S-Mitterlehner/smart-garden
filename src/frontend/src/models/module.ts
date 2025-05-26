@@ -1,4 +1,4 @@
-export enum ActuatorStateStrings {
+export enum ModuleStateStrings {
   Open = "Open",
   Closed = "Closed",
   Running = "Running",

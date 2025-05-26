@@ -1,18 +1,17 @@
 import { notifications } from "@mantine/notifications";
 import { createContext, useContext, useMemo } from "react";
 import {
-  ActuatorRefDto,
   AutomationRuleDto,
   BedDto,
+  ModuleRefDto,
+  ModuleTypeGroup,
   PlantDto,
-  SensorRefDto,
-  useAddActuatorToBedMutation,
-  useAddSensorToBedMutation,
+  useAddModuleToBedMutation,
   useGetBedByIdQuery,
-  useRemoveActuatorFromBedMutation,
-  useRemoveSensorFromBedMutation,
+  useRemoveModuleFromBedMutation,
   useSetCurrentPlantMutation,
 } from "../__generated__/graphql";
+import { toNiceCasing } from "../utils";
 import usePlants from "./usePlants";
 
 export type BedValue = {
@@ -22,13 +21,17 @@ export type BedValue = {
     value: PlantDto | null;
     set: (plant: PlantDto) => Promise<void>;
   };
-  sensors: SensorRefDto[];
-  actuators: ActuatorRefDto[];
+  modules: ModuleRefDto[];
+  getModulesByGroup: (group: ModuleTypeGroup) => ModuleRefDto[];
+  sensors: ModuleRefDto[];
+  actuators: ModuleRefDto[];
   rules: AutomationRuleDto[];
-  addSensor: (sensor: SensorRefDto) => void;
-  removeSensor: (sensor: SensorRefDto) => void;
-  addActuator: (actuator: ActuatorRefDto) => void;
-  removeActuator: (actuator: ActuatorRefDto) => void;
+  addModule: (sensor: ModuleRefDto) => void;
+  removeModule: (sensor: ModuleRefDto) => void;
+  addSensor: (sensor: ModuleRefDto) => void;
+  removeSensor: (sensor: ModuleRefDto) => void;
+  addActuator: (actuator: ModuleRefDto) => void;
+  removeActuator: (actuator: ModuleRefDto) => void;
 };
 
 const BedContext = createContext<BedValue | null>(null);
@@ -57,10 +60,8 @@ export function useBed(id: string) {
   });
 
   const [setCurrentPlant] = useSetCurrentPlantMutation();
-  const [addSensorMutation] = useAddSensorToBedMutation();
-  const [removeSensorMutation] = useRemoveSensorFromBedMutation();
-  const [addActuatorMutation] = useAddActuatorToBedMutation();
-  const [removeActuatorMutation] = useRemoveActuatorFromBedMutation();
+  const [addModuleMutation] = useAddModuleToBedMutation();
+  const [removeModuleMutation] = useRemoveModuleFromBedMutation();
 
   const { plants = [], isFetched: plantFetched } = usePlants();
 
@@ -69,18 +70,19 @@ export function useBed(id: string) {
     return plants.find((p) => p.id === bed.plant.id) ?? null;
   }, [bed, plants]);
 
-  const addSensor = (sensor: SensorRefDto) => {
+  const addModule = (module: ModuleRefDto) => {
     if (!bed) return;
 
-    addSensorMutation({
-      variables: { bedId: id, sensorId: sensor.id },
+    const group = toNiceCasing(module.group);
+    addModuleMutation({
+      variables: { bedId: id, moduleId: module.id },
     })
       .then((r) => {
-        if (r.data?.addSensorToBed) {
+        if (r.data?.addModuleToBed) {
           refetch();
           notifications.show({
-            title: "Sensor added",
-            message: `Sensor ${sensor.name} added to bed ${bed?.name}`,
+            title: `${group} added`,
+            message: `${group} ${module.name} added to bed ${bed.name}`,
             color: "green",
           });
         }
@@ -89,26 +91,27 @@ export function useBed(id: string) {
         console.error(err);
         notifications.show({
           title: "Error",
-          message: `Failed to add sensor ${sensor.name} to bed ${bed?.name}`,
+          message: `Failed to add ${group} ${module.name} to bed ${bed.name}`,
           color: "red",
         });
       });
   };
 
-  const removeSensor = (sensor: SensorRefDto) => {
+  const removeModule = (module: ModuleRefDto) => {
     if (!bed) return;
 
     if (!confirm("are you sure?")) return;
 
-    removeSensorMutation({
-      variables: { bedId: id, sensorId: sensor.id },
+    const group = toNiceCasing(module.group);
+    removeModuleMutation({
+      variables: { bedId: id, moduleId: module.id },
     })
       .then((r) => {
-        if (r.data?.removeSensorFromBed) {
+        if (r.data?.removeModuleFromBed) {
           refetch();
           notifications.show({
-            title: "Sensor removed",
-            message: `Sensor ${sensor.name} removed from bed ${bed.name}`,
+            title: `${group} removed`,
+            message: `${group} ${module.name} removed from bed ${bed.name}`,
             color: "red",
           });
         }
@@ -117,61 +120,7 @@ export function useBed(id: string) {
         console.error(err);
         notifications.show({
           title: "Error",
-          message: `Failed to remove sensor ${sensor.name} from bed ${bed.name}`,
-          color: "red",
-        });
-      });
-  };
-
-  const addActuator = (actuator: ActuatorRefDto) => {
-    if (!bed) return;
-
-    addActuatorMutation({
-      variables: { bedId: id, actuatorId: actuator.id },
-    })
-      .then((r) => {
-        if (r.data?.addActuatorToBed) {
-          refetch();
-          notifications.show({
-            title: "Actuator added",
-            message: `Actuator ${actuator.name} added to bed ${bed.name}`,
-            color: "green",
-          });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to add actuator ${actuator.name} to bed ${bed.name}`,
-          color: "red",
-        });
-      });
-  };
-
-  const removeActuator = (actuator: ActuatorRefDto) => {
-    if (!bed) return;
-
-    if (!confirm("are you sure?")) return;
-
-    removeActuatorMutation({
-      variables: { bedId: id, actuatorId: actuator.id },
-    })
-      .then((r) => {
-        if (r.data?.removeActuatorFromBed) {
-          refetch();
-          notifications.show({
-            title: "Actuator removed",
-            message: `Actuator ${actuator.name} removed from bed ${bed.name}`,
-            color: "red",
-          });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to remove actuator ${actuator.name} from bed ${bed.name}`,
+          message: `Failed to remove ${group} ${module.name} from bed ${bed.name}`,
           color: "red",
         });
       });
@@ -189,12 +138,16 @@ export function useBed(id: string) {
         await refetch();
       },
     },
-    sensors: bed?.sensors ?? [],
-    actuators: bed?.actuators ?? [],
+    modules: bed?.modules ?? [],
+    getModulesByGroup: (group: ModuleTypeGroup) => bed?.modules.filter((x) => x.group === group) ?? [],
+    sensors: bed?.modules.filter((x) => x.isSensor) ?? [],
+    actuators: bed?.modules.filter((x) => x.isActuator) ?? [],
     rules: bed?.rules ?? [],
-    addSensor,
-    removeSensor,
-    addActuator,
-    removeActuator,
+    addModule,
+    removeModule,
+    addSensor: addModule,
+    removeSensor: removeModule,
+    addActuator: addModule,
+    removeActuator: removeModule,
   } as BedValue;
 }

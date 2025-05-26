@@ -76,6 +76,7 @@ createRoot(document.getElementById("root")!).render(
                     <Route path=":bedId" element={<BedPage />}></Route>
                   </Route>
                   <Route path="/" element={<Navigate to="/garden" />} />
+                  <Route path="*" element={<Navigate to="/garden" />} />
                 </Routes>
               </div>
             </BrowserRouter>

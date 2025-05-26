@@ -1,19 +1,19 @@
 import { ActionIcon, Drawer } from "@mantine/core";
 import { IconEngine, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
-import { ActuatorRefDto } from "../../__generated__/graphql";
+import { ModuleRefDto, ModuleTypeGroup } from "../../__generated__/graphql";
 import ActuatorCard from "../../components/actuators/ActuatorCard";
 import ActuatorList from "../../components/actuators/ActuatorList";
 import SectionTitle from "../../components/SectionTitle";
-import { ActuatorProvider } from "../../hooks/useActuator";
-import useActuators from "../../hooks/useActuators";
 import { useBedContext } from "../../hooks/useCurrentBed";
+import { ModuleProvider } from "../../hooks/useModule";
+import useModules from "../../hooks/useModules";
 
 export default function ActuatorSection() {
   const { addActuator, removeActuator, actuators } = useBedContext();
-  const { actuators: availableActuators } = useActuators();
+  const { modules: availableActuators } = useModules(ModuleTypeGroup.Actuator);
   const [showActuatorDrawer, setShowActuatorDrawer] = useState(false);
-  const handleActuatorAction = (actuator: ActuatorRefDto, action: string) => {
+  const handleActuatorAction = (actuator: ModuleRefDto, action: string) => {
     switch (action) {
       case "remove":
         removeActuator(actuator);
@@ -21,7 +21,7 @@ export default function ActuatorSection() {
     }
   };
 
-  const handleActuatorAdd = (actuator: ActuatorRefDto) => {
+  const handleActuatorAdd = (actuator: ModuleRefDto) => {
     addActuator(actuator);
     setShowActuatorDrawer(false);
   };
@@ -61,10 +61,10 @@ export default function ActuatorSection() {
         ></SectionTitle>
 
         <div className="flex flex-row flex-wrap gap-4">
-          {actuators.map((actuator) => (
-            <ActuatorProvider key={actuator.id} actuatorId={actuator.id}>
+          {actuators.map((module) => (
+            <ModuleProvider key={module.id} moduleId={module.id}>
               <ActuatorCard onMenuAction={handleActuatorAction} />
-            </ActuatorProvider>
+            </ModuleProvider>
           ))}
           <button
             onClick={() => setShowActuatorDrawer(true)}

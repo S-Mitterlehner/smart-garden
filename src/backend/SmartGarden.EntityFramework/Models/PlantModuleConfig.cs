@@ -3,7 +3,7 @@ using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.EntityFramework.Models;
 
-public class PlantSensorConfig : BaseEntity
+public class PlantModuleConfig : BaseEntity
 {
     public ModuleType ModuleType { get; set; }
     public double RangeFrom { get; set; }

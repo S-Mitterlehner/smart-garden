@@ -3,6 +3,8 @@ using SmartGarden.Modules.Actuators.Models;
 
 namespace SmartGarden.API.Listener;
 
+
+[Obsolete("Use GraphQlModuleListener instead")]
 public class ActuatorListenerComposite(params IActuatorListener[] listeners) : IActuatorListener
 {
     public async Task PublishStateChangeAsync(ActuatorState data, IEnumerable<ActionDefinition> actions)

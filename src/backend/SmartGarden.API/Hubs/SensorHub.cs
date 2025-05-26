@@ -4,6 +4,8 @@ using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.Hubs;
 
+
+[Obsolete("Use ModuleHub instead")]
 public class SensorHub : Hub
 {
     public async Task SubscribeToSensor(string key, string type)

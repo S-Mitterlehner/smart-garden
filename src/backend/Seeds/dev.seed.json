@@ -1,5 +1,5 @@
 {
-  "plantSensorConfigs": [
+  "plantModuleConfigs": [
     {
       "id": "1b9c649b-55e1-422b-b86c-876c72fd2ea1",
       "rangeFrom": 21,
@@ -25,7 +25,7 @@
       "name": "Tomato",
       "description": "Tomato is a fruit that is often used as a vegetable in cooking. It is rich in vitamins and antioxidants.",
       "imageUrl": "/plants/tomato.svg",
-      "sensorConfigs": [
+      "moduleConfigs": [
         { "id": "1b9c649b-55e1-422b-b86c-876c72fd2ea1" },
         { "id": "13be42e3-d80c-4566-9b1c-8fce80fe8c38" },
         { "id": "f549b5df-ca9c-49a6-9cb4-26ebd90ff88a" }

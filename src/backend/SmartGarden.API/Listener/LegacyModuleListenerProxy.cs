@@ -9,6 +9,7 @@ using ActionDefinition = SmartGarden.Modules.Models.ActionDefinition;
 
 namespace SmartGarden.API.Listener;
 
+[Obsolete]
 public class LegacyModuleListenerProxy(ISensorListener sensorListener, IActuatorListener actuatorListener) : IModuleListener
 {
     public async Task PublishStateChangeAsync(ModuleState data, IEnumerable<ActionDefinition> actions)

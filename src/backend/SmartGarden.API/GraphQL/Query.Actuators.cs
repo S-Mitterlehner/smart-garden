@@ -11,12 +11,14 @@ namespace SmartGarden.API.GraphQL;
 public partial class Query
 {
     [UseFiltering]
+    [Obsolete("Use GetModules instead")]
     public async Task<IEnumerable<ActuatorRefDto>> GetActuators([Service] ApplicationDbContext db) => await db.Get<ModuleRef>()
                                                                                                               .Where(x => ModuleTypeExpressions.IsActuator.Invoke(x.Type))
                                                                                                               .Select(ActuatorDto.FromEntity)
                                                                                                               .ToListAsync();
 
     [UseFiltering]
+    [Obsolete("Use GetModule instead")]
     public async Task<ActuatorDto?> GetActuator(Guid id,
                                                 [Service] ApplicationDbContext db, [Service] IApiModuleManager moduleManager)
     {

@@ -6,19 +6,15 @@ query getBedById($id: UUID!) {
     plant {
       id
     }
-    sensors {
+    modules {
       id
       name
       description
       key
       type
-    }
-    actuators {
-      id
-      name
-      description
-      key
-      type
+      group
+      isActuator
+      isSensor
     }
     rules {
       id
@@ -46,30 +42,16 @@ mutation setCurrentPlant($bedId: ID!, $plantId: ID!) {
   }
 }
 
-mutation addSensorToBed($bedId: ID!, $sensorId: ID!) {
-  addSensorToBed(input: { bedId: $bedId, sensorId: $sensorId }) {
-    sensorRefDto {
+mutation addModuleToBed($bedId: ID!, $moduleId: ID!) {
+  addModuleToBed(input: { bedId: $bedId, moduleId: $moduleId }) {
+    moduleRefDto {
       id
     }
   }
 }
 
-mutation removeSensorFromBed($bedId: ID!, $sensorId: ID!) {
-  removeSensorFromBed(input: { bedId: $bedId, sensorId: $sensorId }) {
-    boolean
-  }
-}
-
-mutation addActuatorToBed($bedId: ID!, $actuatorId: ID!) {
-  addActuatorToBed(input: { bedId: $bedId, actuatorId: $actuatorId }) {
-    actuatorRefDto {
-      id
-    }
-  }
-}
-
-mutation removeActuatorFromBed($bedId: ID!, $actuatorId: ID!) {
-  removeActuatorFromBed(input: { bedId: $bedId, actuatorId: $actuatorId }) {
+mutation removeModuleFromBed($bedId: ID!, $moduleId: ID!) {
+  removeModuleFromBed(input: { bedId: $bedId, moduleId: $moduleId }) {
     boolean
   }
 }

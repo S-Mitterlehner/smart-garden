@@ -1,14 +1,14 @@
 import { Badge, Button, Textarea, TextInput, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { ConnectionState, StateType } from "../../__generated__/graphql";
-import { useActuatorContext } from "../../hooks/useActuator";
+import { useModuleContext } from "../../hooks/useModule";
 import { getTimeString } from "../../utils";
 import PropertyEntry from "../properties/PropertyEntry";
 import { getTypeIconCircle } from "../sensors/utils";
 import "../styles/properties.css";
 
 export default function ActuatorProperties() {
-  const { actuator, state, connectionState, updateRef } = useActuatorContext();
+  const { module: actuator, state, connectionState, updateRef } = useModuleContext();
   const [name, setName] = useState(actuator.name);
   const [description, setDescription] = useState(actuator.description);
   const [hasChanges, setHasChanges] = useState(false);

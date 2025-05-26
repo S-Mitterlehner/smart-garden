@@ -1,7 +1,7 @@
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Modules.Sensors.Models;
 
-namespace SmartGarden.API.Listener;
+namespace SmartGarden.API.Listener.Legacy;
 
 [Obsolete("Use GraphQlModuleListener instead")]
 public class SensorListenerComposite(params ISensorListener[] sensorListeners) : ISensorListener

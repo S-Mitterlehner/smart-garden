@@ -1,7 +1,7 @@
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Actuators.Models;
 
-namespace SmartGarden.API.Listener;
+namespace SmartGarden.API.Listener.Legacy;
 
 
 [Obsolete("Use GraphQlModuleListener instead")]

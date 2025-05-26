@@ -4,6 +4,7 @@ using SmartGarden.API.Dtos.Actuator;
 using SmartGarden.API.Dtos.Module;
 using SmartGarden.API.Dtos.Sensor;
 using SmartGarden.API.Listener;
+using SmartGarden.API.Listener.Legacy;
 using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.GraphQL;

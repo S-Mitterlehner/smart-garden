@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SmartGarden.API.Listener;
+using SmartGarden.API.Listener.Legacy;
 using SmartGarden.Modules.Enums;
 
 namespace SmartGarden.API.Hubs;

@@ -6,6 +6,7 @@ using SmartGarden.API.GraphQL;
 using SmartGarden.API.Hubs;
 using SmartGarden.API.Jobs;
 using SmartGarden.API.Listener;
+using SmartGarden.API.Listener.Legacy;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Core;
 using SmartGarden.EntityFramework.Seeding;

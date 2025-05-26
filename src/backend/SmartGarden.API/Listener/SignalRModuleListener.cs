@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SmartGarden.API.Dtos.Module;
 using SmartGarden.API.Hubs;
+using SmartGarden.API.Listener.Legacy;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;

@@ -5,7 +5,7 @@ using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Modules.Sensors.Models;
 
-namespace SmartGarden.API.Listener;
+namespace SmartGarden.API.Listener.Legacy;
 
 [Obsolete("Use SignalRModuleListener instead")]
 public class SignalRSensorListener(IHubContext<SensorHub> context, ILogger<SignalRSensorListener> logger) : ISensorListener

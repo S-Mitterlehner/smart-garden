@@ -5,7 +5,7 @@ using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Actuators.Models;
 using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.API.Listener;
+namespace SmartGarden.API.Listener.Legacy;
 
 [Obsolete("Use SignalRModuleListener instead")]
 public class SignalRActuatorListener(IHubContext<ActuatorHub> context, ILogger<SignalRSensorListener> logger) : IActuatorListener

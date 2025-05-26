@@ -1,13 +1,11 @@
 using HotChocolate.Subscriptions;
 using SmartGarden.API.Dtos.Actuator;
-using SmartGarden.Modules;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Actuators.Models;
 using SmartGarden.Modules.Enums;
-using SmartGarden.Modules.Models;
 using ActionDefinition = SmartGarden.Modules.Actuators.Models.ActionDefinition;
 
-namespace SmartGarden.API.Listener;
+namespace SmartGarden.API.Listener.Legacy;
 
 [Obsolete("Use GraphQlModuleListener instead")]
 public class GraphQlActuatorListener(ITopicEventSender eventSender, ILogger<GraphQlActuatorListener> logger) : IActuatorListener

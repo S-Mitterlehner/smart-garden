@@ -7,7 +7,7 @@ using SmartGarden.Modules.Sensors;
 using SmartGarden.Modules.Sensors.Models;
 using ActionDefinition = SmartGarden.Modules.Models.ActionDefinition;
 
-namespace SmartGarden.API.Listener;
+namespace SmartGarden.API.Listener.Legacy;
 
 [Obsolete]
 public class LegacyModuleListenerProxy(ISensorListener sensorListener, IActuatorListener actuatorListener) : IModuleListener

@@ -1,9 +1,10 @@
-import { NumberInput, Select } from "@mantine/core";
+import { ActionIcon, NumberInput, Select, Tooltip } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
+import { IconCategoryPlus, IconTrash } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { StateType } from "../../__generated__/graphql";
 import { useAutomationContext } from "../../hooks/useAutomation";
-import { RuleElement, RuleValueRef } from "../../models/automation";
+import { Rule, RuleConnector, RuleElement, RuleValueRef } from "../../models/automation";
 
 const comparators = [
   { label: "=", value: "==" },
@@ -14,7 +15,13 @@ const comparators = [
   { label: ">=", value: ">=" },
 ];
 
-export default function RuleElementComponent({ rulePart }: { rulePart: RuleElement }) {
+export default function RuleElementComponent({
+  rulePart,
+  updateEditCopy = () => {},
+}: {
+  rulePart: RuleElement;
+  updateEditCopy?: (rule: Rule | undefined) => void;
+}) {
   const { fieldSelection, parameterFields } = useAutomationContext();
 
   const ruleKey = useMemo(() => Object.keys(rulePart)[0], [rulePart]);
@@ -30,16 +37,50 @@ export default function RuleElementComponent({ rulePart }: { rulePart: RuleEleme
 
   useEffect(() => {
     setSelectedComparator(ruleKey);
-    setSelectedValueRef(ruleValueRef.var);
+    setSelectedValueRef(ruleValueRef?.var);
     setNumValue(ruleValue as number);
     setSelectValue(ruleValue as string | null);
     setTimeValue(ruleValue as string);
   }, [fieldSelection, ruleValueRef, ruleKey, ruleValue]);
 
+  const update = (changedComparator?: string, changedValueRef?: string, changedValue?: string | number | boolean) => {
+    const configVal = parameterFields?.find((f) => f.key === selectedValueRef);
+
+    let newValue = ruleValue;
+
+    if (!!changedValue) newValue = changedValue;
+    else {
+      if (configVal?.valueType === StateType.Discrete) {
+        newValue = selectValue!;
+      } else if (configVal?.valueType === StateType.Continuous) {
+        if (configVal.tsType === "number") {
+          newValue = numValue;
+        } else if (configVal.tsType === "time") {
+          newValue = timeValue;
+        } else {
+          console.error("Unsupported type for continuous value:", configVal.tsType);
+          return;
+        }
+      } else {
+        console.error("Unsupported value type:", configVal?.valueType);
+        return;
+      }
+    }
+
+    const newRule: Rule = {
+      [(changedComparator ?? selectedComparator) || ""]: [
+        { var: (changedValueRef ?? selectedValueRef) || "" },
+        newValue,
+      ],
+    };
+
+    updateEditCopy(newRule);
+  };
+
   const getInput = () => {
     const configVal = parameterFields?.find((f) => f.key === selectedValueRef);
     if (!configVal) {
-      return <div>Invalid field selection</div>;
+      return <div>-</div>;
     }
 
     switch (configVal.valueType) {
@@ -51,8 +92,11 @@ export default function RuleElementComponent({ rulePart }: { rulePart: RuleEleme
                 min={configVal.min ?? 0}
                 max={configVal.max ?? 999999999}
                 placeholder="Enter value"
-                value={numValue}
-                onChange={(e) => setNumValue(e as number)}
+                value={numValue ?? 0}
+                onChange={(e) => {
+                  setNumValue(e as number);
+                  update(undefined, undefined, e as number);
+                }}
               />
             );
           case "time":
@@ -60,8 +104,11 @@ export default function RuleElementComponent({ rulePart }: { rulePart: RuleEleme
               <TimeInput
                 withSeconds
                 placeholder="Enter time"
-                value={timeValue}
-                onChange={(e) => setTimeValue(e.target.value)}
+                value={timeValue ?? "00:00:00"}
+                onChange={(e) => {
+                  setTimeValue(e.target.value);
+                  update(undefined, undefined, e.target.value);
+                }}
               />
             );
           default:
@@ -73,7 +120,10 @@ export default function RuleElementComponent({ rulePart }: { rulePart: RuleEleme
           <Select
             data={configVal.values?.map((v) => ({ label: v.label, value: v.value })) || []}
             value={selectValue}
-            onChange={setSelectValue}
+            onChange={(s) => {
+              setSelectValue(s);
+              update(undefined, undefined, s as string | number | boolean);
+            }}
             checkIconPosition="right"
           />
         );
@@ -84,20 +134,48 @@ export default function RuleElementComponent({ rulePart }: { rulePart: RuleEleme
   };
 
   return (
-    <div className="flex flex-row items-center gap-2">
-      <Select
-        data={fieldSelection}
-        value={selectedValueRef}
-        onChange={setSelectedValueRef}
-        checkIconPosition="right"
-      ></Select>
-      <Select
-        data={comparators}
-        value={selectedComparator}
-        onChange={setSelectedComparator}
-        checkIconPosition="right"
-      ></Select>
-      {getInput()}
+    <div className="grid w-full grid-cols-[1fr_auto] items-center gap-2">
+      <div className="grid grid-cols-3 items-center gap-2">
+        <Select
+          data={fieldSelection}
+          value={selectedValueRef}
+          onChange={(e) => {
+            setSelectedValueRef(e);
+            update(undefined, e!, undefined);
+          }}
+          checkIconPosition="right"
+        ></Select>
+        <Select
+          data={comparators}
+          value={selectedComparator}
+          onChange={(e) => {
+            setSelectedComparator(e);
+            update(e!, undefined, undefined);
+          }}
+          checkIconPosition="right"
+        ></Select>
+        {getInput()}
+      </div>
+
+      <div className="flex flex-row items-center justify-end gap-2">
+        <Tooltip label="Make Group" withArrow position="top">
+          <ActionIcon
+            size="md"
+            variant="transparent"
+            onClick={() => {
+              const newNode: RuleConnector = { ["and"]: [rulePart] };
+              updateEditCopy(newNode);
+            }}
+          >
+            <IconCategoryPlus />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label="Delete" withArrow position="top">
+          <ActionIcon variant="transparent" color="red" size="sm" onClick={() => updateEditCopy(undefined)}>
+            <IconTrash />
+          </ActionIcon>
+        </Tooltip>
+      </div>
     </div>
   );
 }

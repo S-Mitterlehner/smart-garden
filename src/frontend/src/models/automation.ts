@@ -38,11 +38,11 @@ export type AutomationRuleAction = {
 export type Rule = RuleConnector | RuleElement;
 
 export type RuleConnector = {
-  [key: string]: RuleElement[];
+  [key: string]: (RuleElement | RuleConnector)[];
 };
 
 export type RuleElement = {
-  [key: string]: [RuleValueRef, string | number | boolean];
+  [key: string]: [RuleValueRef | null, string | number | boolean | null];
 };
 
 export type RuleValueRef = {

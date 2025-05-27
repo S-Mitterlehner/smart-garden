@@ -8,7 +8,15 @@ export type RuleEditorProps = {
   config: AutomationConfig[];
 };
 
-export default function RuleEditor({ rulePart, level = 0 }: { rulePart: Rule; level?: number }) {
+export default function RuleEditor({
+  rulePart,
+  level = 0,
+  updateEditCopy = () => {},
+}: {
+  rulePart: Rule;
+  level?: number;
+  updateEditCopy?: (rule: Rule | undefined) => void;
+}) {
   const ruleKey = useMemo(() => Object.keys(rulePart)[0], [rulePart]);
   const [type, setType] = useState<"comparator" | "connector" | null>(null);
 
@@ -16,14 +24,14 @@ export default function RuleEditor({ rulePart, level = 0 }: { rulePart: Rule; le
     setType(connectors.find((i) => i.value === ruleKey) ? "connector" : "comparator");
   }, [ruleKey]);
   const getRulePartComponent = () => {
-    if (type === "connector") return <RuleConnectorComponent rulePart={rulePart as RuleConnector} level={level} />;
-    if (type === "comparator") return <RuleElementComponent rulePart={rulePart as RuleElement} />;
+    if (type === "connector")
+      return (
+        <RuleConnectorComponent rulePart={rulePart as RuleConnector} level={level} updateEditCopy={updateEditCopy} />
+      );
+    if (type === "comparator")
+      return <RuleElementComponent rulePart={rulePart as RuleElement} updateEditCopy={updateEditCopy} />;
     return <div>Invalid rule part</div>;
   };
 
-  const style = {
-    marginLeft: `${level * 3}rem`,
-  };
-
-  return <div style={style}>{getRulePartComponent()}</div>;
+  return <div className={level > 0 ? "ml-12" : ""}>{getRulePartComponent()}</div>;
 }

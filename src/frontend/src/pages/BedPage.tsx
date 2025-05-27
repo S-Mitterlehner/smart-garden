@@ -58,7 +58,14 @@ export function BedPageContent() {
         <ModuleSection group={ModuleGroup.Actuator} />
       </div>
 
-      <Drawer opened={showRulesDrawer} position="right" size="xl" radius={15} onClose={() => setShowRulesDrawer(false)}>
+      <Drawer
+        opened={showRulesDrawer}
+        position="right"
+        size="xl"
+        offset={15}
+        radius={10}
+        onClose={() => setShowRulesDrawer(false)}
+      >
         <AutomationProvider>
           <RuleList />
         </AutomationProvider>

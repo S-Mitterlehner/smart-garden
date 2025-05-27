@@ -29,7 +29,7 @@ export default function RuleEditor({
         <RuleConnectorComponent rulePart={rulePart as RuleConnector} level={level} updateEditCopy={updateEditCopy} />
       );
     if (type === "comparator")
-      return <RuleElementComponent rulePart={rulePart as RuleElement} updateEditCopy={updateEditCopy} />;
+      return <RuleElementComponent rulePart={rulePart as RuleElement} level={level} updateEditCopy={updateEditCopy} />;
     return <div>Invalid rule part</div>;
   };
 

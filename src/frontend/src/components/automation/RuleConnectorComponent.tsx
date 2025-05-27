@@ -56,12 +56,10 @@ export default function RuleConnectorComponent({
           <Tooltip label="Delete" withArrow position="top">
             <ActionIcon
               variant="transparent"
+              disabled={level === 0}
               color="red"
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                alert("Delete rule not implemented yet");
-              }}
+              onClick={() => updateEditCopy(undefined)}
             >
               <IconTrash />
             </ActionIcon>

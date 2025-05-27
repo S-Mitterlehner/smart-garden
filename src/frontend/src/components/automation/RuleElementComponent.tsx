@@ -17,9 +17,11 @@ const comparators = [
 
 export default function RuleElementComponent({
   rulePart,
+  level = 0,
   updateEditCopy = () => {},
 }: {
   rulePart: RuleElement;
+  level?: number;
   updateEditCopy?: (rule: Rule | undefined) => void;
 }) {
   const { fieldSelection, parameterFields } = useAutomationContext();
@@ -171,7 +173,13 @@ export default function RuleElementComponent({
           </ActionIcon>
         </Tooltip>
         <Tooltip label="Delete" withArrow position="top">
-          <ActionIcon variant="transparent" color="red" size="sm" onClick={() => updateEditCopy(undefined)}>
+          <ActionIcon
+            variant="transparent"
+            color="red"
+            size="sm"
+            onClick={() => updateEditCopy(undefined)}
+            disabled={level === 0}
+          >
             <IconTrash />
           </ActionIcon>
         </Tooltip>

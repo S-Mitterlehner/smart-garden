@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Controllers.Base;
 using SmartGarden.API.Dtos.Automation;
+using SmartGarden.API.Helper;
 using SmartGarden.EntityFramework;
 using SmartGarden.Modules.Api;
 using SmartGarden.Modules.Models;
@@ -18,7 +19,7 @@ public class BedAutomationController(ApplicationDbContext db, IApiModuleManager 
         var bed = await GetBedAsync();
         if (bed == null) return NotFound();
 
-        var moduleConfig = new List<ModuleAutomationConfig>();
+        var moduleConfig = new List<AutomationConfig>();
 
         foreach (var sensor in bed.Modules)
         {
@@ -26,11 +27,18 @@ public class BedAutomationController(ApplicationDbContext db, IApiModuleManager 
             moduleConfig.Add(await connector.GetAutomationConfigAsync());
         }
 
-        var fields = moduleConfig.AsQueryable().Select(ParameterFieldDto.FromModel).ToList();
+        moduleConfig.AddRange(AutomationHelper.GetMiscAutomationConfig());
+
+        var parameters = moduleConfig.AsQueryable().GroupBy(x => x.Group).Select(g => new ParameterGroupDto
+        {
+            Key = g.Key.Replace("-", "_"),
+            Label = g.Key.Replace("_", "-"),
+            Fields = g.AsQueryable().Select(ParameterFieldDto.FromModel).ToList()
+        }).ToList();
 
         return Ok(new AutomationConfigDto
         {
-            Fields = fields
+            Parameters = parameters
         });
     }
 

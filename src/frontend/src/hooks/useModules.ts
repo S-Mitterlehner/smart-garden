@@ -1,8 +1,8 @@
-import { ModuleTypeGroup, useGetModulesQuery } from "../__generated__/graphql";
+import { ModuleGroup, useGetModulesQuery } from "../__generated__/graphql";
 
-export default function useModules(group: ModuleTypeGroup) {
+export default function useModules(group: ModuleGroup) {
   const { data, loading } = useGetModulesQuery({
-    variables: { type: group },
+    variables: { group },
   });
 
   return {

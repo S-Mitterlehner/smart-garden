@@ -32,7 +32,7 @@ public abstract class DummyBaseModuleConnector(string key, string topic, IModule
         new ModuleAutomationConfig
         {
             ModuleType = Type
-            , ConnectorKey = Key
+            , ModuleKey = Key
             , TsType = "number"
             , Min = _lastState.Min
             , Max = _lastState.Max

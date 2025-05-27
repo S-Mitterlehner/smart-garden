@@ -12,11 +12,14 @@ public class HatchModuleConnector(string key, IConnectionMultiplexer redis, ILog
     public override string Name => "Hatch";
     public override string Description => "Hatch Module for opening and closing hatches.";
     
-    public override async Task<ModuleAutomationConfig> GetAutomationConfigAsync()
+    public override async Task<ModuleAutomationConfig> GetAutomationConfigAsync() => new()
     {
-        return new ModuleAutomationConfig
-        {
-            // TODO ???
-        };
-    }
+        ModuleKey = Key,
+        ModuleType = ModuleType.Hatch,
+        ValueType = StateType.Continuous,
+        TsType = "number",
+        Min = 0,
+        Max = 100,
+        Unit = "%"
+    };
 }

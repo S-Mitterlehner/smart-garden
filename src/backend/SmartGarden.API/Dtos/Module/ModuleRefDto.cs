@@ -10,7 +10,7 @@ public class ModuleRefDto : BaseDto
     public string Description { get; set; }
     public string Key { get; set; }
 
-    public ModuleTypeGroup Group => Type.GetModuleTypeGroup();
+    public ModuleGroup Group => Type.GetModuleTypeGroup();
     public ModuleType Type { get; set; }
     
     public bool IsSensor => Type.IsSensor();

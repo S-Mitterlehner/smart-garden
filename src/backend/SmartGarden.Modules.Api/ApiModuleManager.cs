@@ -3,6 +3,7 @@ using SmartGarden.Modules.Enums;
 using System.Collections.Concurrent;
 using SmartGarden.Modules.Api.Connectors;
 using SmartGarden.Modules.Models;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.Modules.Api;
 
@@ -12,7 +13,7 @@ public class ApiModuleManager(IServiceProvider sp) : IApiModuleManager
 
     public Task<IApiModuleConnector> GetConnectorAsync(IModuleRef reference)
         => Task.FromResult(GetConnectorFromList(reference.ModuleKey, reference.Type) ?? CreateConnector(reference));
-    
+
     private IApiModuleConnector? GetConnectorFromList(string key, ModuleType type) 
         => _connectors.GetValueOrDefault(GetDictKey(key, type));
 

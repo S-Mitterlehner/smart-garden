@@ -158,7 +158,7 @@
       "name": "Watering",
       "order": 1,
       "bedId": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
-      "expressionJson": "{\n  \"<\": [\n    { \"var\": \"sg_48ca435508f0.Temperature\" },\n    30\n  ]\n}",
+      "expressionJson": "{\n  \"<\": [\n    { \"var\": \"sg_48ca435508f0.TEMPERATURE\" },\n    30\n  ]\n}",
       "isEnabled": false,
       "coolDown": "00:05:00",
       "actions": [
@@ -174,7 +174,7 @@
       "name": "Watering 2",
       "order": 2,
       "bedId": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
-      "expressionJson": "{\n  \"and\": [\n    { \">\": [{ \"var\": \"CurrentTime\" }, \"19:00:00\"] },\n    { \"<\": [{ \"var\": \"CurrentTime\" }, \"23:30:00\"] }\n  ]\n}",
+      "expressionJson": "{\n  \"and\": [\n    { \">\": [{ \"var\": \"misc.CurrentTime\" }, \"19:00:00\"] },\n    { \"<\": [{ \"var\": \"misc.CurrentTime\" }, \"23:30:00\"] }\n  ]\n}",
       "isEnabled": false,
       "coolDown": "00:05:00",
       "actions": [

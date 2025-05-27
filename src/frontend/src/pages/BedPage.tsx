@@ -2,8 +2,8 @@ import { ActionIcon, Drawer, Loader } from "@mantine/core";
 import { IconAutomaticGearbox } from "@tabler/icons-react";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { ModuleTypeGroup } from "../__generated__/graphql";
-import { RuleList } from "../components/automation/RuleEditor";
+import { ModuleGroup } from "../__generated__/graphql";
+import RuleList from "../components/automation/RuleList";
 import ModuleSection from "../components/modules/ModuleSection";
 import PlantSelector from "../components/plants/PlantSelector";
 import { AutomationProvider } from "../hooks/useAutomation";
@@ -35,7 +35,6 @@ export function BedPageContent() {
     <>
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-[auto_1fr_auto] gap-4">
-          {/* <PlantSelectorButton selectedPlant={plant} setSelectedPlant={setPlant} /> */}
           <PlantSelector selectedPlant={plant} setSelectedPlant={setPlant} />
           <div className="flex flex-col gap-2">
             <span className="text-2xl font-bold">{plant?.name}</span>
@@ -55,8 +54,8 @@ export function BedPageContent() {
 
         {/* <SensorSection /> */}
         {/* <ActuatorSection /> */}
-        <ModuleSection type={ModuleTypeGroup.Sensor} />
-        <ModuleSection type={ModuleTypeGroup.Actuator} />
+        <ModuleSection group={ModuleGroup.Sensor} />
+        <ModuleSection group={ModuleGroup.Actuator} />
       </div>
 
       <Drawer opened={showRulesDrawer} position="right" size="xl" radius={15} onClose={() => setShowRulesDrawer(false)}>

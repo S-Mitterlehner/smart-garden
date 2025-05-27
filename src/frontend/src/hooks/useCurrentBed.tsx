@@ -3,8 +3,8 @@ import { createContext, useContext, useMemo } from "react";
 import {
   AutomationRuleDto,
   BedDto,
+  ModuleGroup,
   ModuleRefDto,
-  ModuleTypeGroup,
   PlantDto,
   useAddModuleToBedMutation,
   useGetBedByIdQuery,
@@ -22,7 +22,7 @@ export type BedValue = {
     set: (plant: PlantDto) => Promise<void>;
   };
   modules: ModuleRefDto[];
-  getModulesByGroup: (group: ModuleTypeGroup) => ModuleRefDto[];
+  getModulesByGroup: (group: ModuleGroup) => ModuleRefDto[];
   sensors: ModuleRefDto[];
   actuators: ModuleRefDto[];
   rules: AutomationRuleDto[];
@@ -139,7 +139,7 @@ export function useBed(id: string) {
       },
     },
     modules: bed?.modules ?? [],
-    getModulesByGroup: (group: ModuleTypeGroup) => bed?.modules.filter((x) => x.group === group) ?? [],
+    getModulesByGroup: (group: ModuleGroup) => bed?.modules.filter((x) => x.group === group) ?? [],
     sensors: bed?.modules.filter((x) => x.isSensor) ?? [],
     actuators: bed?.modules.filter((x) => x.isActuator) ?? [],
     rules: bed?.rules ?? [],

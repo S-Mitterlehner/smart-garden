@@ -64,8 +64,9 @@ public abstract class BaseApiModuleConnector(string key, IConnectionMultiplexer 
 
         return new ModuleAutomationConfig
         {
-            ConnectorKey = Key,
+            ModuleKey = Key,
             ModuleType = Type,
+            ValueType = StateType.Continuous,
             Min = state.Min,
             Max = state.Max,
             Unit = state.Unit,

@@ -178,7 +178,7 @@ export type AddSensorToBedPayload = {
 
 export type AutomationConfigDto = {
   __typename?: 'AutomationConfigDto';
-  fields: Array<ParameterFieldDto>;
+  parameters: Array<ParameterGroupDto>;
 };
 
 export type AutomationRuleActionDto = {
@@ -412,7 +412,7 @@ export type ModuleActionDtoFilterInput = {
 export type ModuleDto = {
   __typename?: 'ModuleDto';
   description: Scalars['String']['output'];
-  group: ModuleTypeGroup;
+  group: ModuleGroup;
   id: Scalars['UUID']['output'];
   isActuator: Scalars['Boolean']['output'];
   isSensor: Scalars['Boolean']['output'];
@@ -425,7 +425,7 @@ export type ModuleDto = {
 export type ModuleDtoFilterInput = {
   and?: InputMaybe<Array<ModuleDtoFilterInput>>;
   description?: InputMaybe<StringOperationFilterInput>;
-  group?: InputMaybe<ModuleTypeGroupOperationFilterInput>;
+  group?: InputMaybe<ModuleGroupOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
   isActuator?: InputMaybe<BooleanOperationFilterInput>;
   isSensor?: InputMaybe<BooleanOperationFilterInput>;
@@ -436,10 +436,22 @@ export type ModuleDtoFilterInput = {
   type?: InputMaybe<ModuleTypeOperationFilterInput>;
 };
 
+export enum ModuleGroup {
+  Actuator = 'ACTUATOR',
+  Sensor = 'SENSOR'
+}
+
+export type ModuleGroupOperationFilterInput = {
+  eq?: InputMaybe<ModuleGroup>;
+  in?: InputMaybe<Array<ModuleGroup>>;
+  neq?: InputMaybe<ModuleGroup>;
+  nin?: InputMaybe<Array<ModuleGroup>>;
+};
+
 export type ModuleRefDto = {
   __typename?: 'ModuleRefDto';
   description: Scalars['String']['output'];
-  group: ModuleTypeGroup;
+  group: ModuleGroup;
   id: Scalars['UUID']['output'];
   isActuator: Scalars['Boolean']['output'];
   isSensor: Scalars['Boolean']['output'];
@@ -451,7 +463,7 @@ export type ModuleRefDto = {
 export type ModuleRefDtoFilterInput = {
   and?: InputMaybe<Array<ModuleRefDtoFilterInput>>;
   description?: InputMaybe<StringOperationFilterInput>;
-  group?: InputMaybe<ModuleTypeGroupOperationFilterInput>;
+  group?: InputMaybe<ModuleGroupOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
   isActuator?: InputMaybe<BooleanOperationFilterInput>;
   isSensor?: InputMaybe<BooleanOperationFilterInput>;
@@ -499,18 +511,6 @@ export enum ModuleType {
   Pump = 'PUMP',
   Temperature = 'TEMPERATURE'
 }
-
-export enum ModuleTypeGroup {
-  Actuator = 'ACTUATOR',
-  Sensor = 'SENSOR'
-}
-
-export type ModuleTypeGroupOperationFilterInput = {
-  eq?: InputMaybe<ModuleTypeGroup>;
-  in?: InputMaybe<Array<ModuleTypeGroup>>;
-  neq?: InputMaybe<ModuleTypeGroup>;
-  nin?: InputMaybe<Array<ModuleTypeGroup>>;
-};
 
 export type ModuleTypeOperationFilterInput = {
   eq?: InputMaybe<ModuleType>;
@@ -604,13 +604,21 @@ export type MutationUpdateSensorRefArgs = {
 
 export type ParameterFieldDto = {
   __typename?: 'ParameterFieldDto';
-  connectorKey: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
   max?: Maybe<Scalars['Float']['output']>;
   min?: Maybe<Scalars['Float']['output']>;
   tsType?: Maybe<Scalars['String']['output']>;
-  type: ModuleType;
   unit?: Maybe<Scalars['String']['output']>;
+  valueType: StateType;
   values: Array<AutomationSelectValueDto>;
+};
+
+export type ParameterGroupDto = {
+  __typename?: 'ParameterGroupDto';
+  fields: Array<ParameterFieldDto>;
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
 };
 
 export type PlantDto = {
@@ -714,7 +722,7 @@ export type QueryModuleArgs = {
 
 
 export type QueryModulesArgs = {
-  typeGroup: ModuleTypeGroup;
+  group: ModuleGroup;
   where?: InputMaybe<ModuleRefDtoFilterInput>;
 };
 
@@ -988,12 +996,19 @@ export type ListenActuatorStateChangeSubscriptionVariables = Exact<{
 
 export type ListenActuatorStateChangeSubscription = { __typename?: 'Subscription', onActuatorStateChanged: { __typename?: 'ActuatorStateDto', actuatorKey: string, actuatorType: ModuleType, connectionState: ConnectionState, lastUpdate: any, max?: number | null, min?: number | null, state?: string | null, stateType: StateType, unit?: string | null, value?: number | null, actions: Array<{ __typename?: 'ActuatorActionDto', currentValue?: number | null, description: string, icon: ActionIcons, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: ActionType, unit?: string | null }> } };
 
+export type GetAutomationConfigQueryVariables = Exact<{
+  id: Scalars['UUID']['input'];
+}>;
+
+
+export type GetAutomationConfigQuery = { __typename?: 'Query', automationConfig?: { __typename?: 'AutomationConfigDto', parameters: Array<{ __typename?: 'ParameterGroupDto', key: string, label: string, fields: Array<{ __typename?: 'ParameterFieldDto', key: string, label: string, max?: number | null, min?: number | null, tsType?: string | null, unit?: string | null, valueType: StateType, values: Array<{ __typename?: 'AutomationSelectValueDto', label: string, value: string }> }> }> } | null };
+
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: ModuleType, actionKey: string, value?: number | null, order: number }> }> } | null };
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: ModuleType, actionKey: string, value?: number | null, order: number }> }> } | null };
 
 export type SetCurrentPlantMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -1020,18 +1035,18 @@ export type RemoveModuleFromBedMutationVariables = Exact<{
 export type RemoveModuleFromBedMutation = { __typename?: 'Mutation', removeModuleFromBed: { __typename?: 'RemoveModuleFromBedPayload', boolean?: boolean | null } };
 
 export type GetModulesQueryVariables = Exact<{
-  type: ModuleTypeGroup;
+  group: ModuleGroup;
 }>;
 
 
-export type GetModulesQuery = { __typename?: 'Query', modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean }> };
+export type GetModulesQuery = { __typename?: 'Query', modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }> };
 
 export type GetModuleByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetModuleByIdQuery = { __typename?: 'Query', module?: { __typename?: 'ModuleDto', id: any, key: string, name: string, description: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean, state: { __typename?: 'ModuleStateDto', moduleKey: string, moduleType: ModuleType, connectionState: ConnectionState, stateType: StateType, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ModuleActionDto', key: string, name: string, description: string, type: ActionType, isAllowed: boolean, icon: ActionIcons, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
+export type GetModuleByIdQuery = { __typename?: 'Query', module?: { __typename?: 'ModuleDto', id: any, key: string, name: string, description: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean, state: { __typename?: 'ModuleStateDto', moduleKey: string, moduleType: ModuleType, connectionState: ConnectionState, stateType: StateType, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ModuleActionDto', key: string, name: string, description: string, type: ActionType, isAllowed: boolean, icon: ActionIcons, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
 
 export type UpdateModuleMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1040,7 +1055,7 @@ export type UpdateModuleMutationVariables = Exact<{
 }>;
 
 
-export type UpdateModuleMutation = { __typename?: 'Mutation', updateModuleRef: { __typename?: 'UpdateModuleRefPayload', moduleRefDto?: { __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleTypeGroup, isActuator: boolean, isSensor: boolean } | null } };
+export type UpdateModuleMutation = { __typename?: 'Mutation', updateModuleRef: { __typename?: 'UpdateModuleRefPayload', moduleRefDto?: { __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean } | null } };
 
 export type ExecuteActionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1342,6 +1357,62 @@ export function useListenActuatorStateChangeSubscription(baseOptions: Apollo.Sub
       }
 export type ListenActuatorStateChangeSubscriptionHookResult = ReturnType<typeof useListenActuatorStateChangeSubscription>;
 export type ListenActuatorStateChangeSubscriptionResult = Apollo.SubscriptionResult<ListenActuatorStateChangeSubscription>;
+export const GetAutomationConfigDocument = gql`
+    query getAutomationConfig($id: UUID!) {
+  automationConfig(bedId: $id) {
+    parameters {
+      key
+      label
+      fields {
+        key
+        label
+        max
+        min
+        tsType
+        unit
+        valueType
+        values {
+          label
+          value
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAutomationConfigQuery__
+ *
+ * To run a query within a React component, call `useGetAutomationConfigQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAutomationConfigQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAutomationConfigQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetAutomationConfigQuery(baseOptions: Apollo.QueryHookOptions<GetAutomationConfigQuery, GetAutomationConfigQueryVariables> & ({ variables: GetAutomationConfigQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>(GetAutomationConfigDocument, options);
+      }
+export function useGetAutomationConfigLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>(GetAutomationConfigDocument, options);
+        }
+export function useGetAutomationConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>(GetAutomationConfigDocument, options);
+        }
+export type GetAutomationConfigQueryHookResult = ReturnType<typeof useGetAutomationConfigQuery>;
+export type GetAutomationConfigLazyQueryHookResult = ReturnType<typeof useGetAutomationConfigLazyQuery>;
+export type GetAutomationConfigSuspenseQueryHookResult = ReturnType<typeof useGetAutomationConfigSuspenseQuery>;
+export type GetAutomationConfigQueryResult = Apollo.QueryResult<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>;
 export const GetBedByIdDocument = gql`
     query getBedById($id: UUID!) {
   bed(id: $id) {
@@ -1519,8 +1590,8 @@ export type RemoveModuleFromBedMutationHookResult = ReturnType<typeof useRemoveM
 export type RemoveModuleFromBedMutationResult = Apollo.MutationResult<RemoveModuleFromBedMutation>;
 export type RemoveModuleFromBedMutationOptions = Apollo.BaseMutationOptions<RemoveModuleFromBedMutation, RemoveModuleFromBedMutationVariables>;
 export const GetModulesDocument = gql`
-    query getModules($type: ModuleTypeGroup!) {
-  modules(typeGroup: $type) {
+    query getModules($group: ModuleGroup!) {
+  modules(group: $group) {
     id
     name
     description
@@ -1545,7 +1616,7 @@ export const GetModulesDocument = gql`
  * @example
  * const { data, loading, error } = useGetModulesQuery({
  *   variables: {
- *      type: // value for 'type'
+ *      group: // value for 'group'
  *   },
  * });
  */

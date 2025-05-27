@@ -14,23 +14,23 @@ public class PumpModuleConnector(string key, IConnectionMultiplexer redis, ILogg
     public override string Name => "Water Pump";
     public override string Description => "Water Pump for irrigation";
 
-    public override async Task<ModuleAutomationConfig> GetAutomationConfigAsync() =>
-        new()
-        {
-            ModuleType = Type,
-            ConnectorKey = Key,
-            TsType = "select",
-            Values = [
-                new DiscreteValue
-                {
-                    Label = "Running",
-                    Value = PumpModuleConnectorStates.Running
-                },
-                new DiscreteValue
-                {
-                    Label = "Stopped",
-                    Value = PumpModuleConnectorStates.Stopped
-                }
-            ],
-        };
+    public override async Task<ModuleAutomationConfig> GetAutomationConfigAsync() => new()
+    {
+        ModuleType = Type,
+        ModuleKey = Key,
+        ValueType = StateType.Discrete,
+        TsType = "select",
+        Values = [
+            new DiscreteValue
+            {
+                Label = "Running",
+                Value = PumpModuleConnectorStates.Running
+            },
+            new DiscreteValue
+            {
+                Label = "Stopped",
+                Value = PumpModuleConnectorStates.Stopped
+            }
+        ],
+    };
 }

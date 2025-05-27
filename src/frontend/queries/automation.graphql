@@ -1,0 +1,21 @@
+query getAutomationConfig($id: UUID!) {
+  automationConfig(bedId: $id) {
+    parameters {
+      key
+      label
+      fields {
+        key
+        label
+        max
+        min
+        tsType
+        unit
+        valueType
+        values {
+          label
+          value
+        }
+      }
+    }
+  }
+}

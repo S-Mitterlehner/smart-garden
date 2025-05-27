@@ -1,5 +1,5 @@
-query getModules($type: ModuleTypeGroup!) {
-  modules(typeGroup: $type) {
+query getModules($group: ModuleGroup!) {
+  modules(group: $group) {
     id
     name
     description

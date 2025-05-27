@@ -35,6 +35,16 @@ export type AutomationRuleAction = {
   order: number;
 };
 
+export type Rule = RuleConnector | RuleElement;
+
+export type RuleConnector = {
+  [key: string]: RuleElement[];
+};
+
 export type RuleElement = {
-  [key: string]: RuleElement[] | string | number | boolean;
+  [key: string]: [RuleValueRef, string | number | boolean];
+};
+
+export type RuleValueRef = {
+  var: string;
 };

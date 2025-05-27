@@ -1,7 +1,7 @@
 import { ActionIcon, Drawer } from "@mantine/core";
 import { IconBinoculars, IconEngine, IconPlus } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
-import { ModuleRefDto, ModuleType, ModuleTypeGroup, PlantModuleConfigDto } from "../../__generated__/graphql";
+import { ModuleGroup, ModuleRefDto, ModuleType, PlantModuleConfigDto } from "../../__generated__/graphql";
 import ModuleCard from "../../components/modules/ModuleCard";
 import ModuleList from "../../components/modules/ModuleList";
 import SectionTitle from "../../components/SectionTitle";
@@ -10,13 +10,13 @@ import { ModuleProvider } from "../../hooks/useModule";
 import useModules from "../../hooks/useModules";
 
 export type ModuleSectionProps = {
-  type: ModuleTypeGroup;
+  group: ModuleGroup;
 };
 
-export default function ModuleSection({ type }: ModuleSectionProps) {
+export default function ModuleSection({ group }: ModuleSectionProps) {
   const { addModule, removeModule, getModulesByGroup, currentPlant } = useBedContext();
-  const modules = useMemo(() => getModulesByGroup(type), [getModulesByGroup, type]);
-  const { modules: availableModules } = useModules(type);
+  const modules = useMemo(() => getModulesByGroup(group), [getModulesByGroup, group]);
+  const { modules: availableModules } = useModules(group);
   const [showModuleDrawer, setShowModuleDrawer] = useState(false);
   const handleModuleAction = (module: ModuleRefDto, action: string) => {
     switch (action) {
@@ -69,11 +69,11 @@ export default function ModuleSection({ type }: ModuleSectionProps) {
 
       <div>
         <SectionTitle
-          title={type === ModuleTypeGroup.Actuator ? "Actuators" : "Sensors"}
+          title={group === ModuleGroup.Actuator ? "Actuators" : "Sensors"}
           actionComponent={moduleActionComponent}
           description="Click on an module to see actions and options."
           icon={
-            type === ModuleTypeGroup.Actuator ? (
+            group === ModuleGroup.Actuator ? (
               <IconEngine className="h-8 w-8 text-emerald-400" />
             ) : (
               <IconBinoculars className="h-8 w-8 text-emerald-400" />

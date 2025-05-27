@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.API.Dtos.Automation;
+using SmartGarden.API.Helper;
 using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Api;
@@ -17,7 +18,7 @@ public partial class Query
         var bed = await db.Get<Bed>().FirstOrDefaultAsync(x => x.Id == bedId);
         if (bed == null) throw new GraphQLException("Bed not found");
 
-        var moduleConfig = new List<ModuleAutomationConfig>();
+        var moduleConfig = new List<AutomationConfig>();
 
         foreach (var sensor in bed.Modules)
         {
@@ -25,12 +26,18 @@ public partial class Query
             moduleConfig.Add(await connector.GetAutomationConfigAsync());
         }
 
+        moduleConfig.AddRange(AutomationHelper.GetMiscAutomationConfig());
 
-        var fields = moduleConfig.Select(ParameterFieldDto.FromModel.Compile()).ToList();
+        var parameters = moduleConfig.AsQueryable().GroupBy(x => x.Group).Select(g => new ParameterGroupDto
+        {
+            Key = g.Key.Replace("-", "_"),
+            Label = g.Key.Replace("_", "-"),
+            Fields = g.AsQueryable().Select(ParameterFieldDto.FromModel).ToList()
+        }).ToList();
 
         return new AutomationConfigDto
         {
-            Fields = fields ?? throw new GraphQLException("No fields found")
+            Parameters = parameters
         };
     }
 

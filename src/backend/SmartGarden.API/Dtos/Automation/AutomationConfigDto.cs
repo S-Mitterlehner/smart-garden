@@ -6,27 +6,38 @@ namespace SmartGarden.API.Dtos.Automation;
 
 public class AutomationConfigDto
 {
+    public List<ParameterGroupDto> Parameters { get; set; }
+}
+
+public class ParameterGroupDto
+{
+    public string Label { get; set; }
+    public string Key { get; set; }
+
     public List<ParameterFieldDto> Fields { get; set; }
 }
 
 public class ParameterFieldDto
-{
-    public string ConnectorKey { get; set; }
-    public virtual ModuleType Type { get; set; }
+{    
+    public string Key { get; set; }
+
+    public string Label { get; set; }
+
+    public virtual StateType ValueType { get; set; }
     public string? TsType { get; set; }
 
     public double? Min { get; set; }
-
     public double? Max { get; set; }
     public string? Unit { get; set; }
 
     public List<AutomationSelectValueDto> Values { get; set; } = [];
 
-    public static Expression<Func<ModuleAutomationConfig, ParameterFieldDto>> FromModel =>
+    public static Expression<Func<AutomationConfig, ParameterFieldDto>> FromModel =>
         c => new ParameterFieldDto
         {
-            ConnectorKey = c.ConnectorKey
-            , Type = c.ModuleType
+            Key = c.Key
+            , Label = c.Label
+            , ValueType = c.ValueType
             , TsType = c.TsType
             , Min = c.Min
             , Max = c.Max

@@ -1,15 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
-import { AutomationConfigDto, BedDto } from "../__generated__/graphql";
-import { RuleElement } from "../models/automation";
+import { createContext, useContext, useMemo } from "react";
+import { AutomationConfigDto, BedDto, ParameterFieldDto, useGetAutomationConfigQuery } from "../__generated__/graphql";
+import { Rule } from "../models/automation";
 import { useBedContext } from "./useCurrentBed";
+
+export type FieldSelectionGroup = {
+  group: string;
+  items: { value: string; label: string }[];
+};
 
 export type AutomationValue = {
   bed: BedDto;
   config: AutomationConfigDto | null;
-  rules: RuleElement[];
+  rules: Rule[];
   fieldSelection: any;
+  parameterFields: ParameterFieldDto[];
 };
 
 const AutomationContext = createContext<AutomationValue | null>(null);
@@ -30,47 +35,35 @@ export function useAutomationContext(): AutomationValue {
 
 export function useAutomation(): AutomationValue {
   const { bed, rules } = useBedContext();
-  const [ruleExpressions, setRuleExpressions] = useState<RuleElement[]>([]);
-  const [fielSelection, setFieldSelection] = useState<any>(null);
 
-  const { data: config } = useQuery<AutomationConfigDto>({
-    queryKey: ["automation", bed.id],
-    refetchOnMount: true,
-    queryFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/beds/${bed.id}/automation/config`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch automation");
-      }
-      return response.json();
-    },
-    enabled: !!bed,
+  const { data: { automationConfig: config } = {} } = useGetAutomationConfigQuery({
+    variables: { id: bed.id },
   });
 
-  useEffect(() => {
-    setRuleExpressions(
+  const fieldSelection = useMemo(
+    () =>
+      config?.parameters.map((p) => ({
+        group: p.label,
+        items: p.fields.map((f) => ({ value: f.key, label: f.label })),
+      })),
+    [config],
+  );
+
+  const ruleExpressions = useMemo(
+    () =>
       rules.map((rule) => {
         return JSON.parse(rule.expressionJson);
       }),
-    );
-  }, [rules]);
+    [rules],
+  );
 
-  useEffect(() => {
-    setFieldSelection(
-      config?.fields.reduce((acc, item) => {
-        const { connectorKey, type } = item;
-        if (!acc[connectorKey]) {
-          acc[connectorKey] = [];
-        }
-        acc[connectorKey].push(type);
-        return acc;
-      }, {} as any),
-    );
-  }, [config]);
+  const parameterFields = useMemo(() => config?.parameters.flatMap((p) => p.fields) ?? [], [config]);
 
   return {
     bed,
     rules: ruleExpressions,
     config: config ?? ({} as AutomationConfigDto),
-    fieldSelection: fielSelection,
+    fieldSelection: fieldSelection,
+    parameterFields: parameterFields,
   };
 }

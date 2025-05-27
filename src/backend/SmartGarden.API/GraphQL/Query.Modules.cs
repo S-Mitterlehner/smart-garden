@@ -11,9 +11,9 @@ namespace SmartGarden.API.GraphQL;
 public partial class Query
 {
     [UseFiltering]
-    public async Task<IEnumerable<ModuleRefDto>> GetModules(ModuleTypeGroup typeGroup, [Service] ApplicationDbContext db) =>
+    public async Task<IEnumerable<ModuleRefDto>> GetModules(ModuleGroup group, [Service] ApplicationDbContext db) =>
         await db.Get<ModuleRef>()
-                .Where(x => ModuleTypeExpressions.Group.Invoke(x.Type) == typeGroup)
+                .Where(x => ModuleTypeExpressions.Group.Invoke(x.Type) == group)
                 .Select(ModuleRefDto.FromEntity)
                 .ToListAsync();
 

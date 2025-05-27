@@ -1,96 +1,29 @@
-import { Select } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { useAutomationContext } from "../../hooks/useAutomation";
-import { AutomationConfig, RuleElement } from "../../models/automation";
-
-const connectors = [
-  { label: "AND", value: "and" },
-  { label: "OR", value: "or" },
-  { label: "NOT", value: "not" },
-];
-
-const comparators = [
-  { label: "=", value: "==" },
-  { label: "!=", value: "!=" },
-  { label: "<", value: "<" },
-  { label: "<=", value: "<=" },
-  { label: ">", value: ">" },
-  { label: ">=", value: ">=" },
-];
+import { useEffect, useMemo, useState } from "react";
+import { AutomationConfig, Rule, RuleConnector, RuleElement } from "../../models/automation";
+import RuleConnectorComponent, { connectors } from "./RuleConnectorComponent";
+import RuleElementComponent from "./RuleElementComponent";
 
 export type RuleEditorProps = {
   rule: RuleElement;
   config: AutomationConfig[];
 };
 
-export function RuleList() {
-  const { rules } = useAutomationContext();
-
-  return (
-    <div>
-      {/* TODO */}
-      <RuleEditor root={rules[0]} />
-    </div>
-  );
-}
-
-export function RuleEditor({ root }: { root: RuleElement }) {
-  if (!root) {
-    return <div>Loading...</div>;
-  }
-  return (
-    <div>
-      <Rule rulePart={root} />
-    </div>
-  );
-}
-
-export function RuleGroup() {
-  return <div></div>;
-}
-
-export function Rule({ rulePart }: { rulePart: RuleElement }) {
-  const [ruleKey] = Object.keys(rulePart);
-  const parts = rulePart[ruleKey] as RuleElement[];
-
-  const { config, fieldSelection } = useAutomationContext();
+export default function RuleEditor({ rulePart, level = 0 }: { rulePart: Rule; level?: number }) {
+  const ruleKey = useMemo(() => Object.keys(rulePart)[0], [rulePart]);
   const [type, setType] = useState<"comparator" | "connector" | null>(null);
-
-  const [selectedValue, setSelectedValue] = useState<string | null>(null);
-  const [selectedComparator, setSelectedComparator] = useState<string | null>(null);
-
-  // group items by connectorKey
 
   useEffect(() => {
     setType(connectors.find((i) => i.value === ruleKey) ? "connector" : "comparator");
   }, [ruleKey]);
-
-  const getInput = () => {
-    return <div>TODO</div>;
+  const getRulePartComponent = () => {
+    if (type === "connector") return <RuleConnectorComponent rulePart={rulePart as RuleConnector} level={level} />;
+    if (type === "comparator") return <RuleElementComponent rulePart={rulePart as RuleElement} />;
+    return <div>Invalid rule part</div>;
   };
 
-  if (type === "connector") {
-    return (
-      <div>
-        {/* TODO: connector-selection */}
-        {parts.map((part, index) => {
-          return (
-            <div key={index}>
-              <Rule rulePart={part} />
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
+  const style = {
+    marginLeft: `${level * 3}rem`,
+  };
 
-  console.log("selection", fieldSelection);
-
-  return (
-    <div className="flex flex-row items-center gap-2">
-      <Select data={fieldSelection} value={selectedValue} onChange={setSelectedValue}></Select>
-      <Select data={comparators} value={selectedComparator} onChange={setSelectedComparator}></Select>
-      {getInput()}
-    </div>
-  );
+  return <div style={style}>{getRulePartComponent()}</div>;
 }

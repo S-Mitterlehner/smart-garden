@@ -5,6 +5,7 @@ This repo is a IoT project for an extensible gardening system.
 ## Project Documentations
 
 - [SVE Ex 2 - Web-Services](./docs/SVE-2/README.md)
+- [SVE Ex 3 - Message-oriented Middleware](./docs/SVE-3/README.md)
 
 ---
 

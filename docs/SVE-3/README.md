@@ -74,10 +74,135 @@ Die API bildet die Schnittstelle zum Frontend. Sie sorgt für die Bereitstellung
 
 ## Implementierung
 
-...
+Die Message-Kommunikation wurde in drei zentrale Bausteine aufgeteilt: **Message Consumer**, **Message Producer** und **Message-Klassen**. Diese abstrahieren das RabbitMQ-Handling und entkoppeln die Business-Logik.
 
+### Message Consumer
 
+Die Consumer-Komponente wurde als generischer `BackgroundService` implementiert. Für jede erwartete Nachricht wird beim Start eine eigene Queue erstellt und an die entsprechende Exchange gebunden. Eingehende Nachrichten werden automatisch deserialisiert und an einen definierten `IMessageHandler<T>` weitergeleitet, der die eigentliche Verarbeitung übernimmt.
 
-## Lessons Learned und Review
+```csharp
+public class MessagingListenerService<TMessage, TBody>(
+    IConnection conn, 
+    IOptions<RabbitMQSettings> settings, 
+    IMessageHandler<TBody> handler, 
+    ILogger<MessagingListenerService<TMessage, TBody>> logger) 
+    : BackgroundService 
+    where TMessage : IMessage<TBody>
+{
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        var channel = await conn.CreateChannelAsync(cancellationToken: ct);
+        var queueName = TMessage.GetQueueName(settings.Value.AppId);
+        
+        await channel.ExchangeDeclareAsync(TMessage.Exchange, ExchangeType.Direct, durable: true, cancellationToken: ct);
+        await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: ct);
+        await channel.QueueBindAsync(queueName, TMessage.Exchange, string.Empty, cancellationToken: ct);
 
-...
+        var consumer = new AsyncEventingBasicConsumer(channel);
+        consumer.ReceivedAsync += async (model, ea) =>
+        {
+            try
+            {
+                var body = ea.Body.ToArray();
+                var json = Encoding.UTF8.GetString(body);
+                var msgBody = JsonSerializer.Deserialize<TBody>(json);
+                await handler.HandleAsync(msgBody);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error processing message");
+            }
+        };
+        await channel.BasicConsumeAsync(queue: queueName, 
+                                        autoAck: true, 
+                                        consumer: consumer, 
+                                        cancellationToken: ct);
+    }
+}
+```
+
+#### Beispiel Message Handler: `ModuleRegisterMessageHandler`
+
+Die Verarbeitung der empfangenen `ModuleRegisterMessage` erfolgt durch eine Implementierung des generischen Interfaces `IMessageHandler<T>`.
+
+```csharp
+public class ModuleRegisterMessageHandler(AutomationServiceDbContext db) : IMessageHandler<ModuleRegisterMessageBody>
+{
+    public async Task HandleAsync(ModuleRegisterMessageBody msgBody)
+    {
+        var existing = await db.Get<ModuleRef>().AnyAsync(x => x.Id == msgBody.ModuleId);
+        if (existing) return;
+
+        var entity = db.New<ModuleRef>(msgBody.ModuleId);
+        entity.ModuleKey = msgBody.ModuleKey;
+        entity.Type = (ModuleType) msgBody.ModuleType;
+        await db.SaveChangesAsync();
+    }
+}
+```
+
+### Message Producer
+
+Der Producer ermöglicht das asynchrone Senden von Nachrichten über RabbitMQ. Jede Nachricht enthält ein Body-Objekt sowie Meta-Informationen wie die Exchange, die CorrelationId oder die Lebensdauer der Nachricht. Auch hier erfolgt die Verwendung generisch, um den Code modular zu halten.
+
+```csharp
+public class RabbitMQMessagingProducer(IConnection rabbitConnection) : IMessagingProducer 
+{
+    public async Task SendAsync<T>(T msg) where T : IMessage
+    {
+        await using var channel = await rabbitConnection.CreateChannelAsync();
+        await channel.ExchangeDeclareAsync(T.Exchange, ExchangeType.Direct, durable: true);
+        
+        var json = JsonSerializer.Serialize(msg.Body);
+        var body = Encoding.UTF8.GetBytes(json);
+        var props = new BasicProperties
+        {
+            CorrelationId = msg.CorrelationId,
+            DeliveryMode = T.DeliveryMode,
+            Expiration = T.Expiration?.ToString(),
+            Priority = 5
+        };
+
+        await channel.BasicPublishAsync(T.Exchange, string.Empty, true, props, body);
+    }
+}
+```
+
+### Message: Beispiel "ModuleRegisterMessage"
+
+Nachrichten selbst bestehen aus einer generischen Klasse mit spezifischem Body. Die folgende Klasse zeigt die Implementation einer Registrierungsnachricht, die vom ConnectorService bei der Erkennung neuer Module verwendet wird:
+
+```csharp
+public class ModuleRegisterMessage(ModuleRegisterMessageBody data) : IMessage<ModuleRegisterMessageBody>
+{
+    public static string Exchange => "ModuleRegister_Exchange";
+    public static ulong? Expiration => null;
+    public static DeliveryModes DeliveryMode => DeliveryModes.Persistent;
+    public static string GetQueueName(string clientId) => $"{clientId}_ModuleRegister_Queue";
+
+    public string? CorrelationId => Data.ModuleKey;
+    public ModuleRegisterMessageBody Data => data;
+}
+
+public class ModuleRegisterMessageBody()
+{
+    public Guid ModuleId { get; set; }
+    public string ModuleKey { get; set; }
+    public int ModuleType { get; set; }
+}
+```
+
+Durch diese generische Architektur lassen sich neue Nachrichtentypen einfach ergänzen und wiederverwenden.
+
+---
+
+## Review
+
+- Durch die Nutzung von RabbitMQ konnte eine klare Trennung zwischen den einzelnen Services erreicht werden. Änderungen an einem Service erfordern keine direkten Änderungen an den konsumierenden Services, solange das Nachrichtenformat erhalten bleibt.
+- Die generischen `MessagingProducer`- und `MessagingListenerService`-Implementierungen ermöglichen eine einfache Wiederverwendung für verschiedene Nachrichtentypen.
+
+## Lessons Learned
+
+- Die Arbeit mit RabbitMQ und die Implementierung einer Message Oriented Middleware war eine wertvolle Erfahrung, um asynchrone Systeme besser zu verstehen.
+- Besonders der Einsatz von generischen Komponenten und die Anwendung von Dependency Injection zur Entkopplung der einzelnen Teile haben zur Codequalität und Erweiterbarkeit des Systems beigetragen.
+- Die Übung hat uns gezeigt, wie wichtig saubere Schnittstellendefinitionen und ein durchdachtes Nachrichtenmodell für die Kommunikation in verteilten Systemen sind.

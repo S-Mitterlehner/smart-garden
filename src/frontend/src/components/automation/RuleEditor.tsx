@@ -17,6 +17,7 @@ export default function RuleEditor({
   level?: number;
   updateEditCopy?: (rule: Rule | undefined) => void;
 }) {
+  if (!rulePart) return <div>Invalid rule (no rulePart)</div>;
   const ruleKey = useMemo(() => Object.keys(rulePart)[0], [rulePart]);
   const [type, setType] = useState<"comparator" | "connector" | null>(null);
 

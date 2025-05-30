@@ -23,9 +23,9 @@ query getBedById($id: UUID!) {
       actions {
         id
         ruleId
-        actuatorId
-        actuatorKey
-        actuatorType
+        moduleId
+        moduleKey
+        moduleType
         actionKey
         value
         order

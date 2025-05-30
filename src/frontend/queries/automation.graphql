@@ -19,3 +19,74 @@ query getAutomationConfig($id: UUID!) {
     }
   }
 }
+
+query getRulesFromBed($bedId: UUID!) {
+  rules(bedId: $bedId) {
+    bedId
+    expressionJson
+    id
+    name
+    actions {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+
+
+query getRuleById($ruleId: UUID!) {
+  rule(ruleId: $ruleId) {
+    bedId
+    expressionJson
+    id
+    name
+    actions {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+
+
+mutation addAutomationRuleActionToModule($actionKey: String!, $automationRuleId: UUID!, $moduleId: UUID!, $value: Float) {
+  addAutomationRuleActionToModule(
+    input: { actionKey: $actionKey, automationRuleId: $automationRuleId, moduleId: $moduleId, value: $value }
+  ) {
+    automationRuleActionDto {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+
+
+mutation addAutomationRuleToBed($automationExpressionJson: String!, $automationName: String!, $bedId: UUID!) {
+  addAutomationRuleToBed(
+    input: { automationExpressionJson: $automationExpressionJson, automationName: $automationName, bedId: $bedId }
+  ) {
+    automationRuleDto {
+      bedId
+      expressionJson
+      id
+      name
+    }
+  }
+}

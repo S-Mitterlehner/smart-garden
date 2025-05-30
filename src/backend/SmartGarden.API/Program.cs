@@ -97,7 +97,7 @@ builder.Services.AddHostedService<MessagingListenerService<ModuleRegisterMessage
 // Scheduled Services
 builder.Services.AddScheduler(b =>
 {
-    b.AddJobAdvanced<AutomationRuleSyncJob>(TimeSpan.FromMinutes(5));
+    b.AddJobAdvanced<AutomationRuleSyncJob>(TimeSpan.FromMinutes(1));
 });
 
 // -----

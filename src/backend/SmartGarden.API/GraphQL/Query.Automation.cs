@@ -40,15 +40,13 @@ public partial class Query
             Parameters = parameters
         };
     }
-
-    [HttpGet]
+    
     public async Task<IEnumerable<AutomationRuleDto>> GetRules(Guid bedId, [Service] ApplicationDbContext db) =>
         await db.Get<AutomationRule>()
             .Where(x => x.BedId == bedId)
             .Select(AutomationRuleDto.FromEntity)
             .ToListAsync();
-
-    [HttpGet("{ruleId}")]
+    
     public async Task<AutomationRuleDto?> GetRule(Guid ruleId, [Service] ApplicationDbContext db) =>
         await db.Get<AutomationRule>()
             .Where(x => x.Id == ruleId)

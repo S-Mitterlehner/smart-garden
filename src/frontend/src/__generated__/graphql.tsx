@@ -156,6 +156,29 @@ export type AddActuatorToBedPayload = {
   actuatorRefDto?: Maybe<ActuatorRefDto>;
 };
 
+export type AddAutomationRuleActionToModuleInput = {
+  actionKey: Scalars['String']['input'];
+  automationRuleId: Scalars['UUID']['input'];
+  moduleId: Scalars['UUID']['input'];
+  value?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type AddAutomationRuleActionToModulePayload = {
+  __typename?: 'AddAutomationRuleActionToModulePayload';
+  automationRuleActionDto?: Maybe<AutomationRuleActionDto>;
+};
+
+export type AddAutomationRuleToBedInput = {
+  automationExpressionJson: Scalars['String']['input'];
+  automationName: Scalars['String']['input'];
+  bedId: Scalars['UUID']['input'];
+};
+
+export type AddAutomationRuleToBedPayload = {
+  __typename?: 'AddAutomationRuleToBedPayload';
+  automationRuleDto?: Maybe<AutomationRuleDto>;
+};
+
 export type AddModuleToBedInput = {
   bedId: Scalars['ID']['input'];
   moduleId: Scalars['ID']['input'];
@@ -183,23 +206,23 @@ export type AutomationConfigDto = {
 
 export type AutomationRuleActionDto = {
   __typename?: 'AutomationRuleActionDto';
-  actionKey: Scalars['String']['output'];
-  actuatorId: Scalars['UUID']['output'];
-  actuatorKey: Scalars['String']['output'];
-  actuatorType: ModuleType;
+  actionKey?: Maybe<Scalars['String']['output']>;
   id: Scalars['UUID']['output'];
-  order: Scalars['Int']['output'];
+  moduleId: Scalars['UUID']['output'];
+  moduleKey?: Maybe<Scalars['String']['output']>;
+  moduleType?: Maybe<ModuleType>;
+  order?: Maybe<Scalars['Int']['output']>;
   ruleId: Scalars['UUID']['output'];
   value?: Maybe<Scalars['Float']['output']>;
 };
 
 export type AutomationRuleActionDtoFilterInput = {
   actionKey?: InputMaybe<StringOperationFilterInput>;
-  actuatorId?: InputMaybe<UuidOperationFilterInput>;
-  actuatorKey?: InputMaybe<StringOperationFilterInput>;
-  actuatorType?: InputMaybe<ModuleTypeOperationFilterInput>;
   and?: InputMaybe<Array<AutomationRuleActionDtoFilterInput>>;
   id?: InputMaybe<UuidOperationFilterInput>;
+  moduleId?: InputMaybe<UuidOperationFilterInput>;
+  moduleKey?: InputMaybe<StringOperationFilterInput>;
+  moduleType?: InputMaybe<NullableOfModuleTypeOperationFilterInput>;
   or?: InputMaybe<Array<AutomationRuleActionDtoFilterInput>>;
   order?: InputMaybe<IntOperationFilterInput>;
   ruleId?: InputMaybe<UuidOperationFilterInput>;
@@ -523,6 +546,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** @deprecated Use Module instead */
   addActuatorToBed: AddActuatorToBedPayload;
+  addAutomationRuleActionToModule: AddAutomationRuleActionToModulePayload;
+  addAutomationRuleToBed: AddAutomationRuleToBedPayload;
   addModuleToBed: AddModuleToBedPayload;
   /** @deprecated Use Module instead */
   addSensorToBed: AddSensorToBedPayload;
@@ -545,6 +570,16 @@ export type Mutation = {
 
 export type MutationAddActuatorToBedArgs = {
   input: AddActuatorToBedInput;
+};
+
+
+export type MutationAddAutomationRuleActionToModuleArgs = {
+  input: AddAutomationRuleActionToModuleInput;
+};
+
+
+export type MutationAddAutomationRuleToBedArgs = {
+  input: AddAutomationRuleToBedInput;
 };
 
 
@@ -600,6 +635,13 @@ export type MutationUpdateModuleRefArgs = {
 
 export type MutationUpdateSensorRefArgs = {
   input: UpdateSensorRefInput;
+};
+
+export type NullableOfModuleTypeOperationFilterInput = {
+  eq?: InputMaybe<ModuleType>;
+  in?: InputMaybe<Array<InputMaybe<ModuleType>>>;
+  neq?: InputMaybe<ModuleType>;
+  nin?: InputMaybe<Array<InputMaybe<ModuleType>>>;
 };
 
 export type ParameterFieldDto = {
@@ -1003,12 +1045,45 @@ export type GetAutomationConfigQueryVariables = Exact<{
 
 export type GetAutomationConfigQuery = { __typename?: 'Query', automationConfig?: { __typename?: 'AutomationConfigDto', parameters: Array<{ __typename?: 'ParameterGroupDto', key: string, label: string, fields: Array<{ __typename?: 'ParameterFieldDto', key: string, label: string, max?: number | null, min?: number | null, tsType?: string | null, unit?: string | null, valueType: StateType, values: Array<{ __typename?: 'AutomationSelectValueDto', label: string, value: string }> }> }> } | null };
 
+export type GetRulesFromBedQueryVariables = Exact<{
+  bedId: Scalars['UUID']['input'];
+}>;
+
+
+export type GetRulesFromBedQuery = { __typename?: 'Query', rules: Array<{ __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> }> };
+
+export type GetRuleByIdQueryVariables = Exact<{
+  ruleId: Scalars['UUID']['input'];
+}>;
+
+
+export type GetRuleByIdQuery = { __typename?: 'Query', rule?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> } | null };
+
+export type AddAutomationRuleActionToModuleMutationVariables = Exact<{
+  actionKey: Scalars['String']['input'];
+  automationRuleId: Scalars['UUID']['input'];
+  moduleId: Scalars['UUID']['input'];
+  value?: InputMaybe<Scalars['Float']['input']>;
+}>;
+
+
+export type AddAutomationRuleActionToModuleMutation = { __typename?: 'Mutation', addAutomationRuleActionToModule: { __typename?: 'AddAutomationRuleActionToModulePayload', automationRuleActionDto?: { __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null } | null } };
+
+export type AddAutomationRuleToBedMutationVariables = Exact<{
+  automationExpressionJson: Scalars['String']['input'];
+  automationName: Scalars['String']['input'];
+  bedId: Scalars['UUID']['input'];
+}>;
+
+
+export type AddAutomationRuleToBedMutation = { __typename?: 'Mutation', addAutomationRuleToBed: { __typename?: 'AddAutomationRuleToBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string } | null } };
+
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, actuatorId: any, actuatorKey: string, actuatorType: ModuleType, actionKey: string, value?: number | null, order: number }> }> } | null };
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, actionKey?: string | null, value?: number | null, order?: number | null }> }> } | null };
 
 export type SetCurrentPlantMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -1413,6 +1488,201 @@ export type GetAutomationConfigQueryHookResult = ReturnType<typeof useGetAutomat
 export type GetAutomationConfigLazyQueryHookResult = ReturnType<typeof useGetAutomationConfigLazyQuery>;
 export type GetAutomationConfigSuspenseQueryHookResult = ReturnType<typeof useGetAutomationConfigSuspenseQuery>;
 export type GetAutomationConfigQueryResult = Apollo.QueryResult<GetAutomationConfigQuery, GetAutomationConfigQueryVariables>;
+export const GetRulesFromBedDocument = gql`
+    query getRulesFromBed($bedId: UUID!) {
+  rules(bedId: $bedId) {
+    bedId
+    expressionJson
+    id
+    name
+    actions {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRulesFromBedQuery__
+ *
+ * To run a query within a React component, call `useGetRulesFromBedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRulesFromBedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRulesFromBedQuery({
+ *   variables: {
+ *      bedId: // value for 'bedId'
+ *   },
+ * });
+ */
+export function useGetRulesFromBedQuery(baseOptions: Apollo.QueryHookOptions<GetRulesFromBedQuery, GetRulesFromBedQueryVariables> & ({ variables: GetRulesFromBedQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRulesFromBedQuery, GetRulesFromBedQueryVariables>(GetRulesFromBedDocument, options);
+      }
+export function useGetRulesFromBedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRulesFromBedQuery, GetRulesFromBedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRulesFromBedQuery, GetRulesFromBedQueryVariables>(GetRulesFromBedDocument, options);
+        }
+export function useGetRulesFromBedSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRulesFromBedQuery, GetRulesFromBedQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRulesFromBedQuery, GetRulesFromBedQueryVariables>(GetRulesFromBedDocument, options);
+        }
+export type GetRulesFromBedQueryHookResult = ReturnType<typeof useGetRulesFromBedQuery>;
+export type GetRulesFromBedLazyQueryHookResult = ReturnType<typeof useGetRulesFromBedLazyQuery>;
+export type GetRulesFromBedSuspenseQueryHookResult = ReturnType<typeof useGetRulesFromBedSuspenseQuery>;
+export type GetRulesFromBedQueryResult = Apollo.QueryResult<GetRulesFromBedQuery, GetRulesFromBedQueryVariables>;
+export const GetRuleByIdDocument = gql`
+    query getRuleById($ruleId: UUID!) {
+  rule(ruleId: $ruleId) {
+    bedId
+    expressionJson
+    id
+    name
+    actions {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRuleByIdQuery__
+ *
+ * To run a query within a React component, call `useGetRuleByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRuleByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRuleByIdQuery({
+ *   variables: {
+ *      ruleId: // value for 'ruleId'
+ *   },
+ * });
+ */
+export function useGetRuleByIdQuery(baseOptions: Apollo.QueryHookOptions<GetRuleByIdQuery, GetRuleByIdQueryVariables> & ({ variables: GetRuleByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRuleByIdQuery, GetRuleByIdQueryVariables>(GetRuleByIdDocument, options);
+      }
+export function useGetRuleByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRuleByIdQuery, GetRuleByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRuleByIdQuery, GetRuleByIdQueryVariables>(GetRuleByIdDocument, options);
+        }
+export function useGetRuleByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRuleByIdQuery, GetRuleByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRuleByIdQuery, GetRuleByIdQueryVariables>(GetRuleByIdDocument, options);
+        }
+export type GetRuleByIdQueryHookResult = ReturnType<typeof useGetRuleByIdQuery>;
+export type GetRuleByIdLazyQueryHookResult = ReturnType<typeof useGetRuleByIdLazyQuery>;
+export type GetRuleByIdSuspenseQueryHookResult = ReturnType<typeof useGetRuleByIdSuspenseQuery>;
+export type GetRuleByIdQueryResult = Apollo.QueryResult<GetRuleByIdQuery, GetRuleByIdQueryVariables>;
+export const AddAutomationRuleActionToModuleDocument = gql`
+    mutation addAutomationRuleActionToModule($actionKey: String!, $automationRuleId: UUID!, $moduleId: UUID!, $value: Float) {
+  addAutomationRuleActionToModule(
+    input: {actionKey: $actionKey, automationRuleId: $automationRuleId, moduleId: $moduleId, value: $value}
+  ) {
+    automationRuleActionDto {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+    `;
+export type AddAutomationRuleActionToModuleMutationFn = Apollo.MutationFunction<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>;
+
+/**
+ * __useAddAutomationRuleActionToModuleMutation__
+ *
+ * To run a mutation, you first call `useAddAutomationRuleActionToModuleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddAutomationRuleActionToModuleMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addAutomationRuleActionToModuleMutation, { data, loading, error }] = useAddAutomationRuleActionToModuleMutation({
+ *   variables: {
+ *      actionKey: // value for 'actionKey'
+ *      automationRuleId: // value for 'automationRuleId'
+ *      moduleId: // value for 'moduleId'
+ *      value: // value for 'value'
+ *   },
+ * });
+ */
+export function useAddAutomationRuleActionToModuleMutation(baseOptions?: Apollo.MutationHookOptions<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>(AddAutomationRuleActionToModuleDocument, options);
+      }
+export type AddAutomationRuleActionToModuleMutationHookResult = ReturnType<typeof useAddAutomationRuleActionToModuleMutation>;
+export type AddAutomationRuleActionToModuleMutationResult = Apollo.MutationResult<AddAutomationRuleActionToModuleMutation>;
+export type AddAutomationRuleActionToModuleMutationOptions = Apollo.BaseMutationOptions<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>;
+export const AddAutomationRuleToBedDocument = gql`
+    mutation addAutomationRuleToBed($automationExpressionJson: String!, $automationName: String!, $bedId: UUID!) {
+  addAutomationRuleToBed(
+    input: {automationExpressionJson: $automationExpressionJson, automationName: $automationName, bedId: $bedId}
+  ) {
+    automationRuleDto {
+      bedId
+      expressionJson
+      id
+      name
+    }
+  }
+}
+    `;
+export type AddAutomationRuleToBedMutationFn = Apollo.MutationFunction<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>;
+
+/**
+ * __useAddAutomationRuleToBedMutation__
+ *
+ * To run a mutation, you first call `useAddAutomationRuleToBedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddAutomationRuleToBedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addAutomationRuleToBedMutation, { data, loading, error }] = useAddAutomationRuleToBedMutation({
+ *   variables: {
+ *      automationExpressionJson: // value for 'automationExpressionJson'
+ *      automationName: // value for 'automationName'
+ *      bedId: // value for 'bedId'
+ *   },
+ * });
+ */
+export function useAddAutomationRuleToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>(AddAutomationRuleToBedDocument, options);
+      }
+export type AddAutomationRuleToBedMutationHookResult = ReturnType<typeof useAddAutomationRuleToBedMutation>;
+export type AddAutomationRuleToBedMutationResult = Apollo.MutationResult<AddAutomationRuleToBedMutation>;
+export type AddAutomationRuleToBedMutationOptions = Apollo.BaseMutationOptions<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>;
 export const GetBedByIdDocument = gql`
     query getBedById($id: UUID!) {
   bed(id: $id) {
@@ -1439,9 +1709,9 @@ export const GetBedByIdDocument = gql`
       actions {
         id
         ruleId
-        actuatorId
-        actuatorKey
-        actuatorType
+        moduleId
+        moduleKey
+        moduleType
         actionKey
         value
         order

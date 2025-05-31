@@ -87,29 +87,74 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
     }
   };
 
+  function handleDeleteAction(id: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
-      <div className="mb-4 flex items-center gap-4">
-        <TextInput
-          placeholder="Rule Name"
-          className="w-1/2"
-          value={ruleName ?? ""}
-          onChange={(event) => setRuleName(event.currentTarget.value)}
-        />
-        <Checkbox
-          checked={ruleEnabled}
-          label="Rule Enabled"
-          onChange={(event) => setRuleEnabled(event.currentTarget.checked)}
+      <div>
+        <h3 className="mb-2 font-medium">Automation Data</h3>
+        <div className="mb-4 flex items-center gap-4">
+          <TextInput
+            placeholder="Rule Name"
+            className="w-1/2"
+            value={ruleName ?? ""}
+            onChange={(event) => setRuleName(event.currentTarget.value)}
+          />
+          <Checkbox
+            checked={ruleEnabled}
+            label="Rule Enabled"
+            onChange={(event) => setRuleEnabled(event.currentTarget.checked)}
+          />
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h3 className="mb-2 font-medium">Automation Logic</h3>
+        <RuleEditor
+          rulePart={editCopy}
+          updateEditCopy={(r) => {
+            if (!r) return; // root can't be null
+            setEditCopy(r);
+          }}
         />
       </div>
-      <RuleEditor
-        rulePart={editCopy}
-        updateEditCopy={(r) => {
-          if (!r) return; // root can't be null
-          setEditCopy(r);
-        }}
-      />
-      <div className="mt-16 flex flex-row justify-end">
+      
+      {/* TODO: Move to own module?? */}
+      <div className="mt-6">
+        <h3 className="mb-2 font-medium">Automation Actions</h3>
+        {root.actions?.length ? (
+          <ul className="space-y-2">
+            {root.actions.map((action) => (
+              <li
+                key={action.id}
+                className="flex items-center justify-between p-2 border border-gray-200 rounded-md bg-gray-50"
+              >
+                <div>
+                  <p className="font-medium">{action.actionKey || "Unknown Action"}</p>
+                  <p className="text-md text-gray-700">
+                    Module: {action.moduleKey ?? "Unknown Module"} | Type: {action.moduleType ?? "Unknown Type"} | Value: {action.value ?? "—"}
+                  </p>
+                </div>
+                <Button
+                  variant="subtle"
+                  color="red"
+                  size="s"
+                  onClick={() => handleDeleteAction(action.id)}
+                >
+                  Delete
+                </Button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500 italic">No actions configured.</p>
+        )}
+      </div>
+
+
+      <div className="mt-10 flex flex-row justify-end">
         <Button variant="filled" onClick={save}>
           Save
         </Button>

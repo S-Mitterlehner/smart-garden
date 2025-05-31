@@ -55,7 +55,7 @@ export function useAutomation(): AutomationValue {
     [config],
   );
 
-  const rulesParsed: AutomationRuleDto[] = useMemo(
+  const automationRules: AutomationRuleDto[] = useMemo(
     () =>
       rules.map((rule) => ({
         ...rule,
@@ -128,7 +128,7 @@ export function useAutomation(): AutomationValue {
     bed,
     addRule: addRule,
     updateRule: updateRule,
-    rules: rulesParsed,
+    rules: automationRules,
     config: config ?? ({} as AutomationConfigDto),
     fieldSelection: fieldSelection,
     parameterFields: parameterFields,

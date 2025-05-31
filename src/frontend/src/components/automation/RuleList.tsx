@@ -1,11 +1,12 @@
 import { Accordion, Button, Checkbox, Modal, TextInput } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { AutomationRuleDto } from "../../__generated__/graphql";
 import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule } from "../../models/automation";
+import { ActionList } from "./ActionList";
 import RuleEditor from "./RuleEditor";
-import { useDisclosure } from "@mantine/hooks";
 
 export default function RuleList() {
   const { rules: rules } = useAutomationContext();
@@ -21,13 +22,13 @@ export default function RuleList() {
       expressionJson: '{ gt: [{ var: "" }, 0]} ',
       id: undefined,
       name: "",
-      isEnabled: true
+      isEnabled: true,
     };
     setLocalRules([...localRules, newRule]);
   };
 
   if (!localRules) {
-    return <p className="text-gray-500 italic">Loading ...</p>
+    return <p className="text-gray-500 italic">Loading ...</p>;
   } else if (localRules!.length <= 0) {
     return (
       <>
@@ -75,17 +76,17 @@ export default function RuleList() {
   );
 }
 
-export function RuleListPane({ root }: { root: AutomationRuleDto }) {
+export function RuleListPane({ root: rule }: { root: AutomationRuleDto }) {
   const [editCopy, setEditCopy] = useState<Rule | null>(null);
-  const [ruleName, setRuleName] = useState<string | null>(root.name);
-  const [ruleEnabled, setRuleEnabled] = useState<boolean>(root.isEnabled);
+  const [ruleName, setRuleName] = useState<string | null>(rule.name);
+  const [ruleEnabled, setRuleEnabled] = useState<boolean>(rule.isEnabled);
 
-  const { addRule, updateRule, deleteRule, deleteAction } = useAutomationContext();
+  const { addRule, updateRule, deleteRule } = useAutomationContext();
   const [opened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
 
   useEffect(() => {
-    setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
-  }, [root]);
+    setEditCopy(JSON.parse(JSON.stringify(rule.expressionJson)));
+  }, [rule]);
 
   if (editCopy === null) {
     return <div>Loading...</div>;
@@ -94,8 +95,8 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const saveRule = () => {
     console.log("Saving rule:", JSON.stringify(editCopy));
 
-    if (root.id) {
-      updateRule(root.id, ruleName ?? "", editCopy, ruleEnabled);
+    if (rule.id) {
+      updateRule(rule.id, ruleName ?? "", editCopy, ruleEnabled);
     } else {
       addRule(ruleName ?? "", editCopy, ruleEnabled);
     }
@@ -130,39 +131,10 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
           }}
         />
       </div>
-      
-      {/* TODO: Move to own module?? */}
-      <div className="mt-6">
-        <h3 className="mb-2 font-medium">Automation Actions</h3>
-        {root.actions?.length ? (
-          <ul className="space-y-2">
-            {root.actions.map((action) => (
-              <li
-                key={action.id}
-                className="flex items-center justify-between p-2 border border-gray-200 rounded-md bg-gray-50"
-              >
-                <div>
-                  <p className="font-medium">{action.actionKey || "Unknown Action"}</p>
-                  <p className="text-md text-gray-700">
-                    Module: {action.moduleKey ?? "Unknown Module"} | Type: {action.moduleType ?? "Unknown Type"} | Value: {action.value ?? "—"}
-                  </p>
-                </div>
-                <Button
-                  variant="subtle"
-                  color="red"
-                  size="s"
-                  onClick={() => deleteAction(action)}
-                >
-                  Delete
-                </Button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500 italic">No actions configured.</p>
-        )}
-      </div>
 
+      <div className="mt-6">
+        <ActionList rule={rule} />
+      </div>
 
       <div className="mt-10 flex flex-row justify-end gap-2">
         <Button variant="filled" color="red" onClick={openDeleteModal}>
@@ -173,14 +145,19 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
         </Button>
       </div>
 
-
       <Modal opened={opened} onClose={closeDeleteModal} title="Delete Rule?" centered>
-        <p>Are you sure you want to delete <strong>{ruleName || "this rule"}</strong>?</p>
+        <p>
+          Are you sure you want to delete <strong>{ruleName || "this rule"}</strong>?
+        </p>
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="default" onClick={closeDeleteModal}>Cancel</Button>
-          <Button variant="filled" color="red"
+          <Button variant="default" onClick={closeDeleteModal}>
+            Cancel
+          </Button>
+          <Button
+            variant="filled"
+            color="red"
             onClick={() => {
-              deleteRule(root);
+              deleteRule(rule);
               closeDeleteModal();
             }}
           >

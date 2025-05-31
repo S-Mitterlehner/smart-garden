@@ -1,8 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createContext, useContext, useMemo } from "react";
-import { AutomationConfigDto, AutomationRuleActionDto, AutomationRuleDto, BedDto, ParameterFieldDto, useAddAutomationRuleToBedMutation, useGetAutomationConfigQuery, useRemoveAutomationRuleActionMutation, useRemoveAutomationRuleMutation, useUpdateAutomationRuleFromBedMutation } from "../__generated__/graphql";
-import { useBedContext } from "./useCurrentBed";
 import { notifications } from "@mantine/notifications";
+import { createContext, useContext, useMemo } from "react";
+import {
+  AutomationConfigDto,
+  AutomationRuleActionDto,
+  AutomationRuleDto,
+  BedDto,
+  ParameterFieldDto,
+  useAddAutomationRuleToBedMutation,
+  useGetAutomationConfigQuery,
+  useGetRulesFromBedQuery,
+  useRemoveAutomationRuleActionMutation,
+  useRemoveAutomationRuleMutation,
+  useUpdateAutomationRuleFromBedMutation,
+} from "../__generated__/graphql";
+import { useBedContext } from "./useCurrentBed";
 
 export type FieldSelectionGroup = {
   group: string;
@@ -39,8 +51,13 @@ export function useAutomationContext(): AutomationValue {
 }
 
 export function useAutomation(): AutomationValue {
-  const { bed, rules, refetch } = useBedContext();
-  
+  const { bed } = useBedContext();
+
+  const { data: { rules } = {}, refetch } = useGetRulesFromBedQuery({
+    variables: { bedId: bed.id },
+    skip: !bed.id,
+  });
+
   const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
   const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
   const [removeAutomationRuleMutation] = useRemoveAutomationRuleMutation();
@@ -61,15 +78,14 @@ export function useAutomation(): AutomationValue {
 
   const automationRules: AutomationRuleDto[] = useMemo(
     () =>
-      rules.map((rule) => ({
+      (rules ?? []).map((rule) => ({
         ...rule,
         expressionJson: JSON.parse(rule.expressionJson),
       })),
-    [rules]
+    [rules],
   );
 
   const parameterFields = useMemo(() => config?.parameters.flatMap((p) => p.fields) ?? [], [config]);
-
 
   const addRule = (name: string, expression: any, enabled: boolean) => {
     addAutomationRuleMutation({
@@ -77,26 +93,26 @@ export function useAutomation(): AutomationValue {
         bedId: bed.id,
         expressionJson: JSON.stringify(expression),
         name: name ?? "",
-        isEnabled: enabled
-      }
+        isEnabled: enabled,
+      },
     })
-    .then((r) => {
-      refetch();
-      console.log(r);
-      notifications.show({
-        title: `${name} added`,
-        message: `Automation ${name} added to bed`,
-        color: "green",
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      notifications.show({
-        title: "Error",
-        message: `Failed to add automation rule ${name} to bed with id ${bed.id}`,
-        color: "red"
+      .then((r) => {
+        refetch();
+        console.log(r);
+        notifications.show({
+          title: `${name} added`,
+          message: `Automation ${name} added to bed`,
+          color: "green",
+        });
       })
-    });
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to add automation rule ${name} to bed with id ${bed.id}`,
+          color: "red",
+        });
+      });
   };
 
   const updateRule = (id: string, name: string, expression: any, enabled: boolean) => {
@@ -106,70 +122,70 @@ export function useAutomation(): AutomationValue {
         expressionJson: JSON.stringify(expression),
         id: id,
         name: name ?? "",
-        isEnabled: enabled
-      }
+        isEnabled: enabled,
+      },
     })
-    .then((r) => {
-      refetch();
-      console.log(r);
-      notifications.show({
-        title: `${name} updated`,
-        message: `Automation ${name} updated`,
-        color: "green",
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      notifications.show({
-        title: "Error",
-        message: `Failed to update automation rule ${name} from bed with id ${bed.id}`,
-        color: "red"
+      .then((r) => {
+        refetch();
+        console.log(r);
+        notifications.show({
+          title: `${name} updated`,
+          message: `Automation ${name} updated`,
+          color: "green",
+        });
       })
-    });
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to update automation rule ${name} from bed with id ${bed.id}`,
+          color: "red",
+        });
+      });
   };
 
   const deleteRule = (rule: AutomationRuleDto) => {
     removeAutomationRuleMutation({
-      variables: { automationRuleId: rule.id }
+      variables: { automationRuleId: rule.id },
     })
-    .then(() => {
-      refetch();
-      notifications.show({
-        title: `Rule deleted`,
-        message: `Automation rule ${rule.name} deleted`,
-        color: "yellow",
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      notifications.show({
-        title: "Error",
-        message: `Failed to delete automation rule with id ${rule.id}`,
-        color: "red"
+      .then(() => {
+        refetch();
+        notifications.show({
+          title: `Rule deleted`,
+          message: `Automation rule ${rule.name} deleted`,
+          color: "yellow",
+        });
       })
-    });
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to delete automation rule with id ${rule.id}`,
+          color: "red",
+        });
+      });
   };
 
   const deleteAction = (action: AutomationRuleActionDto) => {
     removeAutomationRuleActionMutation({
-      variables: { actionId: action.id }
+      variables: { actionId: action.id },
     })
-    .then(() => {
-      refetch();
-      notifications.show({
-        title: `Action deleted`,
-        message: `Action ${action.actionKey} deleted`,
-        color: "yellow",
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      notifications.show({
-        title: "Error",
-        message: `Failed to delete action with id ${action.id}`,
-        color: "red"
+      .then(() => {
+        refetch();
+        notifications.show({
+          title: `Action deleted`,
+          message: `Action ${action.actionKey} deleted`,
+          color: "yellow",
+        });
       })
-    });
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to delete action with id ${action.id}`,
+          color: "red",
+        });
+      });
   };
 
   return {
@@ -184,4 +200,3 @@ export function useAutomation(): AutomationValue {
     parameterFields: parameterFields,
   };
 }
-

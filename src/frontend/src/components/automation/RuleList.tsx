@@ -12,6 +12,7 @@ import RuleEditor from "./RuleEditor";
 export default function RuleList() {
   const { rules: rules } = useAutomationContext();
   const [localRules, setLocalRules] = useState<AutomationRuleDto[]>([]);
+  const [openedAccordionItem, setOpenedAccordionItem] = useState<string | null>(null);
 
   useEffect(() => {
     setLocalRules(rules);
@@ -22,10 +23,11 @@ export default function RuleList() {
       bedId: undefined,
       expressionJson: '{ gt: [{ var: "" }, 0]} ',
       id: undefined,
-      name: "",
+      name: "New Rule",
       isEnabled: true,
     };
     setLocalRules([...localRules, newRule]);
+    setOpenedAccordionItem(`rule-${localRules.length}`);
   };
 
   if (!localRules) {
@@ -52,7 +54,7 @@ export default function RuleList() {
           Add Rule
         </Button>
       </div>
-      <Accordion>
+      <Accordion value={openedAccordionItem} onChange={setOpenedAccordionItem}>
         {localRules.map((rule, index) => (
           <Accordion.Item key={index} value={`rule-${index}`}>
             <Accordion.Control>

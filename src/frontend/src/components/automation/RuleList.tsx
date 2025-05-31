@@ -1,4 +1,4 @@
-import { Accordion, Button } from "@mantine/core";
+import { Accordion, Button, TextInput } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useAutomationContext } from "../../hooks/useAutomation";
@@ -59,6 +59,7 @@ export default function RuleList() {
 
 export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const [editCopy, setEditCopy] = useState<Rule | null>(null);
+  const [ruleName, setRuleName] = useState<string | null>(root.name);
 
   const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
   const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
@@ -77,23 +78,20 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
 
     var expressionJson: string = JSON.stringify(editCopy);
 
-    // TODO where should we get this value?
-    var automationName: string = "TestAutomation";
-
     if (root.id) {
       updateAutomationRuleMutation({
         variables: {
           bedId: bed.id,
           expressionJson: expressionJson,
           id: root.id,
-          name: automationName
+          name: ruleName ?? ""
         }
       })
       .then((r) => {
         console.log(r);
         notifications.show({
-          title: `${automationName} updated`,
-          message: `Automation ${automationName} updated`,
+          title: `${ruleName} updated`,
+          message: `Automation ${ruleName} updated`,
           color: "green",
         });
       })
@@ -101,26 +99,26 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
         console.error(err);
         notifications.show({
           title: "Error",
-          message: `Failed to update automation rule ${automationName} from bed with id ${bed.id}`,
+          message: `Failed to update automation rule ${ruleName} from bed with id ${bed.id}`,
           color: "red"
         })
       });
     } else {
 
-      // TODO: Refetch automation rules when adding new ones (remove local copy)
+      // TODO: Refetch automation rules when adding new ones (maybe remove local copy)
       addAutomationRuleMutation({
         variables: {
           bedId: bed.id,
           automationExpressionJson: expressionJson,
-          automationName: automationName
+          automationName: ruleName ?? ""
         }
       })
       .then((r) => {
         refetch();
         console.log(r);
         notifications.show({
-          title: `${automationName} added`,
-          message: `Automation ${automationName} added to bed`,
+          title: `${ruleName} added`,
+          message: `Automation ${ruleName} added to bed`,
           color: "green",
         });
       })
@@ -128,7 +126,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
         console.error(err);
         notifications.show({
           title: "Error",
-          message: `Failed to add automation rule ${automationName} to bed with id ${bed.id}`,
+          message: `Failed to add automation rule ${ruleName} to bed with id ${bed.id}`,
           color: "red"
         })
       });
@@ -141,6 +139,12 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
 
   return (
     <>
+      <TextInput
+        placeholder="Rule Name"
+        className="w-1/2 mb-4"
+        value={ruleName ?? ""}
+        onChange={(event) => setRuleName(event.currentTarget.value)}>
+      </TextInput>
       <RuleEditor
         rulePart={editCopy}
         updateEditCopy={(r) => {

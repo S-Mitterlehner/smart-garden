@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useMemo } from "react";
-import { AutomationConfigDto, BedDto, ParameterFieldDto, useGetAutomationConfigQuery } from "../__generated__/graphql";
-import { Rule } from "../models/automation";
+import { AutomationConfigDto, AutomationRuleDto, BedDto, ParameterFieldDto, useGetAutomationConfigQuery } from "../__generated__/graphql";
 import { useBedContext } from "./useCurrentBed";
 
 export type FieldSelectionGroup = {
@@ -12,7 +11,7 @@ export type FieldSelectionGroup = {
 export type AutomationValue = {
   bed: BedDto;
   config: AutomationConfigDto | null;
-  rules: Rule[];
+  rules: AutomationRuleDto[];
   fieldSelection: any;
   parameterFields: ParameterFieldDto[];
 };
@@ -49,19 +48,20 @@ export function useAutomation(): AutomationValue {
     [config],
   );
 
-  const ruleExpressions = useMemo(
+  const rulesParsed: AutomationRuleDto[] = useMemo(
     () =>
-      rules.map((rule) => {
-        return JSON.parse(rule.expressionJson);
-      }),
-    [rules],
+      rules.map((rule) => ({
+        ...rule,
+        expressionJson: JSON.parse(rule.expressionJson),
+      })),
+    [rules]
   );
 
   const parameterFields = useMemo(() => config?.parameters.flatMap((p) => p.fields) ?? [], [config]);
 
   return {
     bed,
-    rules: ruleExpressions,
+    rules: rulesParsed,
     config: config ?? ({} as AutomationConfigDto),
     fieldSelection: fieldSelection,
     parameterFields: parameterFields,

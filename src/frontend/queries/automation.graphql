@@ -78,9 +78,49 @@ mutation addAutomationRuleActionToModule($actionKey: String!, $automationRuleId:
 }
 
 
+mutation updateAutomationRuleActionFromModule($id: UUID!, $actionKey: String, $moduleId: UUID!, $ruleId: UUID!, $value: Float) {
+  updateAutomationRuleActionFromModule(
+    input: {
+      automationRuleActionDto: { actionKey: $actionKey, moduleId: $moduleId, id: $id, ruleId: $ruleId, value: $value }
+    }
+  ) {
+    automationRuleActionDto {
+      actionKey
+      id
+      moduleId
+      moduleKey
+      moduleType
+      order
+      ruleId
+      value
+    }
+  }
+}
+
+
 mutation addAutomationRuleToBed($automationExpressionJson: String!, $automationName: String!, $bedId: UUID!) {
   addAutomationRuleToBed(
     input: { automationExpressionJson: $automationExpressionJson, automationName: $automationName, bedId: $bedId }
+  ) {
+    automationRuleDto {
+      bedId
+      expressionJson
+      id
+      name
+    }
+  }
+}
+
+mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!) {
+  updateAutomationRuleFromBed(
+    input: {
+      automationRuleDto: {
+        bedId: $bedId,
+        expressionJson: $expressionJson,
+        id: $id,
+        name: $name
+      }
+    }
   ) {
     automationRuleDto {
       bedId

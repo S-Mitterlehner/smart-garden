@@ -21,7 +21,7 @@ export type AutomationRule = {
   id: string;
   bedId: string;
   name: string;
-  expressionJson: string;
+  expressionJson: any;
   actions: AutomationRuleAction[];
 };
 

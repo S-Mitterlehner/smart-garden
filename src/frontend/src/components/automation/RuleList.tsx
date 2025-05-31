@@ -4,31 +4,47 @@ import { useEffect, useState } from "react";
 import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule } from "../../models/automation";
 import RuleEditor from "./RuleEditor";
-import { useAddAutomationRuleToBedMutation } from "../../__generated__/graphql";
+import { AutomationRuleDto, useAddAutomationRuleToBedMutation, useUpdateAutomationRuleFromBedMutation } from "../../__generated__/graphql";
 import { notifications } from "@mantine/notifications";
 import { useBedContext } from "../../hooks/useCurrentBed";
 
 export default function RuleList() {
-  const { rules } = useAutomationContext();
+  const { rules: rules } = useAutomationContext();
+  const [localRules, setLocalRules] = useState<AutomationRuleDto[]>([]);
 
-  if (!rules || rules!.length <= 0) {
+  useEffect(() => {
+    setLocalRules(rules);
+  }, [rules]);
+
+  const addRule = () => {
+    const newRule: AutomationRuleDto = {
+      bedId: undefined,
+      expressionJson: '{ gt: [{ var: "" }, 0]} ',
+      id: undefined,
+      name: ""
+    };
+    setLocalRules([...localRules, newRule]);
+  };
+
+
+  if (!localRules || localRules!.length <= 0) {
     return <div>Loading...</div>;
   }
   // TODO: improve to give name
   return (
     <div>
       <div className="mb-4 flex flex-row items-center justify-end">
-        <Button variant="subtle" onClick={() => alert("Add rule not implemented yet")}>
+        <Button variant="subtle" onClick={() => addRule()}>
           <IconPlus />
           Add Rule
         </Button>
       </div>
       <Accordion>
-        {rules.map((rule, index) => (
+        {localRules.map((rule, index) => (
           <Accordion.Item key={index} value={`rule-${index}`}>
             <Accordion.Control>
               <div className="flex flex-row items-center justify-between pr-4">
-                <p>Rule {index + 1}</p>
+                <p>Rule {index + 1} - {rule.name}</p>
               </div>
             </Accordion.Control>
             <Accordion.Panel>
@@ -41,14 +57,15 @@ export default function RuleList() {
   );
 }
 
-export function RuleListPane({ root }: { root: Rule }) {
+export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const [editCopy, setEditCopy] = useState<Rule | null>(null);
 
   const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
+  const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
   const { bed } = useBedContext();
 
   useEffect(() => {
-    setEditCopy(JSON.parse(JSON.stringify(root)));
+    setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
   }, [root]);
 
   if (editCopy === null) {
@@ -63,25 +80,58 @@ export function RuleListPane({ root }: { root: Rule }) {
     // TODO where should we get this value?
     var automationName: string = "TestAutomation";
 
-    addAutomationRuleMutation({
-      variables: {automationExpressionJson: expressionJson, automationName: automationName, bedId: bed.id}
-    })
-    .then((r) => {
-      console.log(r);
-      notifications.show({
-        title: `${automationName} added`,
-        message: `Automation ${automationName} added to bed`,
-        color: "green",
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      notifications.show({
-        title: "Error",
-        message: `Failed to add automation rule ${automationName} to bed with id ${bed.id}`,
-        color: "red"
+    if (root.id) {
+      updateAutomationRuleMutation({
+        variables: {
+          bedId: bed.id,
+          expressionJson: expressionJson,
+          id: root.id,
+          name: automationName
+        }
       })
-    });
+      .then((r) => {
+        console.log(r);
+        notifications.show({
+          title: `${automationName} updated`,
+          message: `Automation ${automationName} updated`,
+          color: "green",
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to update automation rule ${automationName} from bed with id ${bed.id}`,
+          color: "red"
+        })
+      });
+    } else {
+
+      // TODO: Refetch automation rules when adding new ones (remove local copy)
+      addAutomationRuleMutation({
+        variables: {
+          bedId: bed.id,
+          automationExpressionJson: expressionJson,
+          automationName: automationName
+        }
+      })
+      .then((r) => {
+        console.log(r);
+        notifications.show({
+          title: `${automationName} added`,
+          message: `Automation ${automationName} added to bed`,
+          color: "green",
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        notifications.show({
+          title: "Error",
+          message: `Failed to add automation rule ${automationName} to bed with id ${bed.id}`,
+          color: "red"
+        })
+      });
+    }
     
 
     // TODO: Call API (GraphQL mutation) to save the rule

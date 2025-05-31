@@ -8,7 +8,7 @@ public class AutomationRuleDto : BaseDto
     public Guid BedId { get; set; }
     public string Name { get; set; }
     public string ExpressionJson { get; set; }
-    public List<AutomationRuleActionDto> Actions { get; set; } = new();
+    public List<AutomationRuleActionDto>? Actions { get; set; } = new();
 
     public static Expression<Func<AutomationRule, AutomationRuleDto>> FromEntity => r => 
         new AutomationRuleDto

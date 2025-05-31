@@ -1,12 +1,10 @@
-import { Accordion, Button, TextInput } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Accordion, Button, Checkbox, TextInput } from "@mantine/core";
+import { IconPlus, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
+import { AutomationRuleDto } from "../../__generated__/graphql";
 import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule } from "../../models/automation";
 import RuleEditor from "./RuleEditor";
-import { AutomationRuleDto, useAddAutomationRuleToBedMutation, useUpdateAutomationRuleFromBedMutation } from "../../__generated__/graphql";
-import { notifications } from "@mantine/notifications";
-import { useBedContext } from "../../hooks/useCurrentBed";
 
 export default function RuleList() {
   const { rules: rules } = useAutomationContext();
@@ -21,16 +19,16 @@ export default function RuleList() {
       bedId: undefined,
       expressionJson: '{ gt: [{ var: "" }, 0]} ',
       id: undefined,
-      name: ""
+      name: "",
+      isEnabled: true
     };
     setLocalRules([...localRules, newRule]);
   };
 
-
   if (!localRules || localRules!.length <= 0) {
     return <div>Loading...</div>;
   }
-  // TODO: improve to give name
+
   return (
     <div>
       <div className="mb-4 flex flex-row items-center justify-end">
@@ -43,8 +41,15 @@ export default function RuleList() {
         {localRules.map((rule, index) => (
           <Accordion.Item key={index} value={`rule-${index}`}>
             <Accordion.Control>
-              <div className="flex flex-row items-center justify-between pr-4">
-                <p>Rule {index + 1} - {rule.name}</p>
+              <div className="flex flex-row items-center justify-start gap-2 pr-4">
+                {rule.isEnabled ? (
+                  <IconSquareCheck className="text-green-500" />
+                ) : (
+                  <IconSquareX className="text-red-500" />
+                )}
+                <p>
+                  Rule {index + 1} - {rule.name}
+                </p>
               </div>
             </Accordion.Control>
             <Accordion.Panel>
@@ -60,10 +65,9 @@ export default function RuleList() {
 export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const [editCopy, setEditCopy] = useState<Rule | null>(null);
   const [ruleName, setRuleName] = useState<string | null>(root.name);
+  const [ruleEnabled, setRuleEnabled] = useState<boolean>(root.isEnabled);
 
-  const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
-  const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
-  const { bed, refetch } = useBedContext();
+  const { addRule, updateRule } = useAutomationContext();
 
   useEffect(() => {
     setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
@@ -76,75 +80,28 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const save = () => {
     console.log("Saving rule:", JSON.stringify(editCopy));
 
-    var expressionJson: string = JSON.stringify(editCopy);
-
     if (root.id) {
-      updateAutomationRuleMutation({
-        variables: {
-          bedId: bed.id,
-          expressionJson: expressionJson,
-          id: root.id,
-          name: ruleName ?? ""
-        }
-      })
-      .then((r) => {
-        console.log(r);
-        notifications.show({
-          title: `${ruleName} updated`,
-          message: `Automation ${ruleName} updated`,
-          color: "green",
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to update automation rule ${ruleName} from bed with id ${bed.id}`,
-          color: "red"
-        })
-      });
+      updateRule(root.id, ruleName ?? "", editCopy, ruleEnabled);
     } else {
-
-      // TODO: Refetch automation rules when adding new ones (maybe remove local copy)
-      addAutomationRuleMutation({
-        variables: {
-          bedId: bed.id,
-          automationExpressionJson: expressionJson,
-          automationName: ruleName ?? ""
-        }
-      })
-      .then((r) => {
-        refetch();
-        console.log(r);
-        notifications.show({
-          title: `${ruleName} added`,
-          message: `Automation ${ruleName} added to bed`,
-          color: "green",
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to add automation rule ${ruleName} to bed with id ${bed.id}`,
-          color: "red"
-        })
-      });
+      addRule(ruleName ?? "", editCopy, ruleEnabled);
     }
-    
-
-    // TODO: Call API (GraphQL mutation) to save the rule
-    // TODO: Add enabled checkbox
   };
 
   return (
     <>
-      <TextInput
-        placeholder="Rule Name"
-        className="w-1/2 mb-4"
-        value={ruleName ?? ""}
-        onChange={(event) => setRuleName(event.currentTarget.value)}>
-      </TextInput>
+      <div className="mb-4 flex items-center gap-4">
+        <TextInput
+          placeholder="Rule Name"
+          className="w-1/2"
+          value={ruleName ?? ""}
+          onChange={(event) => setRuleName(event.currentTarget.value)}
+        />
+        <Checkbox
+          checked={ruleEnabled}
+          label="Rule Enabled"
+          onChange={(event) => setRuleEnabled(event.currentTarget.checked)}
+        />
+      </div>
       <RuleEditor
         rulePart={editCopy}
         updateEditCopy={(r) => {

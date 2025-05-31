@@ -172,6 +172,7 @@ export type AddAutomationRuleToBedInput = {
   automationExpressionJson: Scalars['String']['input'];
   automationName: Scalars['String']['input'];
   bedId: Scalars['UUID']['input'];
+  isEnabled: Scalars['Boolean']['input'];
 };
 
 export type AddAutomationRuleToBedPayload = {
@@ -246,6 +247,7 @@ export type AutomationRuleDto = {
   bedId: Scalars['UUID']['output'];
   expressionJson: Scalars['String']['output'];
   id: Scalars['UUID']['output'];
+  isEnabled: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
 };
 
@@ -255,6 +257,7 @@ export type AutomationRuleDtoFilterInput = {
   bedId?: InputMaybe<UuidOperationFilterInput>;
   expressionJson?: InputMaybe<StringOperationFilterInput>;
   id?: InputMaybe<UuidOperationFilterInput>;
+  isEnabled?: InputMaybe<BooleanOperationFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<AutomationRuleDtoFilterInput>>;
 };
@@ -264,6 +267,7 @@ export type AutomationRuleDtoInput = {
   bedId: Scalars['UUID']['input'];
   expressionJson: Scalars['String']['input'];
   id: Scalars['UUID']['input'];
+  isEnabled: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
 };
 
@@ -1099,14 +1103,14 @@ export type GetRulesFromBedQueryVariables = Exact<{
 }>;
 
 
-export type GetRulesFromBedQuery = { __typename?: 'Query', rules: Array<{ __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> | null }> };
+export type GetRulesFromBedQuery = { __typename?: 'Query', rules: Array<{ __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, isEnabled: boolean, name: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> | null }> };
 
 export type GetRuleByIdQueryVariables = Exact<{
   ruleId: Scalars['UUID']['input'];
 }>;
 
 
-export type GetRuleByIdQuery = { __typename?: 'Query', rule?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> | null } | null };
+export type GetRuleByIdQuery = { __typename?: 'Query', rule?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, isEnabled: boolean, name: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> | null } | null };
 
 export type AddAutomationRuleActionToModuleMutationVariables = Exact<{
   actionKey: Scalars['String']['input'];
@@ -1130,30 +1134,32 @@ export type UpdateAutomationRuleActionFromModuleMutationVariables = Exact<{
 export type UpdateAutomationRuleActionFromModuleMutation = { __typename?: 'Mutation', updateAutomationRuleActionFromModule: { __typename?: 'UpdateAutomationRuleActionFromModulePayload', automationRuleActionDto?: { __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null } | null } };
 
 export type AddAutomationRuleToBedMutationVariables = Exact<{
-  automationExpressionJson: Scalars['String']['input'];
-  automationName: Scalars['String']['input'];
   bedId: Scalars['UUID']['input'];
+  expressionJson: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  isEnabled: Scalars['Boolean']['input'];
 }>;
 
 
-export type AddAutomationRuleToBedMutation = { __typename?: 'Mutation', addAutomationRuleToBed: { __typename?: 'AddAutomationRuleToBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string } | null } };
+export type AddAutomationRuleToBedMutation = { __typename?: 'Mutation', addAutomationRuleToBed: { __typename?: 'AddAutomationRuleToBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, isEnabled: boolean } | null } };
 
 export type UpdateAutomationRuleFromBedMutationVariables = Exact<{
   bedId: Scalars['UUID']['input'];
   expressionJson: Scalars['String']['input'];
   id: Scalars['UUID']['input'];
   name: Scalars['String']['input'];
+  isEnabled: Scalars['Boolean']['input'];
 }>;
 
 
-export type UpdateAutomationRuleFromBedMutation = { __typename?: 'Mutation', updateAutomationRuleFromBed: { __typename?: 'UpdateAutomationRuleFromBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string } | null } };
+export type UpdateAutomationRuleFromBedMutation = { __typename?: 'Mutation', updateAutomationRuleFromBed: { __typename?: 'UpdateAutomationRuleFromBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, isEnabled: boolean } | null } };
 
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, actionKey?: string | null, value?: number | null, order?: number | null }> | null }> } | null };
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, isEnabled: boolean, actions?: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, actionKey?: string | null, value?: number | null, order?: number | null }> | null }> } | null };
 
 export type SetCurrentPlantMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -1564,6 +1570,7 @@ export const GetRulesFromBedDocument = gql`
     bedId
     expressionJson
     id
+    isEnabled
     name
     actions {
       actionKey
@@ -1617,6 +1624,7 @@ export const GetRuleByIdDocument = gql`
     bedId
     expressionJson
     id
+    isEnabled
     name
     actions {
       actionKey
@@ -1760,15 +1768,16 @@ export type UpdateAutomationRuleActionFromModuleMutationHookResult = ReturnType<
 export type UpdateAutomationRuleActionFromModuleMutationResult = Apollo.MutationResult<UpdateAutomationRuleActionFromModuleMutation>;
 export type UpdateAutomationRuleActionFromModuleMutationOptions = Apollo.BaseMutationOptions<UpdateAutomationRuleActionFromModuleMutation, UpdateAutomationRuleActionFromModuleMutationVariables>;
 export const AddAutomationRuleToBedDocument = gql`
-    mutation addAutomationRuleToBed($automationExpressionJson: String!, $automationName: String!, $bedId: UUID!) {
+    mutation addAutomationRuleToBed($bedId: UUID!, $expressionJson: String!, $name: String!, $isEnabled: Boolean!) {
   addAutomationRuleToBed(
-    input: {automationExpressionJson: $automationExpressionJson, automationName: $automationName, bedId: $bedId}
+    input: {bedId: $bedId, automationExpressionJson: $expressionJson, automationName: $name, isEnabled: $isEnabled}
   ) {
     automationRuleDto {
       bedId
       expressionJson
       id
       name
+      isEnabled
     }
   }
 }
@@ -1788,9 +1797,10 @@ export type AddAutomationRuleToBedMutationFn = Apollo.MutationFunction<AddAutoma
  * @example
  * const [addAutomationRuleToBedMutation, { data, loading, error }] = useAddAutomationRuleToBedMutation({
  *   variables: {
- *      automationExpressionJson: // value for 'automationExpressionJson'
- *      automationName: // value for 'automationName'
  *      bedId: // value for 'bedId'
+ *      expressionJson: // value for 'expressionJson'
+ *      name: // value for 'name'
+ *      isEnabled: // value for 'isEnabled'
  *   },
  * });
  */
@@ -1802,15 +1812,16 @@ export type AddAutomationRuleToBedMutationHookResult = ReturnType<typeof useAddA
 export type AddAutomationRuleToBedMutationResult = Apollo.MutationResult<AddAutomationRuleToBedMutation>;
 export type AddAutomationRuleToBedMutationOptions = Apollo.BaseMutationOptions<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>;
 export const UpdateAutomationRuleFromBedDocument = gql`
-    mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!) {
+    mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!, $isEnabled: Boolean!) {
   updateAutomationRuleFromBed(
-    input: {automationRuleDto: {bedId: $bedId, expressionJson: $expressionJson, id: $id, name: $name}}
+    input: {automationRuleDto: {bedId: $bedId, expressionJson: $expressionJson, id: $id, name: $name, isEnabled: $isEnabled}}
   ) {
     automationRuleDto {
       bedId
       expressionJson
       id
       name
+      isEnabled
     }
   }
 }
@@ -1834,6 +1845,7 @@ export type UpdateAutomationRuleFromBedMutationFn = Apollo.MutationFunction<Upda
  *      expressionJson: // value for 'expressionJson'
  *      id: // value for 'id'
  *      name: // value for 'name'
+ *      isEnabled: // value for 'isEnabled'
  *   },
  * });
  */
@@ -1867,6 +1879,7 @@ export const GetBedByIdDocument = gql`
       id
       name
       expressionJson
+      isEnabled
       actions {
         id
         ruleId

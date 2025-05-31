@@ -11,6 +11,7 @@ public partial class Mutation
         Guid bedId,
         string automationName,
         string automationExpressionJson,
+        bool isEnabled,
         [Service] ApplicationDbContext db)
     {
         var bed = await db.Get<Bed>().FirstOrDefaultAsync(b => b.Id == bedId);
@@ -20,6 +21,7 @@ public partial class Mutation
         automationRule.BedId = bedId;
         automationRule.Name = automationName;
         automationRule.ExpressionJson = automationExpressionJson;
+        automationRule.IsEnabled = isEnabled;
         automationRule.CoolDown = TimeSpan.FromHours(1); // TODO should be configurable by the user
         
         bed.Rules.Add(automationRule);
@@ -37,6 +39,7 @@ public partial class Mutation
         
         rule.Name = automationRuleDto.Name;
         rule.ExpressionJson = automationRuleDto.ExpressionJson;
+        rule.IsEnabled = automationRuleDto.IsEnabled;
         rule.CoolDown = TimeSpan.FromHours(1); // TODO should be configurable by the user
         await db.SaveChangesAsync();
         

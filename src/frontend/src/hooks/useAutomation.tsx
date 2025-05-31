@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useMemo } from "react";
-import { AutomationConfigDto, AutomationRuleDto, BedDto, ParameterFieldDto, useGetAutomationConfigQuery } from "../__generated__/graphql";
+import { AutomationConfigDto, AutomationRuleDto, BedDto, ParameterFieldDto, useAddAutomationRuleToBedMutation, useGetAutomationConfigQuery, useUpdateAutomationRuleFromBedMutation } from "../__generated__/graphql";
 import { useBedContext } from "./useCurrentBed";
+import { notifications } from "@mantine/notifications";
 
 export type FieldSelectionGroup = {
   group: string;
@@ -14,6 +15,9 @@ export type AutomationValue = {
   rules: AutomationRuleDto[];
   fieldSelection: any;
   parameterFields: ParameterFieldDto[];
+
+  addRule: (name: string, expression: any, enabled: boolean) => void;
+  updateRule: (id: string, name: string, expression: any, enabled: boolean) => void;
 };
 
 const AutomationContext = createContext<AutomationValue | null>(null);
@@ -33,7 +37,10 @@ export function useAutomationContext(): AutomationValue {
 }
 
 export function useAutomation(): AutomationValue {
-  const { bed, rules } = useBedContext();
+  const { bed, rules, refetch } = useBedContext();
+  
+  const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
+  const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
 
   const { data: { automationConfig: config } = {} } = useGetAutomationConfigQuery({
     variables: { id: bed.id },
@@ -59,8 +66,68 @@ export function useAutomation(): AutomationValue {
 
   const parameterFields = useMemo(() => config?.parameters.flatMap((p) => p.fields) ?? [], [config]);
 
+
+  const addRule = (name: string, expression: any, enabled: boolean) => {
+    addAutomationRuleMutation({
+      variables: {
+        bedId: bed.id,
+        expressionJson: JSON.stringify(expression),
+        name: name ?? "",
+        isEnabled: enabled
+      }
+    })
+    .then((r) => {
+      refetch();
+      console.log(r);
+      notifications.show({
+        title: `${name} added`,
+        message: `Automation ${name} added to bed`,
+        color: "green",
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      notifications.show({
+        title: "Error",
+        message: `Failed to add automation rule ${name} to bed with id ${bed.id}`,
+        color: "red"
+      })
+    });
+  };
+
+  const updateRule = (id: string, name: string, expression: any, enabled: boolean) => {
+    updateAutomationRuleMutation({
+      variables: {
+        bedId: bed.id,
+        expressionJson: JSON.stringify(expression),
+        id: id,
+        name: name ?? "",
+        isEnabled: enabled
+      }
+    })
+    .then((r) => {
+      refetch();
+      console.log(r);
+      notifications.show({
+        title: `${name} updated`,
+        message: `Automation ${name} updated`,
+        color: "green",
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      notifications.show({
+        title: "Error",
+        message: `Failed to update automation rule ${name} from bed with id ${bed.id}`,
+        color: "red"
+      })
+    });
+  };
+
   return {
     bed,
+    addRule: addRule,
+    updateRule: updateRule,
     rules: rulesParsed,
     config: config ?? ({} as AutomationConfigDto),
     fieldSelection: fieldSelection,

@@ -25,6 +25,7 @@ query getRulesFromBed($bedId: UUID!) {
     bedId
     expressionJson
     id
+    isEnabled
     name
     actions {
       actionKey
@@ -45,6 +46,7 @@ query getRuleById($ruleId: UUID!) {
     bedId
     expressionJson
     id
+    isEnabled
     name
     actions {
       actionKey
@@ -98,27 +100,29 @@ mutation updateAutomationRuleActionFromModule($id: UUID!, $actionKey: String, $m
 }
 
 
-mutation addAutomationRuleToBed($automationExpressionJson: String!, $automationName: String!, $bedId: UUID!) {
+mutation addAutomationRuleToBed($bedId: UUID!, $expressionJson: String!, $name: String!, $isEnabled: Boolean!) {
   addAutomationRuleToBed(
-    input: { automationExpressionJson: $automationExpressionJson, automationName: $automationName, bedId: $bedId }
+    input: { bedId: $bedId, automationExpressionJson: $expressionJson, automationName: $name, isEnabled: $isEnabled }
   ) {
     automationRuleDto {
       bedId
       expressionJson
       id
       name
+      isEnabled
     }
   }
 }
 
-mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!) {
+mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!, $isEnabled: Boolean!) {
   updateAutomationRuleFromBed(
     input: {
       automationRuleDto: {
         bedId: $bedId,
         expressionJson: $expressionJson,
         id: $id,
-        name: $name
+        name: $name,
+        isEnabled: $isEnabled 
       }
     }
   ) {
@@ -127,6 +131,7 @@ mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $i
       expressionJson
       id
       name
+      isEnabled
     }
   }
 }

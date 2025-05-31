@@ -8,6 +8,7 @@ public class AutomationRuleDto : BaseDto
     public Guid BedId { get; set; }
     public string Name { get; set; }
     public string ExpressionJson { get; set; }
+    public bool IsEnabled { get; set; }
     public List<AutomationRuleActionDto>? Actions { get; set; } = new();
 
     public static Expression<Func<AutomationRule, AutomationRuleDto>> FromEntity => r => 
@@ -16,6 +17,7 @@ public class AutomationRuleDto : BaseDto
             Id = r.Id,
             BedId = r.BedId,
             Name = r.Name,
+            IsEnabled = r.IsEnabled,
             ExpressionJson = r.ExpressionJson,
             Actions = r.Actions.AsQueryable().Select(AutomationRuleActionDto.FromEntity).ToList()
         };

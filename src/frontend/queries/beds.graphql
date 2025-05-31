@@ -20,6 +20,7 @@ query getBedById($id: UUID!) {
       id
       name
       expressionJson
+      isEnabled
       actions {
         id
         ruleId

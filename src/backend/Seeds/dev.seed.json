@@ -155,11 +155,11 @@
   "automationRules": [
     {
       "id": "f2b0c4a1-3d8e-4b5e-8f6c-7a2d9f1c3b5e",
-      "name": "Watering",
+      "name": "Watering by Temperature",
       "order": 1,
       "bedId": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
       "expressionJson": "{\n  \"<\": [\n    { \"var\": \"sg_48ca435508f0.TEMPERATURE\" },\n    30\n  ]\n}",
-      "isEnabled": false,
+      "isEnabled": true,
       "coolDown": "00:05:00",
       "actions": [
         {
@@ -171,7 +171,7 @@
     },
     {
       "id": "2d954786-1209-41d3-82ae-bd3618c3d038",
-      "name": "Watering 2",
+      "name": "Watering by Time",
       "order": 2,
       "bedId": "a3c51a2a-0b07-442f-af31-3b7d88dda10d",
       "expressionJson": "{\n  \"and\": [\n    { \">\": [{ \"var\": \"misc.CurrentTime\" }, \"19:00:00\"] },\n    { \"<\": [{ \"var\": \"misc.CurrentTime\" }, \"23:30:00\"] }\n  ]\n}",

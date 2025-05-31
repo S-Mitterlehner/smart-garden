@@ -67,7 +67,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const [ruleName, setRuleName] = useState<string | null>(root.name);
   const [ruleEnabled, setRuleEnabled] = useState<boolean>(root.isEnabled);
 
-  const { addRule, updateRule } = useAutomationContext();
+  const { addRule, updateRule, deleteRule } = useAutomationContext();
 
   useEffect(() => {
     setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
@@ -77,7 +77,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
     return <div>Loading...</div>;
   }
 
-  const save = () => {
+  const saveRule = () => {
     console.log("Saving rule:", JSON.stringify(editCopy));
 
     if (root.id) {
@@ -87,7 +87,12 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
     }
   };
 
-  function handleDeleteAction(id: string): void {
+  const verifyDeleteRule = () => {
+    // TODO: Add modal to verify delete
+    deleteRule(root.id);
+  }
+
+  const deleteAction = (id: string) => {
     throw new Error("Function not implemented.");
   }
 
@@ -141,7 +146,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
                   variant="subtle"
                   color="red"
                   size="s"
-                  onClick={() => handleDeleteAction(action.id)}
+                  onClick={() => deleteAction(action.id)}
                 >
                   Delete
                 </Button>
@@ -154,9 +159,12 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
       </div>
 
 
-      <div className="mt-10 flex flex-row justify-end">
-        <Button variant="filled" onClick={save}>
-          Save
+      <div className="mt-10 flex flex-row justify-end gap-2">
+        <Button variant="filled" color="red" onClick={verifyDeleteRule}>
+          Delete Rule
+        </Button>
+        <Button variant="filled" onClick={saveRule}>
+          Save Rule
         </Button>
       </div>
     </>

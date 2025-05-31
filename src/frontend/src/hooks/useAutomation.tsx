@@ -18,6 +18,7 @@ export type AutomationValue = {
 
   addRule: (name: string, expression: any, enabled: boolean) => void;
   updateRule: (id: string, name: string, expression: any, enabled: boolean) => void;
+  deleteRule: (id: string) => void;
 };
 
 const AutomationContext = createContext<AutomationValue | null>(null);
@@ -124,10 +125,15 @@ export function useAutomation(): AutomationValue {
     });
   };
 
+  const deleteRule = (id: string) => {
+    console.error("Currently not implemented - DeleteRule: ", id);
+  }
+
   return {
     bed,
     addRule: addRule,
     updateRule: updateRule,
+    deleteRule: deleteRule,
     rules: automationRules,
     config: config ?? ({} as AutomationConfigDto),
     fieldSelection: fieldSelection,

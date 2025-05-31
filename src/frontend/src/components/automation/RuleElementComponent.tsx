@@ -7,12 +7,12 @@ import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule, RuleConnector, RuleElement, RuleValueRef } from "../../models/automation";
 
 const comparators = [
-  { label: "=", value: "==" },
-  { label: "!=", value: "!=" },
-  { label: "<", value: "<" },
-  { label: "<=", value: "<=" },
-  { label: ">", value: ">" },
-  { label: ">=", value: ">=" },
+  { label: "=", value: "==", allowedTypes: ["string", "number", "boolean", "select", "time"] },
+  { label: "!=", value: "!=", allowedTypes: ["string", "number", "boolean", "select", "time"] },
+  { label: "<", value: "<", allowedTypes: ["number", "time"] },
+  { label: "<=", value: "<=", allowedTypes: ["number", "time"] },
+  { label: ">", value: ">", allowedTypes: ["number", "time"] },
+  { label: ">=", value: ">=", allowedTypes: ["number", "time"] },
 ];
 
 export default function RuleElementComponent({
@@ -37,6 +37,15 @@ export default function RuleElementComponent({
   const [selectedValueRef, setSelectedValueRef] = useState<string | null>(null);
   const [selectedComparator, setSelectedComparator] = useState<string | null>(null);
 
+  const configVal = useMemo(
+    () => parameterFields?.find((f) => f.key === selectedValueRef),
+    [parameterFields, selectedValueRef],
+  );
+
+  const allowedComparators = useMemo(() => {
+    return comparators.filter((c) => c.allowedTypes.includes(configVal?.tsType || "string"));
+  }, [configVal]);
+
   useEffect(() => {
     setSelectedComparator(ruleKey);
     setSelectedValueRef(ruleValueRef?.var);
@@ -46,8 +55,6 @@ export default function RuleElementComponent({
   }, [fieldSelection, ruleValueRef, ruleKey, ruleValue]);
 
   const update = (changedComparator?: string, changedValueRef?: string, changedValue?: string | number | boolean) => {
-    const configVal = parameterFields?.find((f) => f.key === selectedValueRef);
-
     let newValue = ruleValue;
 
     if (!!changedValue) newValue = changedValue;
@@ -80,7 +87,6 @@ export default function RuleElementComponent({
   };
 
   const getInput = () => {
-    const configVal = parameterFields?.find((f) => f.key === selectedValueRef);
     if (!configVal) {
       return <div>-</div>;
     }
@@ -148,7 +154,7 @@ export default function RuleElementComponent({
           checkIconPosition="right"
         ></Select>
         <Select
-          data={comparators}
+          data={allowedComparators}
           value={selectedComparator}
           onChange={(e) => {
             setSelectedComparator(e);

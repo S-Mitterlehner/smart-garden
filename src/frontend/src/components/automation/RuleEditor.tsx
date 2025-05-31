@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useMemo, useState } from "react";
 import { AutomationConfig, Rule, RuleConnector, RuleElement } from "../../models/automation";
 import RuleConnectorComponent, { connectors } from "./RuleConnectorComponent";
@@ -24,6 +25,7 @@ export default function RuleEditor({
   useEffect(() => {
     setType(connectors.find((i) => i.value === ruleKey) ? "connector" : "comparator");
   }, [ruleKey]);
+
   const getRulePartComponent = () => {
     if (type === "connector")
       return (

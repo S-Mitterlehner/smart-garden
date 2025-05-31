@@ -1,5 +1,5 @@
 import { ActionIcon, Select, Tooltip } from "@mantine/core";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconCategoryMinus, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { Rule, RuleConnector, RuleElement } from "../../models/automation";
 import RuleEditor from "./RuleEditor";
@@ -51,6 +51,21 @@ export default function RuleConnectorComponent({
               }}
             >
               <IconPlus />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Remove Group" withArrow position="top">
+            <ActionIcon
+              size="md"
+              variant="transparent"
+              onClick={() => {
+                if (subElements.length >= 1) {
+                  updateEditCopy(subElements[0]);
+                } else {
+                  updateEditCopy({ ["="]: [null, null] } as RuleElement);
+                }
+              }}
+            >
+              <IconCategoryMinus />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="Delete" withArrow position="top">

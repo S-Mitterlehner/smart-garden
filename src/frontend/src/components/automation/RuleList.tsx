@@ -1,10 +1,11 @@
-import { Accordion, Button, Checkbox, Modal, TextInput } from "@mantine/core";
+import { Accordion, Button, Switch, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { AutomationRuleDto } from "../../__generated__/graphql";
 import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule } from "../../models/automation";
+import ConfirmModal from "../ConfirmModal";
 import { ActionList } from "./ActionList";
 import RuleEditor from "./RuleEditor";
 
@@ -61,9 +62,7 @@ export default function RuleList() {
                 ) : (
                   <IconSquareX className="text-red-500" />
                 )}
-                <p>
-                  Rule {index + 1} - {rule.name}
-                </p>
+                <p>{rule.name}</p>
               </div>
             </Accordion.Control>
             <Accordion.Panel>
@@ -82,7 +81,7 @@ export function RuleListPane({ root: rule }: { root: AutomationRuleDto }) {
   const [ruleEnabled, setRuleEnabled] = useState<boolean>(rule.isEnabled);
 
   const { addRule, updateRule, deleteRule } = useAutomationContext();
-  const [opened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+  const [confirmModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
 
   useEffect(() => {
     setEditCopy(JSON.parse(JSON.stringify(rule.expressionJson)));
@@ -103,68 +102,60 @@ export function RuleListPane({ root: rule }: { root: AutomationRuleDto }) {
   };
 
   return (
-    <>
-      <div>
-        <h3 className="mb-2 font-medium">Automation Data</h3>
-        <div className="mb-4 flex items-center gap-4">
-          <TextInput
-            placeholder="Rule Name"
-            className="w-1/2"
-            value={ruleName ?? ""}
-            onChange={(event) => setRuleName(event.currentTarget.value)}
-          />
-          <Checkbox
-            checked={ruleEnabled}
-            label="Rule Enabled"
-            onChange={(event) => setRuleEnabled(event.currentTarget.checked)}
-          />
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <h3 className="mb-2 font-medium">Automation Logic</h3>
-        <RuleEditor
-          rulePart={editCopy}
-          updateEditCopy={(r) => {
-            if (!r) return; // root can't be null
-            setEditCopy(r);
-          }}
+    <div className="flex flex-col gap-8">
+      <div className="mb-4 flex flex-row items-end justify-between gap-4">
+        <TextInput
+          label="Rule Name"
+          className="w-1/2"
+          value={ruleName ?? ""}
+          onChange={(event) => setRuleName(event.currentTarget.value)}
+        />
+        <Switch
+          className="-translate-y-2"
+          checked={ruleEnabled}
+          labelPosition="left"
+          label={"Rule " + (ruleEnabled ? "Enabled" : "Disabled")}
+          onChange={(event) => setRuleEnabled(event.currentTarget.checked)}
         />
       </div>
 
-      <div className="mt-6">
+      <div className="border-t border-t-gray-200 pt-4">
+        <h3 className="mb-1 text-lg font-medium tracking-wide text-gray-800">Rule</h3>
+        <p className="mb-6 text-xs text-gray-500">Rule that must be met for the actions to be executed.</p>
+        <div className="pb-4">
+          <RuleEditor
+            rulePart={editCopy}
+            updateEditCopy={(r) => {
+              if (!r) return; // root can't be null
+              setEditCopy(r);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="border-t border-t-gray-200 pt-4">
         <ActionList rule={rule} />
       </div>
 
-      <div className="mt-10 flex flex-row justify-end gap-2">
-        <Button variant="filled" color="red" onClick={openDeleteModal}>
-          Delete Rule
+      <div className="flex flex-row justify-between gap-2">
+        <Button variant="outline" color="red" onClick={openDeleteModal}>
+          Delete
         </Button>
         <Button variant="filled" onClick={saveRule}>
-          Save Rule
+          Save
         </Button>
       </div>
 
-      <Modal opened={opened} onClose={closeDeleteModal} title="Delete Rule?" centered>
-        <p>
-          Are you sure you want to delete <strong>{ruleName || "this rule"}</strong>?
-        </p>
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="default" onClick={closeDeleteModal}>
-            Cancel
-          </Button>
-          <Button
-            variant="filled"
-            color="red"
-            onClick={() => {
-              deleteRule(rule);
-              closeDeleteModal();
-            }}
-          >
-            Confirm Delete
-          </Button>
-        </div>
-      </Modal>
-    </>
+      <ConfirmModal
+        title="Delete Rule"
+        description={`Are you sure you want to delete rule "${ruleName}"? This action cannot be undone.`}
+        opened={confirmModalOpened}
+        cancelled={closeDeleteModal}
+        confirmed={() => {
+          deleteRule(rule);
+          closeDeleteModal();
+        }}
+      ></ConfirmModal>
+    </div>
   );
 }

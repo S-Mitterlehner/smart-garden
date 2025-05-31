@@ -8,7 +8,8 @@ export function ActionList({ rule }: { rule: AutomationRuleDto }) {
 
   return (
     <>
-      <h3 className="mb-2 font-medium">Automation Actions</h3>
+      <h3 className="mb-1 text-lg font-medium tracking-wide text-gray-800">Actions</h3>
+      <p className="mb-6 text-xs text-gray-500">Actions which are going to be executed when the rule is met.</p>
       {actions?.length ? (
         <ul className="space-y-2">
           {actions.map((action) => (

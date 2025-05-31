@@ -16,6 +16,7 @@ import usePlants from "./usePlants";
 
 export type BedValue = {
   bed: BedDto;
+  refetch: any;
   isFetched: boolean;
   currentPlant: {
     value: PlantDto | null;
@@ -128,6 +129,7 @@ export function useBed(id: string) {
 
   return {
     bed,
+    refetch,
     isFetched: !loading && !!bed && plantFetched,
     currentPlant: {
       value: currentPlant,

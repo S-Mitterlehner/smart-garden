@@ -62,7 +62,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
 
   const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
   const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
-  const { bed } = useBedContext();
+  const { bed, refetch } = useBedContext();
 
   useEffect(() => {
     setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
@@ -116,6 +116,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
         }
       })
       .then((r) => {
+        refetch();
         console.log(r);
         notifications.show({
           title: `${automationName} added`,

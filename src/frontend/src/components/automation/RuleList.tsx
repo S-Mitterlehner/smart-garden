@@ -1,10 +1,11 @@
-import { Accordion, Button, Checkbox, TextInput } from "@mantine/core";
+import { Accordion, Button, Checkbox, Modal, TextInput } from "@mantine/core";
 import { IconPlus, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { AutomationRuleDto } from "../../__generated__/graphql";
 import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule } from "../../models/automation";
 import RuleEditor from "./RuleEditor";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function RuleList() {
   const { rules: rules } = useAutomationContext();
@@ -80,6 +81,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const [ruleEnabled, setRuleEnabled] = useState<boolean>(root.isEnabled);
 
   const { addRule, updateRule, deleteRule, deleteAction } = useAutomationContext();
+  const [opened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
 
   useEffect(() => {
     setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
@@ -98,11 +100,6 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
       addRule(ruleName ?? "", editCopy, ruleEnabled);
     }
   };
-
-  const verifyDeleteRule = () => {
-    // TODO: Add modal to verify delete
-    deleteRule(root);
-  }
 
   return (
     <>
@@ -168,13 +165,29 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
 
 
       <div className="mt-10 flex flex-row justify-end gap-2">
-        <Button variant="filled" color="red" onClick={verifyDeleteRule}>
+        <Button variant="filled" color="red" onClick={openDeleteModal}>
           Delete Rule
         </Button>
         <Button variant="filled" onClick={saveRule}>
           Save Rule
         </Button>
       </div>
+
+
+      <Modal opened={opened} onClose={closeDeleteModal} title="Delete Rule?" centered>
+        <p>Are you sure you want to delete <strong>{ruleName || "this rule"}</strong>?</p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="default" onClick={closeDeleteModal}>Cancel</Button>
+          <Button variant="filled" color="red"
+            onClick={() => {
+              deleteRule(root);
+              closeDeleteModal();
+            }}
+          >
+            Confirm Delete
+          </Button>
+        </div>
+      </Modal>
     </>
   );
 }

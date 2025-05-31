@@ -100,4 +100,26 @@ public partial class Mutation
 
         return AutomationRuleActionDto.FromEntity.Compile().Invoke(action);
     }
+    
+    public async Task<bool> RemoveAutomationRule(Guid automationRuleId,
+        [Service] ApplicationDbContext db)
+    {
+        var rule = await db.Get<AutomationRule>().FirstOrDefaultAsync(b => b.Id == automationRuleId);
+        if (rule == null)  throw new GraphQLException($"AutomationRule with id {automationRuleId} not found");
+        
+        db.Remove(rule);
+        await db.SaveChangesAsync();
+        return true;
+    }
+    
+    public async Task<bool> RemoveAutomationRuleAction(Guid actionId,
+        [Service] ApplicationDbContext db)
+    {
+        var action = await db.Get<AutomationRuleAction>().FirstOrDefaultAsync(a => a.Id == actionId);
+        if (action == null)  throw new GraphQLException($"AutomationRuleAction with id {actionId} not found");
+
+        db.Remove(action);
+        await db.SaveChangesAsync();
+        return true;
+    }
 }

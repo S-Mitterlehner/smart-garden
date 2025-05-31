@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useMemo } from "react";
-import { AutomationConfigDto, AutomationRuleDto, BedDto, ParameterFieldDto, useAddAutomationRuleToBedMutation, useGetAutomationConfigQuery, useUpdateAutomationRuleFromBedMutation } from "../__generated__/graphql";
+import { AutomationConfigDto, AutomationRuleActionDto, AutomationRuleDto, BedDto, ParameterFieldDto, useAddAutomationRuleToBedMutation, useGetAutomationConfigQuery, useRemoveAutomationRuleActionMutation, useRemoveAutomationRuleMutation, useUpdateAutomationRuleFromBedMutation } from "../__generated__/graphql";
 import { useBedContext } from "./useCurrentBed";
 import { notifications } from "@mantine/notifications";
 
@@ -18,7 +18,8 @@ export type AutomationValue = {
 
   addRule: (name: string, expression: any, enabled: boolean) => void;
   updateRule: (id: string, name: string, expression: any, enabled: boolean) => void;
-  deleteRule: (id: string) => void;
+  deleteRule: (rule: AutomationRuleDto) => void;
+  deleteAction: (action: AutomationRuleActionDto) => void;
 };
 
 const AutomationContext = createContext<AutomationValue | null>(null);
@@ -42,6 +43,8 @@ export function useAutomation(): AutomationValue {
   
   const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
   const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
+  const [removeAutomationRuleMutation] = useRemoveAutomationRuleMutation();
+  const [removeAutomationRuleActionMutation] = useRemoveAutomationRuleActionMutation();
 
   const { data: { automationConfig: config } = {} } = useGetAutomationConfigQuery({
     variables: { id: bed.id },
@@ -125,18 +128,60 @@ export function useAutomation(): AutomationValue {
     });
   };
 
-  const deleteRule = (id: string) => {
-    console.error("Currently not implemented - DeleteRule: ", id);
-  }
+  const deleteRule = (rule: AutomationRuleDto) => {
+    removeAutomationRuleMutation({
+      variables: { automationRuleId: rule.id }
+    })
+    .then(() => {
+      refetch();
+      notifications.show({
+        title: `Rule deleted`,
+        message: `Automation rule ${rule.name} deleted`,
+        color: "yellow",
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      notifications.show({
+        title: "Error",
+        message: `Failed to delete automation rule with id ${rule.id}`,
+        color: "red"
+      })
+    });
+  };
+
+  const deleteAction = (action: AutomationRuleActionDto) => {
+    removeAutomationRuleActionMutation({
+      variables: { actionId: action.id }
+    })
+    .then(() => {
+      refetch();
+      notifications.show({
+        title: `Action deleted`,
+        message: `Action ${action.actionKey} deleted`,
+        color: "yellow",
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      notifications.show({
+        title: "Error",
+        message: `Failed to delete action with id ${action.id}`,
+        color: "red"
+      })
+    });
+  };
 
   return {
     bed,
     addRule: addRule,
     updateRule: updateRule,
     deleteRule: deleteRule,
+    deleteAction: deleteAction,
     rules: automationRules,
     config: config ?? ({} as AutomationConfigDto),
     fieldSelection: fieldSelection,
     parameterFields: parameterFields,
   };
 }
+

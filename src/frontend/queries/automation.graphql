@@ -114,6 +114,7 @@ mutation addAutomationRuleToBed($bedId: UUID!, $expressionJson: String!, $name: 
   }
 }
 
+
 mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!, $isEnabled: Boolean!) {
   updateAutomationRuleFromBed(
     input: {
@@ -133,5 +134,19 @@ mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $i
       name
       isEnabled
     }
+  }
+}
+
+
+mutation removeAutomationRule($automationRuleId: UUID!) {
+  removeAutomationRule(input: { automationRuleId: $automationRuleId }) {
+    boolean
+  }
+}
+
+
+mutation removeAutomationRuleAction($actionId: UUID!) {
+  removeAutomationRuleAction(input: { actionId: $actionId }) {
+    boolean
   }
 }

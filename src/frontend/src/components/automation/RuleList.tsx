@@ -25,8 +25,20 @@ export default function RuleList() {
     setLocalRules([...localRules, newRule]);
   };
 
-  if (!localRules || localRules!.length <= 0) {
-    return <div>Loading...</div>;
+  if (!localRules) {
+    return <p className="text-gray-500 italic">Loading ...</p>
+  } else if (localRules!.length <= 0) {
+    return (
+      <>
+        <div className="mb-4 flex flex-row items-center justify-end">
+          <Button variant="subtle" onClick={() => addRule()}>
+            <IconPlus />
+            Add Rule
+          </Button>
+        </div>
+        <p className="text-gray-500 italic">No automation rules configured.</p>
+      </>
+    );
   }
 
   return (
@@ -67,7 +79,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
   const [ruleName, setRuleName] = useState<string | null>(root.name);
   const [ruleEnabled, setRuleEnabled] = useState<boolean>(root.isEnabled);
 
-  const { addRule, updateRule, deleteRule } = useAutomationContext();
+  const { addRule, updateRule, deleteRule, deleteAction } = useAutomationContext();
 
   useEffect(() => {
     setEditCopy(JSON.parse(JSON.stringify(root.expressionJson)));
@@ -89,11 +101,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
 
   const verifyDeleteRule = () => {
     // TODO: Add modal to verify delete
-    deleteRule(root.id);
-  }
-
-  const deleteAction = (id: string) => {
-    throw new Error("Function not implemented.");
+    deleteRule(root);
   }
 
   return (
@@ -146,7 +154,7 @@ export function RuleListPane({ root }: { root: AutomationRuleDto }) {
                   variant="subtle"
                   color="red"
                   size="s"
-                  onClick={() => deleteAction(action.id)}
+                  onClick={() => deleteAction(action)}
                 >
                   Delete
                 </Button>

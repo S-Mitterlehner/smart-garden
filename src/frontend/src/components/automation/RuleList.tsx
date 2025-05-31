@@ -1,4 +1,4 @@
-import { Accordion, Button, Switch, TextInput } from "@mantine/core";
+import { Accordion, Button, Switch, TextInput, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -58,9 +58,13 @@ export default function RuleList() {
             <Accordion.Control>
               <div className="flex flex-row items-center justify-start gap-2 pr-4">
                 {rule.isEnabled ? (
-                  <IconSquareCheck className="text-green-500" />
+                  <Tooltip label="Enabled" withArrow position="top">
+                    <IconSquareCheck className="text-green-500" />
+                  </Tooltip>
                 ) : (
-                  <IconSquareX className="text-red-500" />
+                  <Tooltip label="Disabled" withArrow position="top">
+                    <IconSquareX className="text-red-500" />
+                  </Tooltip>
                 )}
                 <p>{rule.name}</p>
               </div>

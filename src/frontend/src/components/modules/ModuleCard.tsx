@@ -1,5 +1,5 @@
 import { Button, Drawer, Menu, Modal, Slider, Tooltip } from "@mantine/core";
-import { IconListDetails, IconPlayerPlay, IconPlayerStop, IconStopwatch, IconTrash } from "@tabler/icons-react";
+import { IconListDetails, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 import {
   ActionIcons,
@@ -12,7 +12,7 @@ import {
 import { useModuleContext } from "../../hooks/useModule";
 import { getTimeString } from "../../utils";
 import Card from "../Card";
-import { getTypeIconCircle } from "../sensors/utils";
+import { getActionIcon, getTypeIconCircle } from "../sensors/utils";
 import ModuleProperties from "./ModuleProperties";
 import ModuleStateIndicator from "./ModuleStateIndicator";
 
@@ -30,18 +30,6 @@ export default function ModuleCard({
   const [sliderValue, setSliderValue] = useState<number | undefined>(undefined);
   const [currentAction, setCurrentAction] = useState<ModuleActionDto | null>(null);
 
-  const getIcon = (icon: ActionIcons) => {
-    switch (icon) {
-      case ActionIcons.Play:
-        return <IconPlayerPlay className="h-4 w-4 text-emerald-600" />;
-      case ActionIcons.Stop:
-        return <IconPlayerStop className="h-4 w-4 text-red-700" />;
-      case ActionIcons.Timer:
-        return <IconStopwatch className="h-4 w-4 text-yellow-500" />;
-      default:
-        return <IconPlayerPlay className="h-4 w-4" />;
-    }
-  };
 
   const executeAction = (action: ModuleActionDto, value: number | undefined) => {
     if (!action.isAllowed) return;
@@ -87,7 +75,7 @@ export default function ModuleCard({
               key={action.key}
               onClick={() => executeAction(action, undefined)}
               disabled={!canDoAction || !action.isAllowed}
-              leftSection={getIcon(action.icon)}
+              leftSection={getActionIcon(action.icon)}
             >
               {action.name}
             </Menu.Item>

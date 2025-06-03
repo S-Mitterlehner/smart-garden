@@ -3,11 +3,14 @@ import {
   IconDropletsFilled,
   IconEngine,
   IconInfoCircle,
+  IconPlayerPlay,
+  IconPlayerStop,
+  IconStopwatch,
   IconTemperature,
   IconWind,
 } from "@tabler/icons-react";
 import { cva, VariantProps } from "class-variance-authority";
-import { ModuleType } from "../../__generated__/graphql";
+import { ActionIcons, ModuleType } from "../../__generated__/graphql";
 
 const iconVariants = cva("", {
   variants: {
@@ -66,4 +69,17 @@ export const getTypeIcon = (moduleType: ModuleType, variants?: VariantProps<type
 export const getTypeIconCircle = (moduleType: ModuleType, variants?: VariantProps<typeof circleVariants>) => {
   const mergedCircleClass = circleVariants(variants);
   return <div className={mergedCircleClass}>{getTypeIcon(moduleType, variants)}</div>;
+};
+
+export const getActionIcon = (icon: ActionIcons) => {
+  switch (icon) {
+    case ActionIcons.Play:
+      return <IconPlayerPlay className="h-4 w-4 text-emerald-600" />;
+    case ActionIcons.Stop:
+      return <IconPlayerStop className="h-4 w-4 text-red-700" />;
+    case ActionIcons.Timer:
+      return <IconStopwatch className="h-4 w-4 text-yellow-500" />;
+    default:
+      return <IconPlayerPlay className="h-4 w-4" />;
+  }
 };

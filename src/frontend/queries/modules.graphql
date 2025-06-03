@@ -49,6 +49,34 @@ query getModuleById($id: UUID!) {
   }
 }
 
+
+query getModulesInformation {
+  modulesInformation(where: { isActuator: { eq: true } }) {
+    description
+    group
+    id
+    isActuator
+    key
+    name
+    type
+    state {
+      actions {
+        description
+        icon
+        increment
+        isAllowed
+        key
+        max
+        min
+        name
+        type
+        unit
+      }
+    }
+    isSensor
+  }
+}
+
 mutation updateModule($id: ID!, $name: String, $description: String) {
   updateModuleRef(input: { id: $id, name: $name, description: $description }) {
     moduleRefDto {

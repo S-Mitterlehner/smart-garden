@@ -6,7 +6,7 @@ import { AutomationRuleDto } from "../../__generated__/graphql";
 import { useAutomationContext } from "../../hooks/useAutomation";
 import { Rule } from "../../models/automation";
 import ConfirmModal from "../ConfirmModal";
-import { ActionList } from "./ActionList";
+import { RuleActionList } from "./RuleActionList";
 import RuleEditor from "./RuleEditor";
 
 export default function RuleList() {
@@ -140,7 +140,7 @@ export function RuleListPane({ root: rule }: { root: AutomationRuleDto }) {
       </div>
 
       <div className="border-t border-t-gray-200 pt-4">
-        <ActionList rule={rule} />
+        <RuleActionList rule={rule} />
       </div>
 
       <div className="flex flex-row justify-between gap-2">

@@ -766,6 +766,7 @@ export type Query = {
   beds: Array<BedDto>;
   module?: Maybe<ModuleDto>;
   modules: Array<ModuleRefDto>;
+  modulesInformation: Array<Maybe<ModuleDto>>;
   plant?: Maybe<PlantDto>;
   plants: Array<PlantDto>;
   rule?: Maybe<AutomationRuleDto>;
@@ -813,6 +814,11 @@ export type QueryModuleArgs = {
 export type QueryModulesArgs = {
   group: ModuleGroup;
   where?: InputMaybe<ModuleRefDtoFilterInput>;
+};
+
+
+export type QueryModulesInformationArgs = {
+  where?: InputMaybe<ModuleDtoFilterInput>;
 };
 
 
@@ -1242,6 +1248,11 @@ export type GetModuleByIdQueryVariables = Exact<{
 
 
 export type GetModuleByIdQuery = { __typename?: 'Query', module?: { __typename?: 'ModuleDto', id: any, key: string, name: string, description: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean, state: { __typename?: 'ModuleStateDto', moduleKey: string, moduleType: ModuleType, connectionState: ConnectionState, stateType: StateType, state?: string | null, value?: number | null, min?: number | null, max?: number | null, unit?: string | null, lastUpdate: any, actions: Array<{ __typename?: 'ModuleActionDto', key: string, name: string, description: string, type: ActionType, isAllowed: boolean, icon: ActionIcons, currentValue?: number | null, min?: number | null, max?: number | null, increment?: number | null, unit?: string | null }> } } | null };
+
+export type GetModulesInformationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetModulesInformationQuery = { __typename?: 'Query', modulesInformation: Array<{ __typename?: 'ModuleDto', description: string, group: ModuleGroup, id: any, isActuator: boolean, key: string, name: string, type: ModuleType, isSensor: boolean, state: { __typename?: 'ModuleStateDto', actions: Array<{ __typename?: 'ModuleActionDto', description: string, icon: ActionIcons, increment?: number | null, isAllowed: boolean, key: string, max?: number | null, min?: number | null, name: string, type: ActionType, unit?: string | null }> } } | null> };
 
 export type UpdateModuleMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2262,6 +2273,66 @@ export type GetModuleByIdQueryHookResult = ReturnType<typeof useGetModuleByIdQue
 export type GetModuleByIdLazyQueryHookResult = ReturnType<typeof useGetModuleByIdLazyQuery>;
 export type GetModuleByIdSuspenseQueryHookResult = ReturnType<typeof useGetModuleByIdSuspenseQuery>;
 export type GetModuleByIdQueryResult = Apollo.QueryResult<GetModuleByIdQuery, GetModuleByIdQueryVariables>;
+export const GetModulesInformationDocument = gql`
+    query getModulesInformation {
+  modulesInformation(where: {isActuator: {eq: true}}) {
+    description
+    group
+    id
+    isActuator
+    key
+    name
+    type
+    state {
+      actions {
+        description
+        icon
+        increment
+        isAllowed
+        key
+        max
+        min
+        name
+        type
+        unit
+      }
+    }
+    isSensor
+  }
+}
+    `;
+
+/**
+ * __useGetModulesInformationQuery__
+ *
+ * To run a query within a React component, call `useGetModulesInformationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetModulesInformationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetModulesInformationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetModulesInformationQuery(baseOptions?: Apollo.QueryHookOptions<GetModulesInformationQuery, GetModulesInformationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetModulesInformationQuery, GetModulesInformationQueryVariables>(GetModulesInformationDocument, options);
+      }
+export function useGetModulesInformationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetModulesInformationQuery, GetModulesInformationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetModulesInformationQuery, GetModulesInformationQueryVariables>(GetModulesInformationDocument, options);
+        }
+export function useGetModulesInformationSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetModulesInformationQuery, GetModulesInformationQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetModulesInformationQuery, GetModulesInformationQueryVariables>(GetModulesInformationDocument, options);
+        }
+export type GetModulesInformationQueryHookResult = ReturnType<typeof useGetModulesInformationQuery>;
+export type GetModulesInformationLazyQueryHookResult = ReturnType<typeof useGetModulesInformationLazyQuery>;
+export type GetModulesInformationSuspenseQueryHookResult = ReturnType<typeof useGetModulesInformationSuspenseQuery>;
+export type GetModulesInformationQueryResult = Apollo.QueryResult<GetModulesInformationQuery, GetModulesInformationQueryVariables>;
 export const UpdateModuleDocument = gql`
     mutation updateModule($id: ID!, $name: String, $description: String) {
   updateModuleRef(input: {id: $id, name: $name, description: $description}) {

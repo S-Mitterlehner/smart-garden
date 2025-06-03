@@ -5,6 +5,7 @@ using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Api;
 using SmartGarden.Modules.Enums;
+using SmartGarden.Modules.Models;
 
 namespace SmartGarden.API.GraphQL;
 
@@ -33,5 +34,34 @@ public partial class Query
             , Description = connector.Description
             , State = ModuleStateDto.FromState(state, await connector.GetActionsAsync())
         };
+    }
+    
+    [UseFiltering]
+    public async Task<IEnumerable<ModuleDto?>> GetModulesInformation(
+        [Service] ApplicationDbContext db,
+        [Service] IApiModuleManager moduleManager)
+    {
+        var references = await db.Get<ModuleRef>().ToListAsync();
+
+        var moduleDtos = await Task.WhenAll(references.Select(async r =>
+        {
+            if (r == null) return null;
+
+            var connector = await moduleManager.GetConnectorAsync(r);
+            var state = await connector.GetStateAsync();
+            var actions = await connector.GetActionsAsync();
+
+            return new ModuleDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Key = r.ModuleKey,
+                Type = r.Type,
+                Description = connector.Description,
+                State = ModuleStateDto.FromState(state, actions)
+            };
+        }));
+
+        return moduleDtos;
     }
 }

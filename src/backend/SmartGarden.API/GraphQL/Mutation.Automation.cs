@@ -93,7 +93,7 @@ public partial class Mutation
         }
         if (automationRuleActionDto.ActionKey is not null)
         {
-            action.ActionKey = automationRuleActionDto.ActionKey;    
+            action.ActionKey = automationRuleActionDto.ActionKey;
         }
         action.Value = automationRuleActionDto.Value;
         await db.SaveChangesAsync();

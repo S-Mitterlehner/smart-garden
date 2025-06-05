@@ -8,11 +8,7 @@ public class Bed : BaseEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }
-
-
-    [ForeignKey(nameof(Plant))]
-    public Guid PlantId { get; set; }
-    public virtual Plant Plant { get; set; }
+    public Guid? PlantId { get; set; }
 
     public virtual List<ModuleRef> Modules { get; set; } = new();
     public virtual List<AutomationRule> Rules { get; set; } = new();

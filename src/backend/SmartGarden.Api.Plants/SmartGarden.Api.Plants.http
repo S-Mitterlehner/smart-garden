@@ -1,0 +1,6 @@
+@SmartGarden.Api.Plants_HostAddress = http://localhost:5117
+
+GET {{SmartGarden.Api.Plants_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

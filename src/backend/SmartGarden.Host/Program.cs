@@ -7,16 +7,15 @@ var dbUsername = builder.AddParameter("username", secret: true, value: "postgres
 var dbPassword = builder.AddParameter("password", secret: true, value: "postgres");
 
 var postgres = builder.AddPostgres("db", dbUsername, dbPassword);
-var dbApi = postgres.AddDatabase("smartgarden-api");
-var dbConnectionService = postgres.AddDatabase("smartgarden-connection-service");
-var dbAutomationService = postgres.AddDatabase("smartgarden-automation-service");
+var dbBedApi = postgres.AddDatabase("bed-db");
+var dbPlantApi = postgres.AddDatabase("plant-db");
+var dbConnectionService = postgres.AddDatabase("connection-service-db");
+var dbAutomationService = postgres.AddDatabase("automation-service-db");
 
 // redis
-
 var redis = builder.AddRedis("redis-api");
 
 // rabbitmq
-
 var rabbitMqUsername = builder.AddParameter("username-rabbit", secret: true, value: "rabbitmq");
 var rabbitMqPassword = builder.AddParameter("password-rabbit", secret: true, value: "rabbitmq");
 
@@ -25,8 +24,7 @@ var rabbitmq = builder
     .WithManagementPlugin(port: 15672)
     .WithExternalHttpEndpoints();
 
-// applications
-
+// Applications
 var frontend = builder.AddNpmApp(
         "frontend",
         "../../frontend",
@@ -35,12 +33,12 @@ var frontend = builder.AddNpmApp(
     .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
     .WithExternalHttpEndpoints();
 
-builder.AddProject<SmartGarden_Api_Beds>("api-beds")
-    .WithReference(dbApi)
+// apis
+var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
+    .WithReference(dbBedApi)
     .WithReference(rabbitmq)
-    .WithReference(frontend)
     .WithReference(redis)
-    .WaitFor(dbApi)
+    .WaitFor(dbBedApi)
     .WaitFor(rabbitmq)
     .WaitFor(redis)
     //.WithHttpEndpoint(5001, 8080, name: "httpapi")
@@ -48,6 +46,14 @@ builder.AddProject<SmartGarden_Api_Beds>("api-beds")
     .WithExternalHttpEndpoints()
     .WithReplicas(2);
 
+builder.AddProject<SmartGarden_Api_Plants>("plant-api")
+    .WithReference(dbPlantApi)
+    .WaitFor(dbPlantApi)
+    //.WithHttpEndpoint(5001, 8080, name: "httpapi")
+    //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
+    .WithExternalHttpEndpoints();
+
+// services
 builder.AddProject<SmartGarden_ConnectorService>("connector-service")
     .WithReference(rabbitmq)
     .WithReference(dbConnectionService)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SmartGarden.Api.Core.Controller;
 using SmartGarden.EntityFramework.Beds;
 using SmartGarden.EntityFramework.Beds.Models;
 

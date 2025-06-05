@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace SmartGarden.Api.Beds.Controllers.Base;
+namespace SmartGarden.Api.Core.Controller;
 
 [ApiController]
 [Route("[controller]")]

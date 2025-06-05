@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.Api.Beds.Controllers.Base;
 using SmartGarden.Api.Beds.Dtos.Actuator;
+using SmartGarden.Api.Core.Controller;
 using SmartGarden.EntityFramework.Beds;
 using SmartGarden.EntityFramework.Beds.Models;
 using SmartGarden.Messaging;
@@ -11,7 +12,10 @@ using SmartGarden.Modules.Api;
 
 namespace SmartGarden.Api.Beds.Controllers;
 
-public class ActuatorsController(ApplicationDbContext db, IApiModuleManager actuatorManager, IMessagingProducer messaging) : BaseController
+public class ActuatorsController(
+    ApplicationDbContext db,
+    IApiModuleManager actuatorManager,
+    IMessagingProducer messaging) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() =>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGarden.Api.Beds.Controllers.Base;
 using SmartGarden.Api.Beds.Dtos;
+using SmartGarden.Api.Core.Controller;
 using SmartGarden.EntityFramework.Beds;
 using SmartGarden.EntityFramework.Beds.Models;
 

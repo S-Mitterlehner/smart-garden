@@ -25,7 +25,7 @@ builder.Configuration.AddJsonFile("./appsettings.json");
 builder.Logging.AddSerilog();
 
 // DB
-builder.AddNpgsqlDbContext<AutomationServiceDbContext>("smartgarden-automation-service"
+builder.AddNpgsqlDbContext<AutomationServiceDbContext>("automation-service-db"
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );

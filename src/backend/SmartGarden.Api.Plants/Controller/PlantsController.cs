@@ -1,14 +1,14 @@
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SmartGarden.Api.Beds.Controllers.Base;
-using SmartGarden.Api.Beds.Dtos;
-using SmartGarden.EntityFramework.Beds;
-using SmartGarden.EntityFramework.Beds.Models;
+using SmartGarden.Api.Core.Controller;
+using SmartGarden.Api.Plants.Dtos;
+using SmartGarden.EntityFramework.Plants;
+using SmartGarden.EntityFramework.Plants.Models;
 
-namespace SmartGarden.Api.Beds.Controllers;
+namespace SmartGarden.Api.Plants.Controller;
 
-public class PlantsController(ApplicationDbContext db) : BaseController
+public class PlantsController(PlantsDbContext db) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetPlants() =>

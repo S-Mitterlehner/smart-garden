@@ -7,10 +7,8 @@ using SmartGarden.Api.Beds.Hubs;
 using SmartGarden.Api.Beds.Jobs;
 using SmartGarden.Api.Beds.Listener;
 using SmartGarden.Api.Beds.Listener.Legacy;
-using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Beds;
 using SmartGarden.EntityFramework.Beds.Seeding;
-using SmartGarden.EntityFramework.Core;
 using SmartGarden.Modules.Actuators;
 using SmartGarden.Modules.Sensors;
 using SmartGarden.Messaging;
@@ -35,11 +33,11 @@ builder.Host.UseSerilog();
 
 // DB
 // builder.Services.RegisterDbContext(builder.Configuration);
-builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden-api"
+builder.AddNpgsqlDbContext<ApplicationDbContext>("bed-db"
     , s => {}
     , b => b.UseLazyLoadingProxies()
     );
-builder.Services.AddDistributedDbInitializerWithJsonSeeder<ApiSeedModel, ApplicationDbContext>("../Seeds/dev.seed.json");
+builder.Services.AddDistributedDbInitializerWithJsonSeeder<BedsSeedModel, ApplicationDbContext>("../Seeds/dev.seed.json");
 
 builder.AddRedisClient(connectionName: "redis-api");
 builder.Services.AddSingleton<IDistributedLockProvider>(sp =>
@@ -54,14 +52,14 @@ builder.Services.AddSingleton<IApiModuleManager, ApiModuleManager>();
 
 builder.Services.AddSingleton<GraphQlModuleListener>();
 builder.Services.AddSingleton<SignalRModuleListener>();
-builder.Services.AddSingleton<LegacyModuleListenerProxy>();
 builder.Services.AddSingleton<IModuleListener>(sp => new ModuleListenerComposite(
                                                    sp.GetRequiredService<ILogger<ModuleListenerComposite>>()
                                                    , sp.GetRequiredService<GraphQlModuleListener>()
                                                    , sp.GetRequiredService<SignalRModuleListener>()
                                                    , sp.GetRequiredService<LegacyModuleListenerProxy>()));
 
-// Legacy
+#region Legacy
+builder.Services.AddSingleton<LegacyModuleListenerProxy>();
 builder.Services.AddSingleton<SignalRActuatorListener>();
 builder.Services.AddSingleton<GraphQlActuatorListener>();
 builder.Services.AddSingleton<IActuatorListener, ActuatorListenerComposite>(s => 
@@ -76,6 +74,7 @@ builder.Services.AddSingleton<ISensorListener, SensorListenerComposite>(s =>
         s.GetRequiredService<SignalRSensorListener>(),
         s.GetRequiredService<GraphQlSensorListener>()));
 
+#endregion Legacy
 
 // SignalR
 builder.Services.AddSignalR()

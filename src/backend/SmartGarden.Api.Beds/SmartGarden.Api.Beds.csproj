@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SmartGarden.Api.Core\SmartGarden.Api.Core.csproj" />
     <ProjectReference Include="..\SmartGarden.EntityFramework.Beds\SmartGarden.EntityFramework.Beds.csproj" />
     <ProjectReference Include="..\SmartGarden.EntityFramework.Distributed\SmartGarden.EntityFramework.Distributed.csproj" />
     <ProjectReference Include="..\SmartGarden.Legacy\SmartGarden.Legacy.csproj" />

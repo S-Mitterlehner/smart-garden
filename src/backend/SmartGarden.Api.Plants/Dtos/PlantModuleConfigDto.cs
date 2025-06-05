@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
-using SmartGarden.EntityFramework.Beds.Models;
+using SmartGarden.EntityFramework.Plants.Models;
 using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.Api.Beds.Dtos;
+namespace SmartGarden.Api.Plants.Dtos;
 
 public class PlantModuleConfigDto
 {

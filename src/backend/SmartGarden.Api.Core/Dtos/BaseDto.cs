@@ -1,4 +1,4 @@
-﻿namespace SmartGarden.Api.Beds.Dtos;
+﻿namespace SmartGarden.Api.Core.Dtos;
 
 public abstract class BaseDto
 {

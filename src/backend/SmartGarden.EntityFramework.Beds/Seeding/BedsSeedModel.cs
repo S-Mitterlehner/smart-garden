@@ -3,20 +3,14 @@ using SmartGarden.EntityFramework.Core.Seeding;
 
 namespace SmartGarden.EntityFramework.Beds.Seeding;
 
-public class ApiSeedModel
+public class BedsSeedModel
 {
     [SeedOrder(1)]
-    public List<PlantModuleConfig> PlantModuleConfigs { get; set; } = [];
-
-    [SeedOrder(2)]
-    public List<Plant> Plants { get; set; } = [];
-
-    [SeedOrder(3)]
     public List<ModuleRef> Modules { get; set; } = [];
 
-    [SeedOrder(4)]
+    [SeedOrder(2)]
     public List<Bed> Beds { get; set; } = [];
     
-    [SeedOrder(5)]
+    [SeedOrder(3)]
     public List<AutomationRule> AutomationRules { get; set; } = [];
 }

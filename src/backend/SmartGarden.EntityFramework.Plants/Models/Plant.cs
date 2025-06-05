@@ -1,6 +1,6 @@
 ﻿using SmartGarden.EntityFramework.Core.Models;
 
-namespace SmartGarden.EntityFramework.Beds.Models;
+namespace SmartGarden.EntityFramework.Plants.Models;
 
 public class Plant : BaseEntityWithOrder
 {

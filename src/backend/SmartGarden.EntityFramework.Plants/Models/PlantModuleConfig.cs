@@ -1,7 +1,7 @@
 ﻿using SmartGarden.EntityFramework.Core.Models;
 using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.EntityFramework.Beds.Models;
+namespace SmartGarden.EntityFramework.Plants.Models;
 
 public class PlantModuleConfig : BaseEntity
 {

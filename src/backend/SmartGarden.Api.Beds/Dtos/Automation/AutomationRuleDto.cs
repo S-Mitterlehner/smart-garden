@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using SmartGarden.Api.Core.Dtos;
 using SmartGarden.EntityFramework.Beds.Models;
 
 namespace SmartGarden.Api.Beds.Dtos.Automation;

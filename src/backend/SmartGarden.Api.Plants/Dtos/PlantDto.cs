@@ -1,7 +1,8 @@
 ﻿using System.Linq.Expressions;
-using SmartGarden.EntityFramework.Beds.Models;
+using SmartGarden.Api.Core.Dtos;
+using SmartGarden.EntityFramework.Plants.Models;
 
-namespace SmartGarden.Api.Beds.Dtos;
+namespace SmartGarden.Api.Plants.Dtos;
 
 public class PlantRefDto : BaseDto
 {

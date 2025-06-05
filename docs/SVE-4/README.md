@@ -3,10 +3,9 @@
 ## Betätigungsfelder
 
 - Service Discovery: -
-- API-Gateway: Reverse-Proxy ?
+- API-Gateway: YARP
 - Security: -
 - Microservice-Anwendungen:
-  - Automatische Erstellung von Sub-Container für ConnectionService
   - Replicas of API
 - Ausfallssicherheit:
   - Replicas of API
@@ -17,6 +16,5 @@
   - Github Actions
 - Betrieb einer Microservice-Anwendung:
   - Deployment to Azure Container Services
-  - Deployment to Docker-Compose
 - Microservice-Architekturen: -
 - Polyglott Persistence: Verteilte Datenbanken + Datenbankentechnologien (Redis, Postgres)

@@ -35,7 +35,7 @@ var frontend = builder.AddNpmApp(
     .WithHttpEndpoint(5173, 5173, name: "httpfrontend", isProxied: false)
     .WithExternalHttpEndpoints();
 
-builder.AddProject<SmartGarden_API>("api")
+builder.AddProject<SmartGarden_Api_Beds>("api-beds")
     .WithReference(dbApi)
     .WithReference(rabbitmq)
     .WithReference(frontend)

@@ -3,7 +3,6 @@ using SmartGarden.Modules.Enums;
 using System.Collections.Concurrent;
 using SmartGarden.Modules.Api.Connectors;
 using SmartGarden.Modules.Models;
-using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.Modules.Api;
 

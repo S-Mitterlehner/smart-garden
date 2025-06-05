@@ -43,9 +43,10 @@ builder.AddProject<SmartGarden_Api_Beds>("api-beds")
     .WaitFor(dbApi)
     .WaitFor(rabbitmq)
     .WaitFor(redis)
-    .WithHttpEndpoint(5001, 8080, name: "httpapi")
-    .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
-    .WithExternalHttpEndpoints();
+    //.WithHttpEndpoint(5001, 8080, name: "httpapi")
+    //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
+    .WithExternalHttpEndpoints()
+    .WithReplicas(2);
 
 builder.AddProject<SmartGarden_ConnectorService>("connector-service")
     .WithReference(rabbitmq)

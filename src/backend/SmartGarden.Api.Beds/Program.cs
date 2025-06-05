@@ -18,6 +18,10 @@ using SmartGarden.Messaging.Messages;
 using SmartGarden.Modules;
 using SmartGarden.Modules.Api;
 using SmartGarden.Scheduling;
+using Medallion.Threading;
+using Medallion.Threading.Redis;
+using SmartGarden.EntityFramework.Distributed;
+using StackExchange.Redis;
 
 Log.Logger = new LoggerConfiguration()
              .MinimumLevel.Debug()
@@ -35,9 +39,15 @@ builder.AddNpgsqlDbContext<ApplicationDbContext>("smartgarden-api"
     , s => {}
     , b => b.UseLazyLoadingProxies()
     );
-builder.Services.AddDbInitializerWithJsonSeeder<ApiSeedModel, ApplicationDbContext>("../Seeds/dev.seed.json");
+builder.Services.AddDistributedDbInitializerWithJsonSeeder<ApiSeedModel, ApplicationDbContext>("../Seeds/dev.seed.json");
 
 builder.AddRedisClient(connectionName: "redis-api");
+builder.Services.AddSingleton<IDistributedLockProvider>(sp =>
+{
+    var redis = sp.GetRequiredService<IConnectionMultiplexer>();
+    var db = redis.GetDatabase();
+    return new RedisDistributedSynchronizationProvider(db);
+});
 
 // Services
 builder.Services.AddSingleton<IApiModuleManager, ApiModuleManager>();

@@ -5,9 +5,12 @@ namespace SmartGarden.EntityFramework.Core.Seeding;
 
 public abstract class BaseSeeder(BaseDbContext context) : ISeeder
 {
-    public async Task SeedAsync()
+    public virtual async Task SeedAsync()
     {
         await context.Database.EnsureCreatedAsync();
+
+        if(context.Database.HasPendingModelChanges())
+            await context.Database.MigrateAsync();
 
         await Initialize();
 

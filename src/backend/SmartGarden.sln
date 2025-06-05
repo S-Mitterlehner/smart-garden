@@ -43,6 +43,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.AutomationServi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.Scheduling", "SmartGarden.Scheduling\SmartGarden.Scheduling.csproj", "{5D4DBBAE-3639-4EAB-B89C-3AF16E3E875F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGarden.EntityFramework.Distributed", "SmartGarden.EntityFramework.Distributed\SmartGarden.EntityFramework.Distributed.csproj", "{8BAE5F5D-1D59-4EA9-805C-BB033AA3460B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api.Beds", "Api.Beds", "{0B3A2C79-327A-4D3B-B58F-6021FB2F8B05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,11 +121,17 @@ Global
 		{5D4DBBAE-3639-4EAB-B89C-3AF16E3E875F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D4DBBAE-3639-4EAB-B89C-3AF16E3E875F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D4DBBAE-3639-4EAB-B89C-3AF16E3E875F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BAE5F5D-1D59-4EA9-805C-BB033AA3460B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BAE5F5D-1D59-4EA9-805C-BB033AA3460B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BAE5F5D-1D59-4EA9-805C-BB033AA3460B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BAE5F5D-1D59-4EA9-805C-BB033AA3460B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{367A87BF-0E6F-4660-B034-DF8DAF53981F} = {0B3A2C79-327A-4D3B-B58F-6021FB2F8B05}
+		{24CCB730-2ADB-4AD0-A149-82178D5F4843} = {0B3A2C79-327A-4D3B-B58F-6021FB2F8B05}
 		{006FBFEF-BBC1-4A2C-B1DE-FC5CC8405219} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{465E692B-768A-438E-B4AE-497FAC2B5933} = {99207866-0876-4AF9-88CA-2F81CFF81CF4}
 		{6C3CD622-57D1-4B64-8955-95485AF9FB97} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}

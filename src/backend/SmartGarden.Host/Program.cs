@@ -46,7 +46,7 @@ var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
     .WithExternalHttpEndpoints()
     .WithReplicas(2);
 
-builder.AddProject<SmartGarden_Api_Plants>("plant-api")
+var plantApi = builder.AddProject<SmartGarden_Api_Plants>("plant-api")
     .WithReference(dbPlantApi)
     .WaitFor(dbPlantApi)
     //.WithHttpEndpoint(5001, 8080, name: "httpapi")
@@ -65,5 +65,13 @@ builder.AddProject<SmartGarden_AutomationService>("automation-service")
     .WithReference(dbAutomationService)
     .WaitFor(rabbitmq)
     .WaitFor(dbAutomationService);
+
+builder.AddYarp("gateway")
+    .WithConfigFile("yarp.json")
+    .WithReference(bedApi)
+    .WithReference(plantApi)
+    .WithHttpEndpoint(5000, 5000, name: "httpgateway")
+    //.WithHttpsEndpoint(5010, 5000, name: "httpsgateway")
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();

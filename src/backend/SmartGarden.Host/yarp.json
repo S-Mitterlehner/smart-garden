@@ -1,0 +1,46 @@
+{
+  "ReverseProxy": {
+    "Routes": {
+      "beds": {
+        "ClusterId": "bedsApiCluster",
+        "Match": {
+          "Path": "/api/beds/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/beds"
+          }
+        ]
+      },
+      "plants": {
+        "ClusterId": "plantsApiCluster",
+        "Match": {
+          "Path": "/api/plants/{**catch-all}"
+        },
+        "Transforms": [
+          {
+            "PathRemovePrefix": "/api/plants"
+          }
+        ]
+      }
+    },
+    "Clusters": {
+      "bedsApiCluster": {
+        "LoadBalancingPolicy": "RoundRobin",
+        "Destinations": {
+          "beds/d1": {
+            "Address": "http://bed-api/"
+          }
+        }
+      },
+      "plantsApiCluster": {
+        "LoadBalancingPolicy": "RoundRobin",
+        "Destinations": {
+          "plants/d1": {
+            "Address": "http://plant-api/"
+          }
+        }
+      }
+    }
+  }
+}

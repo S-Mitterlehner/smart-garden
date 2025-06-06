@@ -66,12 +66,14 @@ builder.AddProject<SmartGarden_AutomationService>("automation-service")
     .WaitFor(rabbitmq)
     .WaitFor(dbAutomationService);
 
-builder.AddYarp("gateway")
-    .WithConfigFile("yarp.json")
-    .WithReference(bedApi)
+// gateway
+builder.AddProject<SmartGarden_Gateway>("gateway")
     .WithReference(plantApi)
-    .WithHttpEndpoint(5000, 5000, name: "httpgateway")
-    //.WithHttpsEndpoint(5010, 5000, name: "httpsgateway")
+    .WithReference(bedApi)
+    .WithReference(frontend)
+    .WaitFor(bedApi)
+    .WaitFor(plantApi)
+    //.WithHttpEndpoint(5000, 5000, name: "httpgateway")
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();

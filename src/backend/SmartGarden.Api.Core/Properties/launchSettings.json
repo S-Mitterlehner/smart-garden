@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "SmartGarden.Api.Core": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:56484;http://localhost:56485"
+    }
+  }
+}

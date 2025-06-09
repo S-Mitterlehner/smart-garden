@@ -25,10 +25,6 @@ var rabbitmq = builder
     .WithExternalHttpEndpoints();
 
 // GRPC
-var grpcServer = builder.AddProject<SmartGarden_AuthService>("grpcserver");
-    //.WithExternalHttpEndpoints()
-    //.WithHttpsEndpoint(5080, 7006, name: "httpsgrpc")
-    //.WithHttpEndpoint(port: 5036, targetPort: 5081, name: "httpgrpc");
 
 // Applications
 var frontend = builder.AddNpmApp(
@@ -40,23 +36,28 @@ var frontend = builder.AddNpmApp(
     .WithExternalHttpEndpoints();
 
 // apis
+var authApi = builder.AddProject<SmartGarden_AuthService>("auth-api")
+                         .WithHttpEndpoint(port: 5036, targetPort: 5010, name: "httpgrpc")
+                         .WithExternalHttpEndpoints();
+
 var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
     .WithReference(dbBedApi)
     .WithReference(rabbitmq)
     .WithReference(redis)
-    .WithReference(grpcServer)
+    .WithReference(authApi)
     .WaitFor(dbBedApi)
     .WaitFor(rabbitmq)
     .WaitFor(redis)
+    .WithEnvironment("AUTH_URL", () => authApi.GetEndpoint("httpgrpc").Url)
     //.WithHttpEndpoint(5001, 8080, name: "httpapi")
     //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
-    .WithExternalHttpEndpoints()
-    .WithReplicas(2);
+    .WithExternalHttpEndpoints();
+    //.WithReplicas(2);
 
 var plantApi = builder.AddProject<SmartGarden_Api_Plants>("plant-api")
     .WithReference(dbPlantApi)
     .WaitFor(dbPlantApi)
-    .WithReference(grpcServer)
+    .WithReference(authApi)
     //.WithHttpEndpoint(5001, 8080, name: "httpapi")
     //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();

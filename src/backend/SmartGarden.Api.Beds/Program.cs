@@ -115,12 +115,11 @@ builder.Services.AddScheduler(b =>
 // Add GRPC auth client
 builder.Services.AddGrpcClient<Grpc.AuthGrpc.AuthGrpcClient>(options =>
 {
-    options.Address = new Uri("http://localhost:5036");
+    options.Address = new Uri(Environment.GetEnvironmentVariable("AUTH_URL"));
 });
 builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
 
-builder.Services.AddAuthentication("GrpcScheme")
-    .AddScheme<AuthenticationSchemeOptions, GrpcTokenAuthenticationHandler>("GrpcScheme", null);
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
 // -----

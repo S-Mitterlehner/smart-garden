@@ -43,14 +43,14 @@ var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
     .WaitFor(redis)
     //.WithHttpEndpoint(5001, 8080, name: "httpapi")
     //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
-    .WithExternalHttpEndpoints()
-    .WithReplicas(2);
+    .WithExternalHttpEndpoints();
+    //.WithReplicas(2);
 
 var plantApi = builder.AddProject<SmartGarden_Api_Plants>("plant-api")
     .WithReference(dbPlantApi)
     .WaitFor(dbPlantApi)
-    //.WithHttpEndpoint(5001, 8080, name: "httpapi")
-    //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
+    //.WithHttpEndpoint(5003, 8080, name: "httpapi")
+    //.WithHttpsEndpoint(5004, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();
 
 // services

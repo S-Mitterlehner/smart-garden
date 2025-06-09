@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using HotChocolate.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SmartGarden.Api.Beds.GraphQL;

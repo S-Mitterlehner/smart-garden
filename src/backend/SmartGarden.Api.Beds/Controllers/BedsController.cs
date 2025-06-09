@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SmartGarden.Api.Beds.Controllers.Base;
 using SmartGarden.Api.Beds.Dtos;
 using SmartGarden.Api.Core.Controller;
 using SmartGarden.EntityFramework.Beds;
@@ -11,6 +11,7 @@ namespace SmartGarden.Api.Beds.Controllers;
 
 public class BedsController(ApplicationDbContext db) : BaseController
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll() 
         => Ok(db.Get<Bed>().Select(BedDto.FromEntity).ToList());

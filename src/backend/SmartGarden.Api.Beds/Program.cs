@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using HotChocolate.AspNetCore;
+using GrpcServiceClient;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SmartGarden.Api.Beds.GraphQL;
@@ -19,6 +19,7 @@ using SmartGarden.Modules.Api;
 using SmartGarden.Scheduling;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
+using Microsoft.AspNetCore.Authentication;
 using SmartGarden.EntityFramework.Distributed;
 using StackExchange.Redis;
 
@@ -111,11 +112,48 @@ builder.Services.AddScheduler(b =>
     b.AddJobAdvanced<AutomationRuleSyncJob>(TimeSpan.FromMinutes(1));
 });
 
+// Add GRPC auth client
+builder.Services.AddGrpcClient<Grpc.AuthGrpc.AuthGrpcClient>(options =>
+{
+    options.Address = new Uri("http://localhost:5036");
+});
+builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
+
+builder.Services.AddAuthentication("GrpcScheme")
+    .AddScheme<AuthenticationSchemeOptions, GrpcTokenAuthenticationHandler>("GrpcScheme", null);
+builder.Services.AddAuthorization();
+
 // -----
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
 builder.Services.AddCors();
 
 builder.Logging.AddConsole();
@@ -144,6 +182,7 @@ app.MapGraphQL();
 
 // app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -22,6 +22,7 @@
     <PackageReference Include="Aspire.RabbitMQ.Client.v7" Version="9.3.0" />
     <PackageReference Include="Aspire.StackExchange.Redis" Version="9.3.0" />
     <PackageReference Include="DistributedLock.Redis" Version="1.0.3" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.71.0" />
     <PackageReference Include="HotChocolate" Version="15.1.3" />
     <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.3" />
     <PackageReference Include="HotChocolate.Data" Version="15.1.3" />
@@ -49,6 +50,7 @@
     <ProjectReference Include="..\SmartGarden.Api.Core\SmartGarden.Api.Core.csproj" />
     <ProjectReference Include="..\SmartGarden.EntityFramework.Beds\SmartGarden.EntityFramework.Beds.csproj" />
     <ProjectReference Include="..\SmartGarden.EntityFramework.Distributed\SmartGarden.EntityFramework.Distributed.csproj" />
+    <ProjectReference Include="..\SmartGarden.GrpcServiceClient\SmartGarden.GrpcServiceClient.csproj" />
     <ProjectReference Include="..\SmartGarden.Legacy\SmartGarden.Legacy.csproj" />
     <ProjectReference Include="..\SmartGarden.Messaging.Messages\SmartGarden.Messaging.Messages.csproj" />
     <ProjectReference Include="..\SmartGarden.Messaging\SmartGarden.Messaging.csproj" />

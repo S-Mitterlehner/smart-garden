@@ -32,6 +32,7 @@
 	  <ProjectReference Include="..\SmartGarden.Api.Core\SmartGarden.Api.Core.csproj" />
 	  <ProjectReference Include="..\SmartGarden.EntityFramework.Core\SmartGarden.EntityFramework.Core.csproj" />
 	  <ProjectReference Include="..\SmartGarden.EntityFramework.Plants\SmartGarden.EntityFramework.Plants.csproj" />
+	  <ProjectReference Include="..\SmartGarden.GrpcServiceClient\SmartGarden.GrpcServiceClient.csproj" />
 	  <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
 	</ItemGroup>
 

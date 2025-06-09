@@ -74,11 +74,11 @@ builder.AddProject<SmartGarden_AutomationService>("automation-service")
 //     //.WithHttpsEndpoint(5010, 5000, name: "httpsgateway")
 //     .WithExternalHttpEndpoints();
 
-// builder.AddDockerfile("nginx", "./infrastructure/nginx", "Dockerfile.nginx")
-//     .WithReference(bedApi)
-//     .WithReference(plantApi)
-//     .WithExternalHttpEndpoints()
-//     .WithEndpoint(name: "nginx-http", port: 8080, targetPort: 80)
-//     .WithEndpoint(name: "nginx-https", port: 8081, targetPort: 443);
+builder.AddDockerfile("nginx", "./infrastructure/nginx", "Dockerfile.nginx")
+    .WithReference(bedApi)
+    .WithReference(plantApi)
+    .WithExternalHttpEndpoints()
+    .WithHttpEndpoint(name: "nginx-http", port: 8080, targetPort: 8080)
+    .WithHttpsEndpoint(name: "nginx-https", port: 8081, targetPort: 8081);
 
 builder.Build().Run();

@@ -66,12 +66,19 @@ builder.AddProject<SmartGarden_AutomationService>("automation-service")
     .WaitFor(rabbitmq)
     .WaitFor(dbAutomationService);
 
-builder.AddYarp("gateway")
-    .WithConfigFile("yarp.json")
-    .WithReference(bedApi)
-    .WithReference(plantApi)
-    .WithHttpEndpoint(5000, 5000, name: "httpgateway")
-    //.WithHttpsEndpoint(5010, 5000, name: "httpsgateway")
-    .WithExternalHttpEndpoints();
+// builder.AddYarp("gateway")
+//     .WithConfigFile("yarp.json")
+//     .WithReference(bedApi)
+//     .WithReference(plantApi)
+//     .WithHttpEndpoint(5000, 5000, name: "httpgateway")
+//     //.WithHttpsEndpoint(5010, 5000, name: "httpsgateway")
+//     .WithExternalHttpEndpoints();
+
+// builder.AddDockerfile("nginx", "./infrastructure/nginx", "Dockerfile.nginx")
+//     .WithReference(bedApi)
+//     .WithReference(plantApi)
+//     .WithExternalHttpEndpoints()
+//     .WithEndpoint(name: "nginx-http", port: 8080, targetPort: 80)
+//     .WithEndpoint(name: "nginx-https", port: 8081, targetPort: 443);
 
 builder.Build().Run();

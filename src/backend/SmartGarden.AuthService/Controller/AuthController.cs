@@ -11,7 +11,7 @@ using SmartGarden.EntityFramework.Auth.Models;
 
 namespace SmartGarden.AuthService.Controller;
 
-[Route("api/[controller]")]
+[Route("")]
 [ApiController]
 public class AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IOptions<JwtSettings> jwtSettingsOptions) : BaseController
 {

@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace SmartGarden.Api.Core;
 
 public static class AuthExtensions
 {
-    public static IServiceCollection AddAuth(this IServiceCollection sc)
+    public static IServiceCollection AddAuth(this IServiceCollection sc, IConfigurationSection jwtSettings)
     {
         sc.AddAuthentication(o =>
         {
@@ -19,7 +20,8 @@ public static class AuthExtensions
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,
-                ValidateIssuerSigningKey = false
+                ValidateIssuerSigningKey = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]))
             };
         });
 

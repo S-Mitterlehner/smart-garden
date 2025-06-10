@@ -5,5 +5,5 @@ namespace SmartGarden.AuthService.Services;
 public interface IAuthService
 {
     Task<(bool Success, string? Token, string? Error)> RegisterAsync(RegisterRequest request);
-    Task<string?> LoginAsync(LoginRequest request);
+    Task<string?> LoginAsync(LoginModel model);
 }

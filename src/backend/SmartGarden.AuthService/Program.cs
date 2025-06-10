@@ -3,11 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using SmartGarden.AuthService.Services;
 using SmartGarden.EntityFramework.Auth;
 using SmartGarden.EntityFramework.Auth.Models;
+using Serilog;
+using SmartGarden.AuthService.Models;
+
+Log.Logger = new LoggerConfiguration()
+             .MinimumLevel.Debug()
+             .Enrich.FromLogContext()
+             .WriteTo.Console()
+             .WriteTo.OpenTelemetry()
+             .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 // Add services to the container.
-builder.Services.AddGrpc();
+//builder.Services.AddGrpc();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenValidator, TokenValidator>();
@@ -16,8 +28,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<AuthDbContext>(o => o.UseInMemoryDatabase("blablablubb"));
 
-builder.Services.AddIdentityCore<User>();
-builder.Services.AddIdentityApiEndpoints<User>(o =>
+builder.Services.AddIdentity<User, IdentityRole>(o =>
        {
            o.Password.RequireDigit = false;
            o.Password.RequireLowercase = false;
@@ -42,8 +53,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapSwagger();
+app.MapControllers();
+//app.MapIdentityApi<User>();
 
-app.MapGrpcService<AuthGrpcService>();
-app.MapIdentityApi<User>();
+//app.MapGrpcService<AuthGrpcService>();
 
 app.Run();

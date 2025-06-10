@@ -37,7 +37,7 @@ var frontend = builder.AddNpmApp(
 
 // apis
 var authApi = builder.AddProject<SmartGarden_AuthService>("auth-api")
-                         .WithHttpEndpoint(port: 5036, targetPort: 5010, name: "httpgrpc")
+                         //.WithHttpEndpoint(port: 5036, targetPort: 5010, name: "httpgrpc")
                          .WithExternalHttpEndpoints();
 
 var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
@@ -48,7 +48,7 @@ var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
     .WaitFor(dbBedApi)
     .WaitFor(rabbitmq)
     .WaitFor(redis)
-    .WithEnvironment("AUTH_URL", () => authApi.GetEndpoint("httpgrpc").Url)
+    //.WithEnvironment("AUTH_URL", () => authApi.GetEndpoint("httpgrpc").Url)
     //.WithHttpEndpoint(5001, 8080, name: "httpapi")
     //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();

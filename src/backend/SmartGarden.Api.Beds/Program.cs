@@ -19,7 +19,8 @@ using SmartGarden.Modules.Api;
 using SmartGarden.Scheduling;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using SmartGarden.Api.Core;
 using SmartGarden.EntityFramework.Distributed;
 using StackExchange.Redis;
 
@@ -119,8 +120,7 @@ builder.Services.AddGrpcClient<Grpc.AuthGrpc.AuthGrpcClient>(options =>
 });
 builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
 
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+builder.Services.AddAuth();
 
 // -----
 builder.Services.AddControllers();

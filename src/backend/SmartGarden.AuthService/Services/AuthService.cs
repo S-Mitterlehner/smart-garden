@@ -10,7 +10,7 @@ public class AuthService : IAuthService
         return Task.FromResult<(bool, string?, string?)>((true, "TestToken_12345678", null));
     }
 
-    public Task<string?> LoginAsync(LoginRequest request)
+    public Task<string?> LoginAsync(LoginModel model)
     {
         // TODO
         return Task.FromResult<string?>("TestToken_12345678");

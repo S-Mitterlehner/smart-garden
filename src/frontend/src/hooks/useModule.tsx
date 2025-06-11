@@ -91,7 +91,7 @@ export function useModule(moduleId: string): ModuleValue {
     }
 
     connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/sockets/module`)
+      .withUrl(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/beds/sockets/module`)
       .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();

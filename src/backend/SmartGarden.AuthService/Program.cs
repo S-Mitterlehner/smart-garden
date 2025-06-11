@@ -25,6 +25,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenValidator, TokenValidator>();
 
 builder.Services.AddAuthorization();
+builder.Services.AddCors();
 
 builder.Services.AddDbContext<AuthDbContext>(o => o.UseInMemoryDatabase("blablablubb"));
 
@@ -49,6 +50,9 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseCors(o => o.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 app.UseSwagger();
 app.UseSwaggerUI();
 

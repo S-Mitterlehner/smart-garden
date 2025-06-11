@@ -18,12 +18,12 @@ import GardenPage from "./pages/GardenPage.tsx";
 
 const queryClient = new QueryClient();
 
-const httpLink = new HttpLink({
+const httpLink1 = new HttpLink({
   uri: `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/graphql/`,
   credentials: "include",
 });
 
-const wsLink = new GraphQLWsLink(
+const wsLink1 = new GraphQLWsLink(
   createClient({
     url: `ws://${import.meta.env.VITE_API_HOST}/graphql/`,
   }),
@@ -34,8 +34,8 @@ const splitLink = split(
     const definition = getMainDefinition(query);
     return definition.kind === "OperationDefinition" && definition.operation === "subscription";
   },
-  wsLink,
-  httpLink,
+  wsLink1,
+  httpLink1,
 );
 const apolloClient = new ApolloClient({
   link: splitLink,

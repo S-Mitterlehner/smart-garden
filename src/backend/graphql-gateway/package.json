@@ -1,0 +1,17 @@
+{
+  "name": "graphql-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "run": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@apollo/gateway": "^2.11.0",
+    "apollo-server": "^3.13.0"
+  }
+}

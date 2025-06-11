@@ -68,7 +68,7 @@ export function useBed(id: string) {
 
   const currentPlant: PlantDto | null = useMemo(() => {
     if (!bed) return null;
-    return plants.find((p) => p.id === bed.plant.id) ?? null;
+    return plants.find((p) => p.id === bed.plantId) ?? null;
   }, [bed, plants]);
 
   const addModule = (module: ModuleRefDto) => {

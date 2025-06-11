@@ -38,6 +38,7 @@ builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
 builder.Services.AddAuthentication("GrpcScheme")
     .AddScheme<AuthenticationSchemeOptions, GrpcTokenAuthenticationHandler>("GrpcScheme", null);
 builder.Services.AddAuthorization();
+builder.Services.AddCors();
 
 
 // Add services to the container.
@@ -49,7 +50,8 @@ builder.Services.AddGraphQLServer()
     .AddMutationConventions(applyToAllMutations: true)
     .AddFiltering()
     .AddSorting()
-    .AddInMemorySubscriptions();
+    .AddInMemorySubscriptions()
+    .AddApolloFederation();
 
 
 var app = builder.Build();
@@ -58,13 +60,19 @@ var app = builder.Build();
 
 //app.UseHttpsRedirection();
 
+List<string> allowedHosts = ["localhost", "studio.apollographql.com"];
+
 app.UseCors(o =>
 {
-    o.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+    o.SetIsOriginAllowed(origin =>
+    {
+        var host = new Uri(origin).Host;
+        return allowedHosts.Any(x => x == host);
+    });
     
     o.AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
+     .AllowAnyMethod()
+     .AllowCredentials();
 });
 
 app.UseAuthentication();

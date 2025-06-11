@@ -94,7 +94,8 @@ builder.Services.AddGraphQLServer()
     .AddMutationConventions(applyToAllMutations: true)
     .AddFiltering()
     .AddSorting()
-    .AddInMemorySubscriptions();
+    .AddInMemorySubscriptions()
+    .AddApolloFederation();
 
 // RabbitMQ
 builder.AddRabbitMQClient(connectionName: "rabbitmq");
@@ -120,6 +121,7 @@ builder.Services.AddGrpcClient<Grpc.AuthGrpc.AuthGrpcClient>(options =>
 builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
 
 builder.Services.AddAuth(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.AddCors();
 
 // -----
 builder.Services.AddControllers();
@@ -166,9 +168,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+List<string> allowedHosts = ["localhost", "studio.apollographql.com"];
+
 app.UseCors(o =>
 {
-    o.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+    o.SetIsOriginAllowed(origin =>
+    {
+        var host = new Uri(origin).Host;
+        return allowedHosts.Any(x => x == host);
+    });
     
     o.AllowAnyHeader()
      .AllowAnyMethod()

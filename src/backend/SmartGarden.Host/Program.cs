@@ -91,10 +91,22 @@ builder.AddProject<SmartGarden_AutomationService>("automation-service")
 //    .WithHttpEndpoint(name: "nginx-http", port: 8080, targetPort: 8080)
 //    .WithHttpsEndpoint(name: "nginx-https", port: 8081, targetPort: 8081);
 
+var graphQL = builder.AddNodeApp("graphql-gateway", "index.js", "../graphql-gateway")
+       .WithReference(plantApi)
+       .WithReference(bedApi)
+       .WithReference(authApi)
+       .WaitFor(plantApi)
+       .WaitFor(authApi)
+       .WaitFor(bedApi)
+       .WithHttpEndpoint(5100, 5100, "httpgraphqlgateway", isProxied: false)
+       .WithExternalHttpEndpoints();
+
 builder.AddProject<SmartGarden_Gateway>("gateway")
        .WithReference(plantApi)
        .WithReference(bedApi)
+       .WithReference(authApi)
        .WithReference(frontend)
+       .WithReference(graphQL)
        .WaitFor(bedApi)
        .WaitFor(plantApi)
        //.WithHttpEndpoint(5000, 5000, name: "httpgateway")

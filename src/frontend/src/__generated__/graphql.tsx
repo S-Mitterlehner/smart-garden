@@ -283,7 +283,7 @@ export type BedDto = {
   id: Scalars['UUID']['output'];
   modules: Array<ModuleRefDto>;
   name: Scalars['String']['output'];
-  plant: PlantRefDto;
+  plantId?: Maybe<Scalars['UUID']['output']>;
   rules: Array<AutomationRuleDto>;
 };
 
@@ -294,7 +294,7 @@ export type BedDtoFilterInput = {
   modules?: InputMaybe<ListFilterInputTypeOfModuleRefDtoFilterInput>;
   name?: InputMaybe<StringOperationFilterInput>;
   or?: InputMaybe<Array<BedDtoFilterInput>>;
-  plant?: InputMaybe<PlantRefDtoFilterInput>;
+  plantId?: InputMaybe<UuidOperationFilterInput>;
   rules?: InputMaybe<ListFilterInputTypeOfAutomationRuleDtoFilterInput>;
 };
 
@@ -742,17 +742,6 @@ export type PlantModuleConfigDtoFilterInput = {
   or?: InputMaybe<Array<PlantModuleConfigDtoFilterInput>>;
   rangeFrom?: InputMaybe<FloatOperationFilterInput>;
   rangeTo?: InputMaybe<FloatOperationFilterInput>;
-};
-
-export type PlantRefDto = {
-  __typename?: 'PlantRefDto';
-  id: Scalars['UUID']['output'];
-};
-
-export type PlantRefDtoFilterInput = {
-  and?: InputMaybe<Array<PlantRefDtoFilterInput>>;
-  id?: InputMaybe<UuidOperationFilterInput>;
-  or?: InputMaybe<Array<PlantRefDtoFilterInput>>;
 };
 
 export type Query = {
@@ -1209,7 +1198,7 @@ export type GetBedByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plant: { __typename?: 'PlantRefDto', id: any }, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, isEnabled: boolean, actions?: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, actionKey?: string | null, value?: number | null, order?: number | null }> | null }> } | null };
+export type GetBedByIdQuery = { __typename?: 'Query', bed?: { __typename?: 'BedDto', id: any, name: string, description: string, plantId?: any | null, modules: Array<{ __typename?: 'ModuleRefDto', id: any, name: string, description: string, key: string, type: ModuleType, group: ModuleGroup, isActuator: boolean, isSensor: boolean }>, rules: Array<{ __typename?: 'AutomationRuleDto', id: any, name: string, expressionJson: string, isEnabled: boolean, actions?: Array<{ __typename?: 'AutomationRuleActionDto', id: any, ruleId: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, actionKey?: string | null, value?: number | null, order?: number | null }> | null }> } | null };
 
 export type SetCurrentPlantMutationVariables = Exact<{
   bedId: Scalars['ID']['input'];
@@ -1983,9 +1972,7 @@ export const GetBedByIdDocument = gql`
     id
     name
     description
-    plant {
-      id
-    }
+    plantId
     modules {
       id
       name

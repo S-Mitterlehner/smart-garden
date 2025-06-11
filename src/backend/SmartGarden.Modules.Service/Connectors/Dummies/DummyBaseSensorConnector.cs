@@ -25,6 +25,7 @@ public abstract class DummyBaseSensorConnector(string key, string topic, IModule
         {
             _lastData = new ModuleState()
             {
+                StateType = StateType.Continuous,
                 ModuleKey = this.Key,
                 ModuleType = Type,
                 CurrentValue = Math.Round(Random.Shared.NextDouble() * (Max - Min) + Min, 2),

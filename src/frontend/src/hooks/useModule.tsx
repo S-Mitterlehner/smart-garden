@@ -13,6 +13,7 @@ import {
   useListenStateChangeSubscription,
   useUpdateModuleMutation,
 } from "../__generated__/graphql";
+import { createCustomApolloClient } from "../utils";
 import { SocketType, useAppSettingsContext } from "./useAppSettings";
 
 export type ModuleValue = {
@@ -41,6 +42,8 @@ export function useModuleContext(): ModuleValue {
   return context;
 }
 
+const client = createCustomApolloClient("localhost:5206"); //TODO: seek better solution for that
+
 export function useModule(moduleId: string): ModuleValue {
   const { socketType } = useAppSettingsContext();
   const [currentState, setCurrentState] = useState<ModuleStateDto | null>(null);
@@ -59,6 +62,7 @@ export function useModule(moduleId: string): ModuleValue {
   const [update] = useUpdateModuleMutation();
 
   const { data: { onModuleStateChanged: state } = {} } = useListenStateChangeSubscription({
+    client,
     variables: {
       key: module?.key ?? "",
       type: module?.type ?? ModuleType.Temperature,

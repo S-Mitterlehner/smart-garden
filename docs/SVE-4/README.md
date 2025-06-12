@@ -3,6 +3,7 @@
 ## Betätigungsfelder
 
 TODO Remove:
+
 - Service Discovery: -
 - API-Gateway: YARP
 - Security: -
@@ -22,7 +23,7 @@ TODO Remove:
 
 ## Architektur
 
-Die Anwendung ist in zwei neue zentrale Microservices aufgeteilt, die jeweils einen bestimmten Geschäftsbereich abbilden (z. B. Pflanzenverwaltung, Beete). Die Kommunikation erfolgt über ein API-Gateway, wahlweise via YARP oder NGINX. Die Services laufen lokal unter Aspire, können aber auch containerisiert und auf Azure deployed werden. Monitoring und Konfiguration sind vollständig in Aspire integriert.
+Die Anwendung soll in drei Microservices aufgeteilt werden, die jeweils einen bestimmten Geschäftsbereich abbilden (z. B. Pflanzenverwaltung, Beete, Auth). Die Kommunikation erfolgt über ein API-Gateway, welches mittels YARP oder NGINX implementiert werden soll. Die Services laufen lokal unter Aspire, können aber auch containerisiert und auf Azure deployed werden. Monitoring und Konfiguration sind vollständig in Aspire integriert.
 
 ![Architekturübersicht](./img/Architecture.png)
 
@@ -90,7 +91,6 @@ app.MapReverseProxy();
 app.Run();
 ```
 
-
 ### NGINX
 
 #### NGINX lokal unter Linux
@@ -141,7 +141,6 @@ http {
 }
 ```
 
-
 #### NGINX in Docker mit Aspire
 
 Ein Containerbetrieb wurde versucht, jedoch traten bei POST-Requests (z. B. GraphQL) Fehler auf. Grundproblem: Kommunikation vom Container zu lokalen Diensten.
@@ -150,6 +149,12 @@ Grundsätzlich hat das Aufrufen von gehosteten Services funktioniert (Bsp. `loca
 
 **Wichtige Erkenntnisse:** Lokale Dienste müssen aus dem Docker Container über `host.docker.internal:<port>` angesprochen werden.
 
+### GraphQL - Apollo Gateway
+
+Da Aufgrund der Aufteilung der API ebenfalls die GraphQL Zuständigkeiten aufgeteilt wurden, gibt es nun zwei Schemas, die die Anwendung spezifizieren.
+Um dennoch einen eigenen `graphql` Endpunkt zur Verfügung zu stellen, muss dafür ein GraphQL-Gateway implementiert werden, dies soll mit `Apollo`-Gateway realisiert werden.
+
+Diese Bibliothek bündelt in regelmäßigen Abständen die Schemas aus den zuvor konfigurierten Endpunkten der Sub-Apis zu einem einzigen Schema. Ewaige Anfragen, werden dann an den jeweiligen Server weitergeleitet und später bei der Auslieferung zusammengeführt. Dies nennt man **GraphQL Federation**.
 
 ## Monitoring mit .NET Aspire
 
@@ -158,8 +163,6 @@ TODO ???
 Mit `.NET Aspire` steht ein integriertes Dashboard zur Verfügung, das alle gestarteten Dienste überwacht.
 
 TODO Screenshots ...
-
-
 
 ## Fehlertoleranz mit Polly
 
@@ -173,7 +176,7 @@ Für HTTP-Clients wurde **Polly** eingesetzt, um Retry-Strategien bei Fehlern um
 
 TODO ??
 
-* `.NET Aspire` bietet einen starken Entwicklungsstack für Microservices, eignet sich aber aktuell primär für **lokale Entwicklung und Testumgebungen**.
-* **YARP** funktioniert out-of-the-box für einfache Routing-Szenarien, hat aber bei komplexeren Anwendungen (GraphQL, CORS) noch Schwächen.
-* **NGINX** ist flexibel und stabil, wenn detaillierte Kontrolle über HTTP-Verhalten erforderlich ist.
-* **Docker + Netzwerkzugriffe** erfordern besondere Beachtung. Der Zugriff von Containern auf lokale Dienste war nicht trivial und sorgte für Herausforderungen.
+- `.NET Aspire` bietet einen starken Entwicklungsstack für Microservices, eignet sich aber aktuell primär für **lokale Entwicklung und Testumgebungen**.
+- **YARP** funktioniert out-of-the-box für einfache Routing-Szenarien, hat aber bei komplexeren Anwendungen (GraphQL, CORS) noch Schwächen.
+- **NGINX** ist flexibel und stabil, wenn detaillierte Kontrolle über HTTP-Verhalten erforderlich ist.
+- **Docker + Netzwerkzugriffe** erfordern besondere Beachtung. Der Zugriff von Containern auf lokale Dienste war nicht trivial und sorgte für Herausforderungen.

@@ -156,6 +156,13 @@ Um dennoch einen eigenen `graphql` Endpunkt zur Verfügung zu stellen, muss daf�
 
 Diese Bibliothek bündelt in regelmäßigen Abständen die Schemas aus den zuvor konfigurierten Endpunkten der Sub-Apis zu einem einzigen Schema. Ewaige Anfragen, werden dann an den jeweiligen Server weitergeleitet und später bei der Auslieferung zusammengeführt. Dies nennt man **GraphQL Federation**.
 
+## Replizieren von Apis
+
+Um die Performance und Ausfallsicherheit noch weiter zu erhöhen, soll vor allem die neu geschaffene `Beds-API` repliziert werden können.
+In der aktuellen Version sollen diese Apis jedoch auf die gleiche Datenbank-Instanz zugreifen. Daher müssen vor allem für das Seeding der Datenbank eine verteilte Variante implementiert werden, da es ansonsten zu Inkonsistenzen oder fehlerhaftem Verhalten kommen kann.
+
+Dafür wird die Bibliothek `DistributedLock` verwendet. Diese Bibliothek nutzt eine Datenbank, wie zum Beispiel die bereits implementierte Redis-DB um einen Lock zu schreiben.
+
 ## Monitoring mit .NET Aspire
 
 TODO ???

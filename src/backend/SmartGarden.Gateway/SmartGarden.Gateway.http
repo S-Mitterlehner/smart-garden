@@ -1,0 +1,6 @@
+@SmartGarden.Gateway_HostAddress = http://localhost:5263
+
+GET {{SmartGarden.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

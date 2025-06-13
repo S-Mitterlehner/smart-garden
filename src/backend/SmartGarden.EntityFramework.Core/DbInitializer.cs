@@ -11,12 +11,6 @@ public class DbInitializer<TContext>(IServiceProvider serviceProvider) : Backgro
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
-        var db = scope.ServiceProvider.GetRequiredService<TContext>();
-        
-        await db.Database.EnsureCreatedAsync(stoppingToken);
-
-        if(db.Database.HasPendingModelChanges())
-            await db.Database.MigrateAsync(stoppingToken);
 
         await seeder.SeedAsync();
     }

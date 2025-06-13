@@ -30,7 +30,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile("./appsettings.json");
 builder.Logging.AddSerilog();
 
-builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("smartgarden-connection-service"
+builder.AddNpgsqlDbContext<ConnectionServiceDbContext>("connection-service-db"
     , s => {}
     , b => b.UseLazyLoadingProxies()
 );

@@ -3,9 +3,7 @@ query getBedById($id: UUID!) {
     id
     name
     description
-    plant {
-      id
-    }
+    plantId
     modules {
       id
       name

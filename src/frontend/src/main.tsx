@@ -10,20 +10,23 @@ import { createClient } from "graphql-ws";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import Header from "./components/Header.tsx";
 import { AppSettingsProvider } from "./hooks/useAppSettings.tsx";
+import { AuthProvider } from "./hooks/useAuth.tsx";
 import "./index.css";
 import BedPage from "./pages/BedPage.tsx";
 import GardenPage from "./pages/GardenPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
 
 const queryClient = new QueryClient();
 
-const httpLink = new HttpLink({
+const httpLink1 = new HttpLink({
   uri: `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/graphql/`,
   credentials: "include",
 });
 
-const wsLink = new GraphQLWsLink(
+const wsLink1 = new GraphQLWsLink(
   createClient({
     url: `ws://${import.meta.env.VITE_API_HOST}/graphql/`,
   }),
@@ -34,8 +37,8 @@ const splitLink = split(
     const definition = getMainDefinition(query);
     return definition.kind === "OperationDefinition" && definition.operation === "subscription";
   },
-  wsLink,
-  httpLink,
+  wsLink1,
+  httpLink1,
 );
 const apolloClient = new ApolloClient({
   link: splitLink,
@@ -60,29 +63,56 @@ const theme = createTheme({
   primaryColor: "emerald",
 });
 
+const oidcConfig = {
+  onSignIn: () => {
+    // Redirect?
+  },
+  authority: "https://oidc.io/oauthhttps://localhost:7006/connect/token",
+  clientId: "react-client",
+  redirectUri: "http://localhost:5173/",
+};
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppSettingsProvider>
-      <MantineProvider theme={theme}>
-        <Notifications />
-        <ApolloProvider client={apolloClient}>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <Header />
-              <div className="m-auto max-w-screen-desktop px-4 py-4 desktop:py-12">
-                <Routes>
-                  <Route path="/garden" element={<GardenPage />} />
-                  <Route path="/bed">
-                    <Route path=":bedId" element={<BedPage />}></Route>
-                  </Route>
-                  <Route path="/" element={<Navigate to="/garden" />} />
-                  <Route path="*" element={<Navigate to="/garden" />} />
-                </Routes>
-              </div>
-            </BrowserRouter>
-          </QueryClientProvider>
-        </ApolloProvider>
-      </MantineProvider>
+      <AuthProvider>
+        <MantineProvider theme={theme}>
+          <Notifications />
+          <ApolloProvider client={apolloClient}>
+            <QueryClientProvider client={queryClient}>
+              <BrowserRouter>
+                <Header />
+                <div className="m-auto max-w-screen-desktop px-4 py-4 desktop:py-12">
+                  <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+
+                    <Route
+                      path="/garden"
+                      element={
+                        <ProtectedRoute>
+                          <GardenPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/bed">
+                      <Route
+                        path=":bedId"
+                        element={
+                          <ProtectedRoute>
+                            <BedPage />
+                          </ProtectedRoute>
+                        }
+                      ></Route>
+                    </Route>
+                    <Route path="/" element={<Navigate to="/garden" />} />
+                    <Route path="*" element={<Navigate to="/garden" />} />
+                  </Routes>
+                </div>
+              </BrowserRouter>
+            </QueryClientProvider>
+          </ApolloProvider>
+        </MantineProvider>
+      </AuthProvider>
     </AppSettingsProvider>
   </StrictMode>,
 );

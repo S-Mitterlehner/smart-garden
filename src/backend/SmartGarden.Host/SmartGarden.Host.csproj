@@ -18,12 +18,22 @@
         <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.3.0" />
         <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.3.0" />
         <PackageReference Include="Aspire.Hosting.Redis" Version="9.3.0" />
+        <PackageReference Include="Aspire.Hosting.Yarp" Version="9.3.0-preview.1.25265.20" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SmartGarden.API\SmartGarden.API.csproj" />
+      <ProjectReference Include="..\SmartGarden.Api.Beds\SmartGarden.Api.Beds.csproj" />
+      <ProjectReference Include="..\SmartGarden.Api.Plants\SmartGarden.Api.Plants.csproj" />
+      <ProjectReference Include="..\SmartGarden.AuthService\SmartGarden.AuthService.csproj" />
       <ProjectReference Include="..\SmartGarden.AutomationService\SmartGarden.AutomationService.csproj" />
       <ProjectReference Include="..\SmartGarden.ConnectorService\SmartGarden.ConnectorService.csproj" />
+      <ProjectReference Include="..\SmartGarden.Gateway\SmartGarden.Gateway.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="nginx.conf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

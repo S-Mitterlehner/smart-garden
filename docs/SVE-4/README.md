@@ -1,25 +1,87 @@
 # SVE - Übung 4 - Microservices
 
-## Betätigungsfelder
+## Machbarkeitsstudie
 
-TODO Remove:
+### Auftrennen der API in einzelne Services
 
-- Service Discovery: -
-- API-Gateway: YARP
-- Security: -
-- Microservice-Anwendungen:
-  - Replicas of API
-- Ausfallssicherheit:
-  - Replicas of API
-  - Polly -> ??
-- Monitoring:
-  - Aspire
-- CI/CD Pipeline:
-  - Github Actions
-- Betrieb einer Microservice-Anwendung:
-  - Deployment to Azure Container Services
-- Microservice-Architekturen: -
-- Polyglott Persistence: Verteilte Datenbanken + Datenbankentechnologien (Redis, Postgres)
+**Ziel:**
+
+- Die Auftrennung einer monolithischen API in mehrere eigenständige Services ermöglicht eine bedarfsweise Skalierung.
+- Beispielsweise kann im Projekt _Smart-Garden_ die `Beds`-API unabhängig vom restlichen System horizontal skaliert und repliziert werden, um der höherer Last besser standzuhalten.
+
+**Schwierigkeiten:**
+
+- Da sowohl die `Plants`-API als auch die `Beds`-API aktuell Teil eines gemeinsamen GraphQL-Services sind, erfordert die Auftrennung auch eine Aufteilung des GraphQL-Schemas.
+- Um dem Frontend weiterhin einen einheitlichen Zugriffspunkt zu bieten, ist ein GraphQL API-Gateway erforderlich. Dieses führt die getrennten Schemata der Services wieder zusammen (Schema-Stitching oder Federation), sodass im Frontend weiterhin zentral Typen generiert (z. B. TypeScript-Klassen) und Anfragen an einen gemeinsamen Endpunkt geschickt werden können.
+- Zusätzlich entsteht Mehraufwand im Deployment, Monitoring und bei der Fehleranalyse durch die erhöhte Komplexität des Systems.
+
+### Replizieren von einzelnen API-Services
+
+**Ziel:**
+
+- Durch die Replikation von Services kann die Last auf mehrere Instanzen verteilt und damit die Verfügbarkeit sowie die Performance gesteigert werden.
+
+**Schwierigkeiten:**
+
+- Bei der Replikation zustandsloser HTTP-Endpunkte entstehen in der Regel keine Probleme.
+- Komplexer wird es bei Stateful-Komponenten wie Websockets oder GraphQL Subscriptions:
+  - Da Nachrichten z. B. über RabbitMQ verteilt werden, aber immer nur eine Instanz (ein Replikat) eine bestimmte Nachricht konsumiert, erhalten nur die Clients, die mit genau dieser Instanz verbunden sind, die entsprechenden Updates.
+  - Die anderen Replikas (und damit die mit ihnen verbundenen Clients) erhalten die Nachricht nicht – was zu inkonsistenten UI-Zuständen im Frontend führen kann.
+  - Eine mögliche Lösung wäre der Einsatz eines gemeinsamen Publish/Subscribe-Mechanismus oder ein Message-Broker mit Fanout-Exchange, sodass alle relevanten Replikas die Nachricht erhalten und an ihre Clients weiterleiten können.
+
+### Einführung eines API-Gateways
+
+**Ziel:**
+
+- Die Auftrennung und Replizierung der Apis führt automatisch zu mehreren Hosts und Endpunkten. Um dies zusammenzufassen muss ein API-Gateway geschaffen werden
+- Durch die Auftrennung der Apis wurde ebenfalls das GraphQL Schema aufgeteilt. Dies muss mittels GraphQL Federation wieder zusammengeführt, bzw. die Requests aufgeteilt werden.
+
+**Anforderungen:**
+
+- Um ein einfaches Betreiben der Software auf einen Server zu ermöglichen, soll das Routing des Gateways über die Route erfolgen. Bspw. soll `http://gateway/api/beds/swagger` auf `http://beds-api/swagger` zugreifen.
+
+**Schwierigkeiten:**
+
+- Die Endpunkte auf welche das Frontend zugreift müssen vom API-Gateway transformiert und bei Weiterleitungen zurücktransformiert werden.
+- Die Weiterleitung von Web-Sockets für den GraphQL Gateway gestaltet sich schwierig, da keine Implementierung von GraphQL-Federation Server Web-Sockets und somit GraphQL-Subscriptions erlauben/zulassen.
+
+### Polyglott Persistence
+
+**Ziel**:
+
+- Jeder Service hat seine eigene Datenbank wo er servicerelevante Daten speichert.
+- Die Skalierung der einzelnen Komponenten ist einfacher möglich.
+
+**Schwierigkeiten**
+
+- Datenbanken bei replizierten Services dürfen nur einmal geseeded werden. Ein DistributedLock ist dafür erforderlich, was eine geteilte Datenbank (Redis) erfordert.
+- Manche Services brauchen die gleichen Daten -> Synchronisierungsläufe sind dabei ggf. erforderlich.
+
+### Replizieren von Background-Services
+
+**Ziel**:
+
+- Auch Background-Services, wie der `ConnectorService` können repliziert werden, damit die Workload für mehrere Sensoren aufgeteilt werden kann.
+
+**Anforderungen**:
+
+- Ein Service soll lediglich Nachrichten einer kleinen Gruppe von Sensoren verarbeiten.
+- Ein Sensor soll nur von einem Service verarbeitet werden.
+- ConnectorServices sollen dynamisch je nach Anzahl der verfügbaren Module erzeugt werden.
+
+**Schwierigkeiten**:
+
+- Eine dynamische Generierung von Services ist mittels Aspire momentan nicht möglich. Dieser Punkt wird daher nicht weiter verfolgt
+
+### Fehlerresistenz mit Polly
+
+Im Rahmen der Evaluierung von Fehlerbehandlungsstrategien wurden die Möglichkeiten der Bibliothek Polly untersucht – insbesondere im Hinblick auf die Umsetzung von Retry, Circuit Breaker und Timeout-Mechanismen.
+
+Da im Kontext unseres Projekts vor allem Sensordaten verarbeitet werden, die in regelmäßigen Zyklen aktualisiert werden, wurde der Verlust einzelner Datenpakete als nicht kritisch eingestuft. Die Wiederholung fehlgeschlagener Anfragen würde daher keinen wesentlichen Mehrwert bringen, sondern unter Umständen sogar unnötige Systemlast erzeugen.
+
+Aus diesem Grund wurde entschieden, Polly nicht weiter zu integrieren, da für unser Einsatzszenario keine sinnvollen Anwendungsfälle identifiziert werden konnten.
+
+---
 
 ## Architektur
 

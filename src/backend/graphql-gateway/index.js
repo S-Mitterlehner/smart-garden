@@ -16,7 +16,6 @@ const gateway = new ApolloGateway({
 // Pass the ApolloGateway to the ApolloServer constructor
 const server = new ApolloServer({
   gateway,
-
   cors: {
     origin: "*", // Allow all origins
   },

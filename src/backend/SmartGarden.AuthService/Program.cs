@@ -19,10 +19,7 @@ builder.Host.UseSerilog();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 // Add services to the container.
-//builder.Services.AddGrpc();
 builder.Services.AddControllers();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenValidator, TokenValidator>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddCors();
@@ -59,7 +56,5 @@ app.UseSwaggerUI();
 app.MapSwagger();
 app.MapControllers();
 //app.MapIdentityApi<User>();
-
-//app.MapGrpcService<AuthGrpcService>();
 
 app.Run();

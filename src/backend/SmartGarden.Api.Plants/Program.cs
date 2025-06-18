@@ -1,7 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using GrpcServiceClient;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SmartGarden.Api.Plants.GraphQL;
@@ -28,15 +24,6 @@ builder.AddNpgsqlDbContext<PlantsDbContext>("plant-db"
 );
 builder.Services.AddDbInitializerWithJsonSeeder<PlantsSeedModel, PlantsDbContext>("../Seeds/dev.seed.json");
 
-// Add GRPC auth client
-builder.Services.AddGrpcClient<Grpc.AuthGrpc.AuthGrpcClient>(options =>
-{
-    options.Address = new Uri("http://localhost:5036");
-});
-builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
-
-builder.Services.AddAuthentication("GrpcScheme")
-    .AddScheme<AuthenticationSchemeOptions, GrpcTokenAuthenticationHandler>("GrpcScheme", null);
 builder.Services.AddAuthorization();
 builder.Services.AddCors();
 

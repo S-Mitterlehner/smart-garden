@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using GrpcServiceClient;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SmartGarden.Api.Beds.GraphQL;
@@ -112,13 +111,6 @@ builder.Services.AddScheduler(b =>
 {
     b.AddJobAdvanced<AutomationRuleSyncJob>(TimeSpan.FromMinutes(1));
 });
-
-// Add GRPC auth client
-builder.Services.AddGrpcClient<Grpc.AuthGrpc.AuthGrpcClient>(options =>
-{
-    options.Address = new Uri(Environment.GetEnvironmentVariable("AUTH_URL"));
-});
-builder.Services.AddScoped<IAuthGrpcValidator, AuthGrpcValidator>();
 
 builder.Services.AddAuth(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddCors();

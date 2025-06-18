@@ -26,7 +26,7 @@
 - Bei der Replikation zustandsloser HTTP-Endpunkte entstehen in der Regel keine Probleme.
 - Komplexer wird es bei Stateful-Komponenten wie Websockets oder GraphQL Subscriptions:
   - Da Nachrichten z. B. über RabbitMQ verteilt werden, aber immer nur eine Instanz (ein Replikat) eine bestimmte Nachricht konsumiert, erhalten nur die Clients, die mit genau dieser Instanz verbunden sind, die entsprechenden Updates.
-  - Die anderen Replikas (und damit die mit ihnen verbundenen Clients) erhalten die Nachricht nicht – was zu inkonsistenten UI-Zuständen im Frontend führen kann.
+  - Die anderen Replikas (und damit die mit ihnen verbundenen Clients) erhalten die Nachricht nicht, was zu inkonsistenten UI-Zuständen im Frontend führen kann.
   - Eine mögliche Lösung wäre der Einsatz eines gemeinsamen Publish/Subscribe-Mechanismus oder ein Message-Broker mit Fanout-Exchange, sodass alle relevanten Replikas die Nachricht erhalten und an ihre Clients weiterleiten können.
 
 ### Einführung eines API-Gateways
@@ -75,7 +75,7 @@
 
 ### Fehlerresistenz mit Polly
 
-Im Rahmen der Evaluierung von Fehlerbehandlungsstrategien wurden die Möglichkeiten der Bibliothek Polly untersucht – insbesondere im Hinblick auf die Umsetzung von Retry, Circuit Breaker und Timeout-Mechanismen.
+Im Rahmen der Evaluierung von Fehlerbehandlungsstrategien wurden die Möglichkeiten der Bibliothek Polly untersucht, insbesondere im Hinblick auf die Umsetzung von Retry, Circuit Breaker und Timeout-Mechanismen.
 
 Da im Kontext unseres Projekts vor allem Sensordaten verarbeitet werden, die in regelmäßigen Zyklen aktualisiert werden, wurde der Verlust einzelner Datenpakete als nicht kritisch eingestuft. Die Wiederholung fehlgeschlagener Anfragen würde daher keinen wesentlichen Mehrwert bringen, sondern unter Umständen sogar unnötige Systemlast erzeugen.
 
@@ -141,16 +141,100 @@ builder.AddYarp("gateway")
 
 #### YARP mit .NET Konfigurationsprojekt
 
-TODO ...
+Als Alternative zur Konfiguration über JSON kann YARP auch manuell als eigenständiges ASP.NET Core-Projekt eingerichtet werden. Diese Methode bietet größere Kontrolle über Aspekte wie Authentifizierung, CORS, Weiterleitungen oder benutzerdefinierte Middleware.
 
-Als Alternative kann YARP auch manuell als eigenständiges ASP.NET Core Projekt aufgesetzt werden. Dies gibt mehr Kontrolle über z. B. Authentifizierung, CORS oder Weiterleitungen.
+Folgendes Beispiel zeigt eine typische YARP-Konfiguration per C#-Code in einem Konfigurationsprojekt. Die HTTP-Routen (`/api/beds/...`, `/api/plants/...`) auf interne Cluster (`bed-api`, `plant-api`) weiterleitet, inklusive statischer Zieladressen und fixer Pfadmuster.
 
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-var app = builder.Build();
-app.MapReverseProxy();
-app.Run();
+```cs
+using System.Collections.ObjectModel;
+using Microsoft.Extensions.Primitives;
+using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Transforms;
+
+namespace SmartGarden.Gateway;
+
+public class Config : IProxyConfigProvider
+{
+    public IProxyConfig GetConfig() => new ProxyConfig();
+}
+
+public class ProxyConfig : IProxyConfig
+{
+    public IReadOnlyList<RouteConfig> Routes =>
+    [
+        new RouteConfig
+        {
+            Match = new RouteMatch
+            {
+                Path = "/api/beds/{**catch-all}"
+            },
+            Metadata = new Dictionary<string, string>
+            {
+                {"prefix", "/api/beds"}
+            }
+        }
+    ];
+
+    public IReadOnlyList<ClusterConfig> Clusters => [
+        new ClusterConfig
+        {
+            ClusterId="beds",
+            Destinations = new Dictionary<string, DestinationConfig>
+            {
+                {
+                    "beds/d1", new DestinationConfig
+                    {
+                        Address = "http://bed-api/"
+                    }
+                },
+                {
+                    "plants/d1", new DestinationConfig
+                    {
+                        Address = "http://plant-api/"
+                    }
+                }
+            }
+        }
+    ];
+
+    public IChangeToken ChangeToken => new CancellationChangeToken(CancellationToken.None);
+}
+```
+
+Die Dienstnamen wie `http://bed-api/` oder `http://plant-api/` werden durch .NET Aspire automatisch aufgelöst. Dadurch entfällt die manuelle Pflege von IP-Adressen oder Ports, die Kommunikation zwischen Diensten wird vereinfacht und zentralisiert.
+
+Neben der Routen-Weiterleitung lassen sich mit YARP auch benutzerdefinierte Transformationen umsetzen. Für Smart-Garden wird z.B. das Problem gelöst, dass GraphQL-Server üblicherweise ein `/graphql/` mit Trailing Slash erwarten:
+
+```cs
+public class GraphQLPathFixer : IMiddleware
+{
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        if (context.Request.Path.Value is not null && context.Request.Path.Value.ToLower().EndsWith("/graphql"))
+        {
+            context.Response.Clear();
+            context.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+            context.Response.Headers.Location = context.Request.Path.Value + "/";
+            return;
+        }
+
+        await next(context);
+    }
+}
+```
+
+In .NET Aspire wird das Gateway wie folgt eingebunden und referenziert automatisch andere Dienste:
+
+```cs
+builder.AddProject<SmartGarden_Gateway>("gateway")
+       .WithReference(plantApi)
+       .WithReference(bedApi)
+       .WithReference(authApi)
+       .WithReference(frontend)
+       .WithReference(graphQL)
+       .WaitFor(bedApi)
+       .WaitFor(plantApi)
+       .WithExternalHttpEndpoints();
 ```
 
 ### NGINX
@@ -213,39 +297,74 @@ Grundsätzlich hat das Aufrufen von gehosteten Services funktioniert (Bsp. `loca
 
 ### GraphQL - Apollo Gateway
 
-Da Aufgrund der Aufteilung der API ebenfalls die GraphQL Zuständigkeiten aufgeteilt wurden, gibt es nun zwei Schemas, die die Anwendung spezifizieren.
-Um dennoch einen eigenen `graphql` Endpunkt zur Verfügung zu stellen, muss dafür ein GraphQL-Gateway implementiert werden, dies soll mit `Apollo`-Gateway realisiert werden.
+Da aufgrund der Architektur die GraphQL-Zuständigkeiten auf mehrere Microservices verteilt wurden (z. B. `beds`, `plants`), wird ein zentraler GraphQL-Endpunkt benötigt, der diese Dienste zusammenführt.
+Dies wird mit Hilfe von Apollo Gateway und dem Konzept der GraphQL Federation realisiert.
 
-Diese Bibliothek bündelt in regelmäßigen Abständen die Schemas aus den zuvor konfigurierten Endpunkten der Sub-Apis zu einem einzigen Schema. Ewaige Anfragen, werden dann an den jeweiligen Server weitergeleitet und später bei der Auslieferung zusammengeführt. Dies nennt man **GraphQL Federation**.
+Das Gateway nutzt das Tool `IntrospectAndCompose`, um die Schemas der Subgraphen dynamisch abzurufen und daraus ein sogenanntes Supergraph-Schema zu erzeugen. Dieses Schema steht dann unter einem einzigen Endpunkt (`/graphql`) bereit.
+
+Bei einer Anfrage entscheidet der Gateway anhand der Felder und Typen, welcher Subgraph zuständig ist, leitet die Anfrage weiter und führt das Ergebnis zusammen, bevor es an den Client geht.
+
+**Beispielimplementierung**
+
+```ts
+const { ApolloServer } = require("apollo-server");
+const { ApolloGateway, IntrospectAndCompose } = require("@apollo/gateway");
+
+const gateway = new ApolloGateway({
+  supergraphSdl: new IntrospectAndCompose({
+    subgraphs: [
+      { name: "beds", url: "http://localhost:5206/graphql/" },
+      { name: "plants", url: "http://localhost:5117/graphql/" },
+    ],
+  }),
+});
+
+const server = new ApolloServer({
+  gateway,
+  cors: { origin: "*" },
+});
+
+server.listen(5100).then(({ url }) => {
+  console.log(`Server ready at ${url}`);
+});
+```
+
+Apollo Gateway bietet einen zentralen Zugriffspunkt für verteilte GraphQL-Services, führt deren Schemas automatisch zu einem gemeinsamen Schema zusammen und ermöglicht so eine starke Entkopplung von Frontend und einzelnen Backend-Services.
 
 ## Replizieren von Apis
 
 Um die Performance und Ausfallsicherheit noch weiter zu erhöhen, soll vor allem die neu geschaffene `Beds-API` repliziert werden können.
 In der aktuellen Version sollen diese Apis jedoch auf die gleiche Datenbank-Instanz zugreifen. Daher müssen vor allem für das Seeding der Datenbank eine verteilte Variante implementiert werden, da es ansonsten zu Inkonsistenzen oder fehlerhaftem Verhalten kommen kann.
 
-Dafür wird die Bibliothek `DistributedLock` verwendet. Diese Bibliothek nutzt eine Datenbank, wie zum Beispiel die bereits implementierte Redis-DB um einen Lock zu schreiben.
+Zu diesem Zweck wird die Bibliothek `DistributedLock` verwendet, die z. B. auf der bereits integrierten Redis-Datenbank basiert. Sie ermöglicht das Setzen von Sperren, um gleichzeitige Schreibzugriffe beim Seeding zuverlässig zu unterbinden.
 
-## Monitoring mit .NET Aspire
+Die eigentliche Replikation eines Services lässt sich mit Aspire sehr einfach umsetzen: Durch den Aufruf von `.WithReplicas(...)` beim Hinzufügen des Projekts kann die gewünschte Anzahl an Instanzen definiert werden.
 
-TODO ???
+```cs
+var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
+    .WithReference(dbBedApi)
+    .WithReference(rabbitmq)
+    .WithReference(redis)
+    .WithReference(authApi)
+    .WaitFor(dbBedApi)
+    .WaitFor(rabbitmq)
+    .WaitFor(redis)
+    .WithExternalHttpEndpoints();
+    .WithReplicas(3);
+```
 
-Mit `.NET Aspire` steht ein integriertes Dashboard zur Verfügung, das alle gestarteten Dienste überwacht.
-
-TODO Screenshots ...
-
-## Fehlertoleranz mit Polly
-
-TODO ???
-
-Für HTTP-Clients wurde **Polly** eingesetzt, um Retry-Strategien bei Fehlern umzusetzen. Dies erhöht die Resilienz gegenüber kurzfristigen Ausfällen (z. B. bei der Datenbank oder anderen Services).
-
--> Bei Bedarf können auch Circuit Breaker und Timeout-Policies integriert werden.
+Ein wesentlicher Nachteil von Aspire ist jedoch, dass die Replikate nicht dynamisch zur Laufzeit skaliert werden können. Die Anzahl der Instanzen muss bereits beim Start festgelegt werden, was die Flexibilität des Systems zur Laufzeit deutlich einschränkt.
 
 ## Lessons Learned und Review
 
-TODO ??
+**.NET Aspire** bietet einen starken Entwicklungsstack für Microservices und eignet sich aktuell primär für lokale Entwicklung, Testumgebungen oder Projekte mit Azure-Integration. Zu Beginn der Entwicklung ermöglicht Aspire sehr schnelles Setup neuer Services inklusive Datenbankanbindung und Kommunikation zwischen Diensten, vieles davon funktioniert automatisch und mit minimalem Konfigurationsaufwand. In komplexeren Architekturen stößt man jedoch rasch an Grenzen, z.B. bei dynamischem Service-Scaling oder bei der Ausführung in Container-Umgebungen. Besonders das Deployment außerhalb von Azure (z.B. in Docker oder Kubernetes) ist derzeit nur eingeschränkt möglich und erfordert Workarounds.
 
-- `.NET Aspire` bietet einen starken Entwicklungsstack für Microservices, eignet sich aber aktuell primär für **lokale Entwicklung und Testumgebungen**.
-- **YARP** funktioniert out-of-the-box für einfache Routing-Szenarien, hat aber bei komplexeren Anwendungen (GraphQL, CORS) noch Schwächen.
-- **NGINX** ist flexibel und stabil, wenn detaillierte Kontrolle über HTTP-Verhalten erforderlich ist.
-- **Docker + Netzwerkzugriffe** erfordern besondere Beachtung. Der Zugriff von Containern auf lokale Dienste war nicht trivial und sorgte für Herausforderungen.
+**YARP (Yet Another Reverse Proxy)** funktioniert "out of the box" sehr gut für einfache Routing-Szenarien. Besonders in Kombination mit .NET Aspire kann es schnell eingebunden werden. Für komplexere Anforderungen (wie z.B. bei GraphQL, CORS-Handling oder feingranularen Weiterleitungen) stößt man mit dem Aspire Package jedoch schnell an funktionale Grenzen, dafür eignet sich ein eigenes YARP-Konfigurationsprojekt.
+
+**NGINX** hat sich als gute Lösung für den API-Gateway erwiesen. Es bietet eine fein einstellbare Konfiguration und eignet sich besonders für produktive Umgebungen mit speziellen Anforderungen. Die Einarbeitung ist aufgrund der vielen Konfigurationsmöglichkeiten aufwendiger als bei YARP, aber man profitiert langfristig von deutlich mehr Flexibilität.
+
+**Docker + Netzwerkzugriffe** stellten eine Herausforderungen dar. Vor allem beim Zugriff von Containern auf Dienste auf dem Host-System oder aufeinander mussten spezielle Netzwerkkonfigurationen berücksichtigt werden (z.B. `host.docker.internal`, benutzerdefinierte Docker-Netzwerke).
+
+**Entwicklungsworkflow**: Aspire + .NET + Redis + RabbitMQ + GraphQL + API-Gateway + Frontend ist mächtig, aber komplex. Die Toolchain erfordert gutes Verständnis für Zusammenhänge und Lebenszyklen der einzelnen Services.
+
+Persönlich würden wir, sofern nicht zwingend notwendig, so lange wie möglich bei einer monolithischen Architektur bleiben. Diese lässt sich deutlich einfacher aufsetzen, warten und erweitern. Für viele Use Cases reicht ein gut strukturierter Monolith aus, vor allem in frühen Projektphasen oder bei kleineren Teams. Microservices bringen zwar Skalierbarkeit und Flexibilität, aber auch hohe Komplexität in Bezug auf Deployment, Monitoring, Servicekommunikation, Datenhaltung und Fehleranalyse.

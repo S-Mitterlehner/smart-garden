@@ -18,7 +18,7 @@ In einer Zeit, in der Menschen immer weniger Zeit für traditionelle Gartenarbei
 
 Smart‑Garden automatisiert Hochbeete und Gartenhäuser, indem es Sensordaten erfasst, diese in Echtzeit verarbeitet und auf Basis vordefinierter Regeln Aktionen an Aktoren auslöst. Die Nutzer sehen online alle Messwerte und Aktorenzustände, können manuell eingreifen und eigene Automatisierungsregeln erstellen. So lässt sich beispielsweise festlegen, dass bei einer Luftfeuchtigkeit unter 40 % und einer Bodenfeuchte unter 30 % automatisch die Bewässerungspumpe für eine festgelegte Zeit aktiviert wird.
 
-TODO: [Hier Bild Hochbeet mit Sensoren einfügen]
+![Wusch](./img/bed.png)
 
 ### 4. Technische Architektur
 
@@ -102,8 +102,6 @@ Aktoren bleiben im Leerlauf, bis sie über MQTT einen Steuerbefehl erhalten:
    }
    ```
 
-TODO: [Hier Grafik MQTT‑Flow einfügen]
-
 ### 4.2 Hardware‑Setup
 
 1. **Mikrocontroller:**
@@ -131,7 +129,7 @@ TODO: [Hier Grafik MQTT‑Flow einfügen]
    - Power Batterie Modul (5 V / 3,3 V)
    - USB-C Netzteil
 
-TODO: [Hier Foto des aufgebauten Prototyps einfügen]
+![Tschak](./img/prototype.png)
 
 #### 4.3 Backend‑Architektur
 
@@ -177,61 +175,69 @@ Das Backend stellt sowohl klassische REST‑Endpoints als auch ein modernes Grap
 
 ##### 4.3.4 Nachrichtenfluss
 
-Das folgende Sequenzdiagramm veranschaulicht den Ablauf der Kommunikation vom Zeitpunkt der Modulregistrierung über die Verteilung von Sensordaten bis hin zur Ausführung von Aktorbefehlen. Es zeigt die Interaktion zwischen Modul, MQTT-Broker, Backend-Services und Frontend.
+Die folgenden Sequenzdiagramme veranschaulichen die Abläufe der Kommunikation im System:
 
-<!-- ![alt text](messageSequence.png) -->
+**Register**
 
 ```mermaid
 sequenceDiagram
-  participant Modul as Modul
-  participant MQTT_Broker as MQTT_Broker
-  participant ConnectionService as ConnectionService
-  participant ConnDB as ConnectionService-DB
-  participant AutomationService as AutomationService
-  participant AutoDB as AutomationService-DB
-  participant API_Service as API_Service
-  participant API_DB as API-Service-DB
-  participant Frontend as Frontend
-  Modul ->> MQTT_Broker: register {moduleId,...}
-  MQTT_Broker ->> ConnectionService: Registrierungsmessage
-  ConnectionService ->> ConnDB: INSERT modules
-  Modul ->> MQTT_Broker: module.data {values...}
-  MQTT_Broker ->> ConnectionService: module.data
-  ConnectionService ->> API_Service: forward module.data
-  ConnectionService ->> AutomationService: forward module.data
-  AutomationService ->> AutoDB: load active rules
-  AutomationService ->> AutomationService: Rule evaluation
-  AutomationService ->> ConnectionService: send module.commands.beetY
-  ConnectionService ->> MQTT_Broker: module/beetY-pump1/set
-  API_Service ->> API_DB: persist latest module states
-  API_Service ->> Frontend: push via GraphQL Subscription / SignalR
+    participant Module
+    participant MQTT_Broker as MQTT Broker
+    participant ConnectorService
+    participant RMQ as RabbitMQ
+    Module ->> MQTT_Broker: send register message
+    MQTT_Broker ->> ConnectorService: register Device
+    ConnectorService ->> RMQ: publish new Device
+    RMQ ->> API: add new Device to list
 ```
 
-<!--
+**Send Status Update**
+
+```mermaid
 sequenceDiagram
-  participant Modul as Modul
-  participant MQTT_Broker as MQTT_Broker
-  participant ConnectionService as ConnectionService
-  participant ConnDB as ConnectionService-DB
-  participant AutomationService as AutomationService
-  participant AutoDB as AutomationService-DB
-  participant API_Service as API_Service
-  participant API_DB as API-Service-DB
-  participant Frontend as Frontend
-  Modul ->> MQTT_Broker: register {moduleId,...}
-  MQTT_Broker ->> ConnectionService: Registrierungsmessage
-  ConnectionService ->> ConnDB: INSERT modules
-  Modul ->> MQTT_Broker: module.data {values...}
-  MQTT_Broker ->> ConnectionService: module.data
-  ConnectionService ->> API_Service: forward module.data
-  ConnectionService ->> AutomationService: forward module.data
-  AutomationService ->> AutoDB: load active rules
-  AutomationService ->> AutomationService: Rule evaluation
-  AutomationService ->> ConnectionService: send module.commands.beetY
-  ConnectionService ->> MQTT_Broker: module/beetY-pump1/set
-  API_Service ->> API_DB: persist latest module states
-  API_Service ->> Frontend: push via GraphQL Subscription / SignalR
--->
+    participant Module
+    participant MQTT_Broker as MQTT Broker
+    participant ConnectorService
+    participant RMQ as RabbitMQ
+    participant AutomationService
+    participant API
+    Module ->> MQTT_Broker: send state change
+    MQTT_Broker ->> ConnectorService: update state
+    ConnectorService ->> RMQ: publish state change
+    RMQ ->> AutomationService: update state
+    RMQ ->> API: update state
+```
+
+**Ausführen von Actions**
+
+```mermaid
+sequenceDiagram
+    participant Module
+    participant MQTT as MQTT Broker
+    participant ConnectorService
+    participant RMQ as RabbitMQ
+    participant AutomationService
+    participant API
+    participant Frontend
+
+    Frontend ->> API: Request Action-Execution
+    API ->> RMQ: Publish Action-Execution
+    AutomationService ->> RMQ: Publish Automation <br/>Rule Action-Execution
+    RMQ ->> ConnectorService: Receive Action-Execution
+    activate ConnectorService
+    ConnectorService ->> MQTT: Publish Action-Execution <br/>to module1/waterpump
+    deactivate ConnectorService
+    MQTT ->> Module: Receive Execution
+
+    activate Module
+    Module -->> MQTT: Send Status Update
+    deactivate Module
+    MQTT -->> ConnectorService: Receive Status Update
+    ConnectorService -->> RMQ: Publish State Change
+    RMQ -->> AutomationService: Receive State Change
+    RMQ -->> API: Receive State Change
+    API -->> Frontend: Send SignalR / GraphQL Update
+```
 
 #### 4.4 Frontend‑Funktionalität
 
@@ -242,18 +248,297 @@ Das Webinterface erlaubt dem Nutzer:
 - **Manuelle Steuerung:** Direkter Eingriff auf Aktoren wie Ein-/Aus-Schaltung der Pumpe oder Regelung der Motorstellung.
 - **Regelgenerator:** Intuitive Oberfläche zum Erstellen, Bearbeiten und Aktivieren automatisierter Bewässerungs‑ und Belüftungsabläufe.
 
-TODO: [Hier Screenshot Frontend‑Dashboard einfügen]
+![Frontend](./img/frontend.png)
 
 ### 5. Implementierungsdetails
 
-TODO: Weiter Implementierungsdetails und Code einfügen??
+#### Initialisierung von Modulen
 
-### 6. Ergebnisse
+```cpp
+// References
+extern WiFiClient network;
+extern PubSubClient mqttClient;
+extern String macAddress;
 
-TODO: Nochmal Screenshots von den Ergebnissen??
+static String deviceId;
+static SensorManager sensorManager;
+static ActuatorManager actuatorManager;
 
-### 7. Fazit und Ausblick
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial) {
+    ;  // wait for serial port to connect. Needed for native USB port only
+  }
+
+  Serial.println("Connecting to WIFI ...");
+  connectWifi();
+  deviceId = getDeviceId();
+
+  setupSensors();
+  setupActuators();
+
+  Serial.println("Connecting to MQTT ...");
+  connectMQTT(deviceId);
+
+  // Register sensors and actors at MQTT
+  Serial.println("Registering Sensors ...");
+  sensorManager.registerSensors(deviceId);
+  Serial.println("Registering Actuators ...");
+  actuatorManager.registerActuators(deviceId);
+
+
+  mqttClient.setCallback(listen);
+  actuatorManager.subscribeAll(mqttClient);
+}
+
+void loop() {
+  mqttClient.loop();
+  sensorManager.updateAll();
+  actuatorManager.updateAll();
+}
+```
+
+#### MQTT Initialisierung
+
+```cpp
+void connectMQTT(String deviceId) {
+  if (mqttClient.connected()) {
+    mqttClient.disconnect();
+  }
+
+  mqttClient.setServer(mqttServerAddress, mqttServerPort);
+  while (!mqttClient.connected()) {
+    if (mqttClient.connect(deviceId.c_str())) {
+      Serial.println("Success, MQTT device with ID " + deviceId + " connected!");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(mqttClient.state());
+      Serial.println(" try again in 1 seconds");
+      delay(1000);
+    }
+  }
+}
+
+void delayWithLoop(int ms) {
+  int parts = ms / 1000;
+
+  for (int i = 0; i < parts; i++) {
+    delay(1000);
+    mqttClient.loop();
+  }
+}
+
+void sendToMQTT(const String topic, const String json) {
+  if (mqttClient.connected()) {
+    mqttClient.loop();
+    mqttClient.publish(topic.c_str(), json.c_str(), false);
+  }
+}
+
+void sendToMQTTRetained(const String topic, const String json) {
+  if (mqttClient.connected()) {
+    mqttClient.loop();
+    mqttClient.publish(topic.c_str(), json.c_str(), true);
+  }
+}
+```
+
+#### Sensor / Aktor Initialisierung
+
+```cpp
+class ActuatorManager {
+private:
+  Actuator* actuators[MAX_ACTUATORS];
+  int actuatorCount = 0;
+
+public:
+  void addActuator(Actuator* actuator) {
+    if (actuator && actuatorCount < MAX_ACTUATORS) {
+      actuators[actuatorCount++] = actuator;
+    } else {
+      Serial.println("ActuatorManager full or invalid actuator!");
+    }
+  }
+
+  void initializeActuators() {
+    for (int i = 0; i < actuatorCount; i++) {
+      actuators[i]->initialize();
+    }
+  }
+
+  void registerActuators(const String deviceId) {
+    StaticJsonDocument<1024> doc;
+    doc["moduleKey"] = deviceId;
+    JsonObject topics = doc.createNestedObject("topics");
+    for (int i = 0; i < actuatorCount; i++) {
+      actuators[i]->appendTopicsTo(topics);
+    }
+
+    char buffer[1024];
+    size_t len = serializeJson(doc, buffer, sizeof(buffer));
+    if (len == 0) {
+      Serial.println("registerActuators: Serialization failed or buffer too small.");
+    }
+    Serial.println(buffer);
+
+    sendToMQTT(ACTUATOR_REGISTER_TOPIC, buffer);
+    Serial.println("Actuator Registered");
+  }
+
+  void updateAll() {
+    for (int i = 0; i < actuatorCount; ++i) {
+      if (actuators[i]) {
+        actuators[i]->updateFast();
+        if (actuators[i]->shouldUpdate()) {
+          actuators[i]->update();
+          actuators[i]->markUpdated();
+        }
+      }
+    }
+  }
+
+  void onActionMessage(JsonDocument& doc) {
+    // Check if the message is a command
+    if (doc["messageType"].as<String>() == ACTION_MESSAGE_TYPE) {
+      for (int i = 0; i < actuatorCount; ++i) {
+        actuators[i]->onActionMessage(doc);
+      }
+    }
+  }
+
+  void subscribeAll(PubSubClient& client) {
+    StaticJsonDocument<512> doc;
+    JsonObject topics = doc.to<JsonObject>();
+
+    for (int i = 0; i < actuatorCount; ++i) {
+      actuators[i]->appendTopicsTo(topics);
+    }
+
+    for (JsonPair kv : topics) {
+      const char* topic = kv.value();
+      client.subscribe(topic);
+      Serial.print("Subscribed to topic: ");
+      Serial.println(topic);
+    }
+  }
+};
+```
+
+#### Aktor / Sensor anhand Beispiel Pump
+
+```cpp
+class Pump : public Actuator {
+private:
+  const String id;
+  const int pinBI;
+  const int pinFI;
+  const String pumpTopic;
+
+  String pumpState = "Stopped";
+  unsigned long pumpStopTime = 0;
+  bool pumpRunningForDuration = false;
+
+public:
+  Pump(int pinBI, int pinFI, String deviceId)
+    : pinBI(pinBI),
+      pinFI(pinFI),
+      id(deviceId),
+      pumpTopic("smart-garden/" + deviceId + "/waterpump") {
+
+    Serial.print("Pump Topic: ");
+    Serial.println(pumpTopic);
+  }
+
+  unsigned long getInterval() const override {
+    return 5000;
+  }
+
+  void initialize() override {
+    pinMode(pinBI, OUTPUT);
+    pinMode(pinFI, OUTPUT);
+  }
+
+  void update() override {
+    sendPumpStatus();
+  }
+
+  void updateFast() override {
+    unsigned long now = millis();
+    if (pumpRunningForDuration && now >= pumpStopTime) {
+      setPump(false);
+      pumpRunningForDuration = false;
+    }
+  }
+
+  void appendTopicsTo(JsonObject& parent) override {
+    parent["pump"] = pumpTopic;
+  }
+
+  void onActionMessage(JsonDocument& doc) override {
+    Serial.println("Pump Action called");
+    String moduleType = doc["moduleType"] | "";
+    if (moduleType != "Pump") return;
+
+    String actionKey = doc["actionKey"] | "";
+    String actionType = doc["actionType"] | "";
+
+    if (actionKey == "pump.start" && actionType == "Command") {
+      setPump(true);
+    } else if (actionKey == "pump.stop" && actionType == "Command") {
+      setPump(false);
+      pumpRunningForDuration = false;
+    } else if (actionKey == "pump.run" && actionType == "Value") {
+      float value = doc["value"].as<float>();
+      if (value > 0.0f) {
+        pumpStopTime = millis() + static_cast<unsigned long>(value * 1000);
+        pumpRunningForDuration = true;
+        setPump(true);
+      }
+    } else {
+      Serial.println("Unknown action key or type");
+    }
+  }
+
+
+private:
+
+  void setPump(bool on) {
+    if (on) {
+      digitalWrite(pinBI, HIGH);
+      digitalWrite(pinFI, LOW);
+      pumpState = "Running";
+    } else {
+      digitalWrite(pinBI, LOW);
+      digitalWrite(pinFI, LOW);
+      pumpState = "Stopped";
+    }
+
+    sendPumpStatus();
+  }
+
+  void sendPumpStatus() {
+    JsonDocument doc;
+    doc["messageType"] = "State";
+    doc["moduleKey"] = id;
+    doc["moduleType"] = "Pump";
+    doc["stateType"] = "Discrete";
+    doc["state"] = pumpState;
+
+    char buffer[512];
+    serializeJson(doc, buffer);
+
+    sendToMQTTRetained(pumpTopic, buffer);
+
+    Serial.print("Pump Status: ");
+    Serial.println(buffer);
+  }
+};
+```
+
+### 6. Fazit
 
 Smart‑Garden zeigt, wie moderne IoT‑Lösungen vor dem Hintergrund nachhaltiger Lebensmittelproduktion Mehrwert schaffen können.
+Mithilfe dieser Architektur ist es ein leichtes neue Aktoren und Sensoren zu erweitern.
 
-TODO ??
+MQTT ermöglicht sehr einfach das Senden und Empfangen von Nachrichten von und zu IoT-Devices und die Verarbeitung im Backend.

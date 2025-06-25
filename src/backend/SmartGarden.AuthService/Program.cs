@@ -5,6 +5,9 @@ using SmartGarden.EntityFramework.Auth;
 using SmartGarden.EntityFramework.Auth.Models;
 using Serilog;
 using SmartGarden.AuthService.Models;
+using SmartGarden.EntityFramework.Auth.Seeding;
+using SmartGarden.EntityFramework.Core;
+using SmartGarden.EntityFramework.Core.Seeding;
 
 Log.Logger = new LoggerConfiguration()
              .MinimumLevel.Debug()
@@ -41,6 +44,9 @@ builder.Services.AddIdentity<User, IdentityRole>(o =>
            o.Tokens.AuthenticatorIssuer = "me";
        })
        .AddEntityFrameworkStores<AuthDbContext>();
+
+builder.Services.AddScoped<ISeeder, DevSeeder>();
+builder.Services.AddHostedService<DbInitializer>();
 
 builder.Services.AddSwaggerGen();
 

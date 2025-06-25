@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartGarden.EntityFramework.Core.Seeding;
 
 namespace SmartGarden.EntityFramework.Core;
 
-public class DbInitializer<TContext>(IServiceProvider serviceProvider) : BackgroundService where TContext : BaseDbContext
+public class DbInitializer(IServiceProvider serviceProvider) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

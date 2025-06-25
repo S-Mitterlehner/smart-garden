@@ -7,6 +7,10 @@ namespace SmartGarden.Api.Beds.GraphQL;
 
 public partial class Mutation
 {
+    //TODO:  Make SaveAutomationRule(AutomationRuleDto dto), remove add and update
+    //TODO: Also Update Actions and remove Add + Remove Action
+
+    [Obsolete("Will be changed to SaveAutomationRule in the future")]
     public async Task<AutomationRuleDto> AddAutomationRuleToBed(
         Guid bedId,
         string automationName,
@@ -30,6 +34,7 @@ public partial class Mutation
         return AutomationRuleDto.FromEntity.Compile().Invoke(automationRule);
     }
 
+    [Obsolete("Will be changed to SaveAutomationRule in the future")]
     public async Task<AutomationRuleDto> UpdateAutomationRuleFromBed(AutomationRuleDto automationRuleDto,
         [Service] ApplicationDbContext db)
     {
@@ -41,11 +46,13 @@ public partial class Mutation
         rule.ExpressionJson = automationRuleDto.ExpressionJson;
         rule.IsEnabled = automationRuleDto.IsEnabled;
         rule.CoolDown = TimeSpan.FromHours(1); // TODO should be configurable by the user
+        //TODO: Update Actions
         await db.SaveChangesAsync();
         
         return AutomationRuleDto.FromEntity.Compile().Invoke(rule);
     }
 
+    [Obsolete("Will be changed to SaveAutomationRule in the future")]
     public async Task<AutomationRuleActionDto> AddAutomationRuleActionToModule(
         Guid automationRuleId,
         Guid moduleId,
@@ -73,7 +80,8 @@ public partial class Mutation
             .FirstOrDefaultAsync(a => a.Id == automationRuleAction.Id);
         return AutomationRuleActionDto.FromEntity.Compile().Invoke(newRuleAction);
     }
-    
+
+    [Obsolete("Will be changed to SaveAutomationRule in the future")]
     public async Task<AutomationRuleActionDto> UpdateAutomationRuleActionFromModule(
         AutomationRuleActionDto automationRuleActionDto,
         [Service] ApplicationDbContext db)
@@ -111,7 +119,8 @@ public partial class Mutation
         await db.SaveChangesAsync();
         return true;
     }
-    
+
+    [Obsolete("Will be changed to SaveAutomationRule in the future")]
     public async Task<bool> RemoveAutomationRuleAction(Guid actionId,
         [Service] ApplicationDbContext db)
     {

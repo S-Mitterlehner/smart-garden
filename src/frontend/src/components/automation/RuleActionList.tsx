@@ -4,7 +4,7 @@ import { ModuleActionMenu } from "./ModuleActionMenu";
 import { RuleAction } from "./RuleAction";
 
 export function RuleActionList({ rule }: { rule: AutomationRuleDto }) {
-  const ruleActions = rule.actions as AutomationRuleActionDto[] | undefined;
+  const ruleActions = (rule.actions ?? []) as AutomationRuleActionDto[];
   const { modules } = useAutomationContext();
 
   return (
@@ -14,7 +14,7 @@ export function RuleActionList({ rule }: { rule: AutomationRuleDto }) {
           <h3 className="mb-1 text-lg font-medium tracking-wide text-gray-800">Actions</h3>
           <p className="mb-6 text-xs text-gray-500">Actions which are going to be executed when the rule is met.</p>
         </div>
-        <ModuleActionMenu modules={modules} ruleId={rule.id} actionsInUse={ruleActions!}></ModuleActionMenu>
+        <ModuleActionMenu modules={modules} ruleId={rule.id} actionsInUse={ruleActions}></ModuleActionMenu>
       </div>
 
       {ruleActions?.length ? (

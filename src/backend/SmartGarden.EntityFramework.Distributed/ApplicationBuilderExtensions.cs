@@ -17,7 +17,7 @@ public static class ApplicationBuilderExtensions
     {
         sc.AddScoped<JsonSeeder<TSeedModel, TContext>>(sp => ActivatorUtilities.CreateInstance<JsonSeeder<TSeedModel, TContext>>(sp, path));
         sc.AddScoped<ISeeder, DistributedSeederDecorator<JsonSeeder<TSeedModel, TContext>>>();
-        sc.AddHostedService<DbInitializer<TContext>>();
+        sc.AddHostedService<DbInitializer>();
         return sc;
     }
 }

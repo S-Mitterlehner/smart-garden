@@ -15,4 +15,8 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SmartGarden.EntityFramework.Core\SmartGarden.EntityFramework.Core.csproj" />
+  </ItemGroup>
+
 </Project>

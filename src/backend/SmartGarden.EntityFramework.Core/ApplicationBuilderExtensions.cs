@@ -14,7 +14,7 @@ public static class ApplicationBuilderExtensions
     public static IServiceCollection AddDbInitializerWithJsonSeeder<TSeedModel, TContext>(this IServiceCollection sc, string path) where TContext : BaseDbContext
     {
         sc.AddScoped<ISeeder>(sp => ActivatorUtilities.CreateInstance<JsonSeeder<TSeedModel, TContext>>(sp, path));
-        sc.AddHostedService<DbInitializer<TContext>>();
+        sc.AddHostedService<DbInitializer>();
         return sc;
     }
 }

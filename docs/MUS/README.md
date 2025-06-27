@@ -1,5 +1,11 @@
 ## Smart-Garden – Dokumentation
 
+### Dokumentation Backendarchitektur
+
+- [Kommunikationsservice - GraphQL](https://github.com/S-Mitterlehner/smart-garden/blob/main/docs/SVE-2/README.md)
+- [Message-oriented Middleware - RabbitMQ](https://github.com/S-Mitterlehner/smart-garden/blob/main/docs/SVE-3/README.md)
+- [Microservicearchitektur](https://github.com/S-Mitterlehner/smart-garden/blob/main/docs/SVE-4/README.md)
+
 ### 1. Einleitung und Motivation
 
 In einer Zeit, in der Menschen immer weniger Zeit für traditionelle Gartenarbeit aufbringen können, wächst gleichzeitig das Interesse daran, die Herkunft unserer Lebensmittel besser nachzuvollziehen. Kurze Transportwege und regionale Produktion sind zentrale Faktoren nachhaltiger Ernährung. Doch ohne Automatisierung sind Hochbeete und Gartenhäuser häufig mit hohem Pflegeaufwand verbunden. Genau hier setzt Smart‑Garden an: Es bietet eine IoT‑basierte Lösung, um den Anbau von Gemüse und Kräutern sowohl im städtischen als auch im ländlichen Umfeld zu automatisieren und zugleich jederzeit transparent nachzuverfolgen.

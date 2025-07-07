@@ -89,7 +89,7 @@ export default function ModuleSection({ group }: ModuleSectionProps) {
           ))}
           <button
             onClick={() => setShowModuleDrawer(true)}
-            className="relative flex min-h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-4 border-dashed border-gray-300 p-4 hover:bg-gray-200 phone:w-64"
+            className="relative flex min-h-[270px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-4 border-dashed border-gray-300 p-4 hover:bg-gray-200 phone:w-64"
           >
             <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4">
               <IconPlus className="h-12 w-12 text-gray-400" />

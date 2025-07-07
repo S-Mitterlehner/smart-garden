@@ -2,7 +2,6 @@ import { Button, Drawer, Menu, Modal, Slider, Tooltip } from "@mantine/core";
 import { IconListDetails, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 import {
-  ActionIcons,
   ActionType,
   ConnectionState,
   ModuleActionDto,
@@ -12,9 +11,9 @@ import {
 import { useModuleContext } from "../../hooks/useModule";
 import { getTimeString } from "../../utils";
 import Card from "../Card";
-import { getActionIcon, getTypeIconCircle } from "../sensors/utils";
 import ModuleProperties from "./ModuleProperties";
 import ModuleStateIndicator from "./ModuleStateIndicator";
+import { getActionIcon, getTypeIconCircle } from "./utils";
 
 export default function ModuleCard({
   plantConfig,
@@ -29,7 +28,6 @@ export default function ModuleCard({
   const [showValueModal, setShowValueModal] = useState(false);
   const [sliderValue, setSliderValue] = useState<number | undefined>(undefined);
   const [currentAction, setCurrentAction] = useState<ModuleActionDto | null>(null);
-
 
   const executeAction = (action: ModuleActionDto, value: number | undefined) => {
     if (!action.isAllowed) return;

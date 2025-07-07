@@ -1,5 +1,5 @@
 import { ModuleRefDto } from "../../__generated__/graphql";
-import { getTypeIconCircle } from "../sensors/utils";
+import { getTypeIconCircle } from "./utils";
 
 export type ModuleListProps = {
   modules: ModuleRefDto[];

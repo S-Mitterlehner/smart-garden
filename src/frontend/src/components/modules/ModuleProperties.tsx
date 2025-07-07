@@ -4,8 +4,8 @@ import { ConnectionState, StateType } from "../../__generated__/graphql";
 import { useModuleContext } from "../../hooks/useModule";
 import { getTimeString } from "../../utils";
 import PropertyEntry from "../properties/PropertyEntry";
-import { getTypeIconCircle } from "../sensors/utils";
 import "../styles/properties.css";
+import { getTypeIconCircle } from "./utils";
 
 export default function ModuleProperties() {
   const { module: module, state, connectionState, updateRef } = useModuleContext();

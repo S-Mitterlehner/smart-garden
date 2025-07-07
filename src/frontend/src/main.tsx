@@ -18,6 +18,7 @@ import "./index.css";
 import BedPage from "./pages/BedPage.tsx";
 import GardenPage from "./pages/GardenPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
+import RegisterPage from "./pages/RegisterPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,7 @@ createRoot(document.getElementById("root")!).render(
                 <div className="m-auto max-w-screen-desktop px-4 py-4 desktop:py-12">
                   <Routes>
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
 
                     <Route
                       path="/garden"

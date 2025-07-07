@@ -2,12 +2,18 @@ import { ActionIcon, Slider, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 import { AutomationRuleActionDto, ModuleDto } from "../../__generated__/graphql";
-import { useAutomationContext } from "../../hooks/useAutomation";
 import { getActionIcon, getTypeIconCircle } from "../modules/utils";
 
-export function RuleAction({ action, module }: { action: AutomationRuleActionDto; module: ModuleDto | undefined }) {
+export function RuleAction({
+  action,
+  module,
+  deleteAction,
+}: {
+  action: AutomationRuleActionDto;
+  module: ModuleDto | undefined;
+  deleteAction?: (action: AutomationRuleActionDto) => void;
+}) {
   const [sliderValue, setSliderValue] = useState(50);
-  const { deleteRuleAction: deleteRuleAction } = useAutomationContext();
 
   function setSliderEndValue(value: number): void {
     console.log("SliderValue: ", value);
@@ -52,7 +58,7 @@ export function RuleAction({ action, module }: { action: AutomationRuleActionDto
 
       <div className="ms-auto">
         <Tooltip label="Delete" withArrow position="top">
-          <ActionIcon variant="transparent" color="red" size="sm" onClick={() => deleteRuleAction(action)}>
+          <ActionIcon variant="transparent" color="red" size="sm" onClick={() => deleteAction?.(action)}>
             <IconTrash />
           </ActionIcon>
         </Tooltip>

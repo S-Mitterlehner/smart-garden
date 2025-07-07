@@ -3,20 +3,15 @@ import { notifications } from "@mantine/notifications";
 import { createContext, useContext, useMemo } from "react";
 import {
   AutomationConfigDto,
-  AutomationRuleActionDto,
   AutomationRuleDto,
   BedDto,
   ModuleDto,
   ParameterFieldDto,
-  useAddAutomationRuleActionToModuleMutation,
-  useAddAutomationRuleToBedMutation,
   useGetAutomationConfigQuery,
   useGetModulesInformationQuery,
   useGetRulesFromBedQuery,
-  useRemoveAutomationRuleActionMutation,
   useRemoveAutomationRuleMutation,
-  useUpdateAutomationRuleActionFromModuleMutation,
-  useUpdateAutomationRuleFromBedMutation,
+  useSaveAutomationRuleMutation,
 } from "../__generated__/graphql";
 import { useBedContext } from "./useCurrentBed";
 
@@ -33,13 +28,8 @@ export type AutomationValue = {
   parameterFields: ParameterFieldDto[];
   modules: ModuleDto[];
 
-  addRule: (name: string, expression: any, enabled: boolean) => void;
-  updateRule: (id: string, name: string, expression: any, enabled: boolean) => void;
+  saveRule: (rule: AutomationRuleDto) => void;
   deleteRule: (rule: AutomationRuleDto) => void;
-
-  addRuleAction: (actionKey: string, ruleId: string, moduleId: string, value: number | undefined) => void;
-  updateRuleAction: (action: AutomationRuleActionDto) => void;
-  deleteRuleAction: (action: AutomationRuleActionDto) => void;
 };
 
 const AutomationContext = createContext<AutomationValue | null>(null);
@@ -66,18 +56,12 @@ export function useAutomation(): AutomationValue {
     skip: !bed.id,
   });
 
-  const [addAutomationRuleMutation] = useAddAutomationRuleToBedMutation();
-  const [updateAutomationRuleMutation] = useUpdateAutomationRuleFromBedMutation();
+  const [saveAutomationRule] = useSaveAutomationRuleMutation();
   const [removeAutomationRuleMutation] = useRemoveAutomationRuleMutation();
-
-  const [addAutomationRuleActionMutation] = useAddAutomationRuleActionToModuleMutation();
-  const [updateAutomationRuleActionMutation] = useUpdateAutomationRuleActionFromModuleMutation();
-  const [removeAutomationRuleActionMutation] = useRemoveAutomationRuleActionMutation();
 
   const { data } = useGetModulesInformationQuery({});
   //const modules: ModuleDto[] = data?.modulesInformation ?? [];
   const modules = (data?.modulesInformation ?? []).filter((m): m is ModuleDto => m !== null);
-
 
   const { data: { automationConfig: config } = {} } = useGetAutomationConfigQuery({
     variables: { id: bed.id },
@@ -103,13 +87,12 @@ export function useAutomation(): AutomationValue {
 
   const parameterFields = useMemo(() => config?.parameters.flatMap((p) => p.fields) ?? [], [config]);
 
-  const addRule = (name: string, expression: any, enabled: boolean) => {
-    addAutomationRuleMutation({
+  const saveRule = (rule: AutomationRuleDto) => {
+    saveAutomationRule({
       variables: {
-        bedId: bed.id,
-        expressionJson: JSON.stringify(expression),
-        name: name ?? "",
-        isEnabled: enabled,
+        input: {
+          dto: rule,
+        },
       },
     })
       .then((r) => {
@@ -126,35 +109,6 @@ export function useAutomation(): AutomationValue {
         notifications.show({
           title: "Error",
           message: `Failed to add automation rule ${name} to bed with id ${bed.id}`,
-          color: "red",
-        });
-      });
-  };
-
-  const updateRule = (id: string, name: string, expression: any, enabled: boolean) => {
-    updateAutomationRuleMutation({
-      variables: {
-        bedId: bed.id,
-        expressionJson: JSON.stringify(expression),
-        id: id,
-        name: name ?? "",
-        isEnabled: enabled,
-      },
-    })
-      .then((r) => {
-        refetch();
-        console.log(r);
-        notifications.show({
-          title: `${name} updated`,
-          message: `Automation ${name} updated`,
-          color: "green",
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to update automation rule ${name} from bed with id ${bed.id}`,
           color: "red",
         });
       });
@@ -182,73 +136,10 @@ export function useAutomation(): AutomationValue {
       });
   };
 
-  const addRuleAction = (actionKey: string, ruleId: string, moduleId: string, value: number | undefined) => {
-
-    console.log(actionKey, ruleId, moduleId, value);
-    
-    addAutomationRuleActionMutation({
-      variables: { actionKey: actionKey, automationRuleId: ruleId, moduleId: moduleId, value: value }
-    })
-      .then(() => {
-        refetch();
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to add action with id ${actionKey}`,
-          color: "red",
-        });
-      });
-  }
-
-  const updateRuleAction = (action: AutomationRuleActionDto) => {
-    updateAutomationRuleActionMutation({
-      variables: { id: action.id, actionKey: action.actionKey, ruleId: action.ruleId, moduleId: action.moduleId, value: action.value }
-    })
-      .then(() => {
-        refetch();
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to update action with id ${action.id}`,
-          color: "red",
-        });
-      });
-  }
-
-  const deleteRuleAction = (action: AutomationRuleActionDto) => {
-    removeAutomationRuleActionMutation({
-      variables: { actionId: action.id },
-    })
-      .then(() => {
-        refetch();
-        notifications.show({
-          title: `Action deleted`,
-          message: `Action ${action.actionKey} deleted`,
-          color: "yellow",
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        notifications.show({
-          title: "Error",
-          message: `Failed to delete action with id ${action.id}`,
-          color: "red",
-        });
-      });
-  };
-
   return {
     bed,
-    addRule: addRule,
-    updateRule: updateRule,
+    saveRule: saveRule,
     deleteRule: deleteRule,
-    addRuleAction: addRuleAction,
-    updateRuleAction: updateRuleAction,
-    deleteRuleAction: deleteRuleAction,
     modules: modules,
     rules: automationRules,
     config: config ?? ({} as AutomationConfigDto),

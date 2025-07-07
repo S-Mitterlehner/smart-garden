@@ -1,20 +1,17 @@
 import { Button, Menu } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { AutomationRuleActionDto, ModuleDto } from "../../__generated__/graphql";
-import { useAutomationContext } from "../../hooks/useAutomation";
 import { getActionIcon, getTypeIconCircle } from "../modules/utils";
 
 export function ModuleActionMenu({
   modules,
-  ruleId,
   actionsInUse,
+  addAction = () => {},
 }: {
   modules: ModuleDto[];
-  ruleId: string;
   actionsInUse: AutomationRuleActionDto[];
+  addAction?: (actionKey: string, value: number | undefined) => void;
 }) {
-  const { addRuleAction } = useAutomationContext();
-
   return (
     <Menu shadow="md" width={200} position="bottom-start">
       <Menu.Target>
@@ -37,7 +34,7 @@ export function ModuleActionMenu({
                 actionsInUse.find((a) => a.actionKey == action.key) == null ? (
                   <Menu.Item
                     key={action.key}
-                    onClick={() => addRuleAction(action.key, ruleId, mod.id, undefined)}
+                    onClick={() => addAction(action.key, undefined)}
                     leftSection={getActionIcon(action.icon)}
                   >
                     {action.name}

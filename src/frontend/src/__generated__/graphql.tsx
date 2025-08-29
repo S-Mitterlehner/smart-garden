@@ -569,7 +569,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** @deprecated Use Module instead */
   addActuatorToBed: AddActuatorToBedPayload;
+  /** @deprecated Will be changed to SaveAutomationRule in the future */
   addAutomationRuleActionToModule: AddAutomationRuleActionToModulePayload;
+  /** @deprecated Will be changed to SaveAutomationRule in the future */
   addAutomationRuleToBed: AddAutomationRuleToBedPayload;
   addModuleToBed: AddModuleToBedPayload;
   /** @deprecated Use Module instead */
@@ -580,14 +582,18 @@ export type Mutation = {
   /** @deprecated Use Module instead */
   removeActuatorFromBed: RemoveActuatorFromBedPayload;
   removeAutomationRule: RemoveAutomationRulePayload;
+  /** @deprecated Will be changed to SaveAutomationRule in the future */
   removeAutomationRuleAction: RemoveAutomationRuleActionPayload;
   removeModuleFromBed: RemoveModuleFromBedPayload;
   /** @deprecated Use Module instead */
   removeSensorFromBed: RemoveSensorFromBedPayload;
+  saveAutomationRule: SaveAutomationRulePayload;
   setPlantToBed: SetPlantToBedPayload;
   /** @deprecated Use Module instead */
   updateActuatorRef: UpdateActuatorRefPayload;
+  /** @deprecated Will be changed to SaveAutomationRule in the future */
   updateAutomationRuleActionFromModule: UpdateAutomationRuleActionFromModulePayload;
+  /** @deprecated Will be changed to SaveAutomationRule in the future */
   updateAutomationRuleFromBed: UpdateAutomationRuleFromBedPayload;
   updateModuleRef: UpdateModuleRefPayload;
   /** @deprecated Use Module instead */
@@ -652,6 +658,11 @@ export type MutationRemoveModuleFromBedArgs = {
 
 export type MutationRemoveSensorFromBedArgs = {
   input: RemoveSensorFromBedInput;
+};
+
+
+export type MutationSaveAutomationRuleArgs = {
+  input: SaveAutomationRuleInput;
 };
 
 
@@ -888,6 +899,15 @@ export type RemoveSensorFromBedInput = {
 export type RemoveSensorFromBedPayload = {
   __typename?: 'RemoveSensorFromBedPayload';
   boolean?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type SaveAutomationRuleInput = {
+  dto: AutomationRuleDtoInput;
+};
+
+export type SaveAutomationRulePayload = {
+  __typename?: 'SaveAutomationRulePayload';
+  automationRuleDto?: Maybe<AutomationRuleDto>;
 };
 
 export type SensorDataDto = {
@@ -1137,47 +1157,12 @@ export type GetRuleByIdQueryVariables = Exact<{
 
 export type GetRuleByIdQuery = { __typename?: 'Query', rule?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, isEnabled: boolean, name: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null }> | null } | null };
 
-export type AddAutomationRuleActionToModuleMutationVariables = Exact<{
-  actionKey: Scalars['String']['input'];
-  automationRuleId: Scalars['UUID']['input'];
-  moduleId: Scalars['UUID']['input'];
-  value?: InputMaybe<Scalars['Float']['input']>;
+export type SaveAutomationRuleMutationVariables = Exact<{
+  input: SaveAutomationRuleInput;
 }>;
 
 
-export type AddAutomationRuleActionToModuleMutation = { __typename?: 'Mutation', addAutomationRuleActionToModule: { __typename?: 'AddAutomationRuleActionToModulePayload', automationRuleActionDto?: { __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null } | null } };
-
-export type UpdateAutomationRuleActionFromModuleMutationVariables = Exact<{
-  id: Scalars['UUID']['input'];
-  actionKey?: InputMaybe<Scalars['String']['input']>;
-  moduleId: Scalars['UUID']['input'];
-  ruleId: Scalars['UUID']['input'];
-  value?: InputMaybe<Scalars['Float']['input']>;
-}>;
-
-
-export type UpdateAutomationRuleActionFromModuleMutation = { __typename?: 'Mutation', updateAutomationRuleActionFromModule: { __typename?: 'UpdateAutomationRuleActionFromModulePayload', automationRuleActionDto?: { __typename?: 'AutomationRuleActionDto', actionKey?: string | null, id: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, order?: number | null, ruleId: any, value?: number | null } | null } };
-
-export type AddAutomationRuleToBedMutationVariables = Exact<{
-  bedId: Scalars['UUID']['input'];
-  expressionJson: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  isEnabled: Scalars['Boolean']['input'];
-}>;
-
-
-export type AddAutomationRuleToBedMutation = { __typename?: 'Mutation', addAutomationRuleToBed: { __typename?: 'AddAutomationRuleToBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, isEnabled: boolean } | null } };
-
-export type UpdateAutomationRuleFromBedMutationVariables = Exact<{
-  bedId: Scalars['UUID']['input'];
-  expressionJson: Scalars['String']['input'];
-  id: Scalars['UUID']['input'];
-  name: Scalars['String']['input'];
-  isEnabled: Scalars['Boolean']['input'];
-}>;
-
-
-export type UpdateAutomationRuleFromBedMutation = { __typename?: 'Mutation', updateAutomationRuleFromBed: { __typename?: 'UpdateAutomationRuleFromBedPayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, name: string, isEnabled: boolean } | null } };
+export type SaveAutomationRuleMutation = { __typename?: 'Mutation', saveAutomationRule: { __typename?: 'SaveAutomationRulePayload', automationRuleDto?: { __typename?: 'AutomationRuleDto', bedId: any, expressionJson: string, id: any, isEnabled: boolean, name: string, actions?: Array<{ __typename?: 'AutomationRuleActionDto', ruleId: any, moduleId: any, moduleKey?: string | null, moduleType?: ModuleType | null, actionKey?: string | null, value?: number | null, order?: number | null, id: any }> | null } | null } };
 
 export type RemoveAutomationRuleMutationVariables = Exact<{
   automationRuleId: Scalars['UUID']['input'];
@@ -1185,13 +1170,6 @@ export type RemoveAutomationRuleMutationVariables = Exact<{
 
 
 export type RemoveAutomationRuleMutation = { __typename?: 'Mutation', removeAutomationRule: { __typename?: 'RemoveAutomationRulePayload', boolean?: boolean | null } };
-
-export type RemoveAutomationRuleActionMutationVariables = Exact<{
-  actionId: Scalars['UUID']['input'];
-}>;
-
-
-export type RemoveAutomationRuleActionMutation = { __typename?: 'Mutation', removeAutomationRuleAction: { __typename?: 'RemoveAutomationRuleActionPayload', boolean?: boolean | null } };
 
 export type GetBedByIdQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
@@ -1716,190 +1694,55 @@ export type GetRuleByIdQueryHookResult = ReturnType<typeof useGetRuleByIdQuery>;
 export type GetRuleByIdLazyQueryHookResult = ReturnType<typeof useGetRuleByIdLazyQuery>;
 export type GetRuleByIdSuspenseQueryHookResult = ReturnType<typeof useGetRuleByIdSuspenseQuery>;
 export type GetRuleByIdQueryResult = Apollo.QueryResult<GetRuleByIdQuery, GetRuleByIdQueryVariables>;
-export const AddAutomationRuleActionToModuleDocument = gql`
-    mutation addAutomationRuleActionToModule($actionKey: String!, $automationRuleId: UUID!, $moduleId: UUID!, $value: Float) {
-  addAutomationRuleActionToModule(
-    input: {actionKey: $actionKey, automationRuleId: $automationRuleId, moduleId: $moduleId, value: $value}
-  ) {
-    automationRuleActionDto {
-      actionKey
-      id
-      moduleId
-      moduleKey
-      moduleType
-      order
-      ruleId
-      value
-    }
-  }
-}
-    `;
-export type AddAutomationRuleActionToModuleMutationFn = Apollo.MutationFunction<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>;
-
-/**
- * __useAddAutomationRuleActionToModuleMutation__
- *
- * To run a mutation, you first call `useAddAutomationRuleActionToModuleMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddAutomationRuleActionToModuleMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [addAutomationRuleActionToModuleMutation, { data, loading, error }] = useAddAutomationRuleActionToModuleMutation({
- *   variables: {
- *      actionKey: // value for 'actionKey'
- *      automationRuleId: // value for 'automationRuleId'
- *      moduleId: // value for 'moduleId'
- *      value: // value for 'value'
- *   },
- * });
- */
-export function useAddAutomationRuleActionToModuleMutation(baseOptions?: Apollo.MutationHookOptions<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>(AddAutomationRuleActionToModuleDocument, options);
-      }
-export type AddAutomationRuleActionToModuleMutationHookResult = ReturnType<typeof useAddAutomationRuleActionToModuleMutation>;
-export type AddAutomationRuleActionToModuleMutationResult = Apollo.MutationResult<AddAutomationRuleActionToModuleMutation>;
-export type AddAutomationRuleActionToModuleMutationOptions = Apollo.BaseMutationOptions<AddAutomationRuleActionToModuleMutation, AddAutomationRuleActionToModuleMutationVariables>;
-export const UpdateAutomationRuleActionFromModuleDocument = gql`
-    mutation updateAutomationRuleActionFromModule($id: UUID!, $actionKey: String, $moduleId: UUID!, $ruleId: UUID!, $value: Float) {
-  updateAutomationRuleActionFromModule(
-    input: {automationRuleActionDto: {actionKey: $actionKey, moduleId: $moduleId, id: $id, ruleId: $ruleId, value: $value}}
-  ) {
-    automationRuleActionDto {
-      actionKey
-      id
-      moduleId
-      moduleKey
-      moduleType
-      order
-      ruleId
-      value
-    }
-  }
-}
-    `;
-export type UpdateAutomationRuleActionFromModuleMutationFn = Apollo.MutationFunction<UpdateAutomationRuleActionFromModuleMutation, UpdateAutomationRuleActionFromModuleMutationVariables>;
-
-/**
- * __useUpdateAutomationRuleActionFromModuleMutation__
- *
- * To run a mutation, you first call `useUpdateAutomationRuleActionFromModuleMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateAutomationRuleActionFromModuleMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateAutomationRuleActionFromModuleMutation, { data, loading, error }] = useUpdateAutomationRuleActionFromModuleMutation({
- *   variables: {
- *      id: // value for 'id'
- *      actionKey: // value for 'actionKey'
- *      moduleId: // value for 'moduleId'
- *      ruleId: // value for 'ruleId'
- *      value: // value for 'value'
- *   },
- * });
- */
-export function useUpdateAutomationRuleActionFromModuleMutation(baseOptions?: Apollo.MutationHookOptions<UpdateAutomationRuleActionFromModuleMutation, UpdateAutomationRuleActionFromModuleMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateAutomationRuleActionFromModuleMutation, UpdateAutomationRuleActionFromModuleMutationVariables>(UpdateAutomationRuleActionFromModuleDocument, options);
-      }
-export type UpdateAutomationRuleActionFromModuleMutationHookResult = ReturnType<typeof useUpdateAutomationRuleActionFromModuleMutation>;
-export type UpdateAutomationRuleActionFromModuleMutationResult = Apollo.MutationResult<UpdateAutomationRuleActionFromModuleMutation>;
-export type UpdateAutomationRuleActionFromModuleMutationOptions = Apollo.BaseMutationOptions<UpdateAutomationRuleActionFromModuleMutation, UpdateAutomationRuleActionFromModuleMutationVariables>;
-export const AddAutomationRuleToBedDocument = gql`
-    mutation addAutomationRuleToBed($bedId: UUID!, $expressionJson: String!, $name: String!, $isEnabled: Boolean!) {
-  addAutomationRuleToBed(
-    input: {bedId: $bedId, automationExpressionJson: $expressionJson, automationName: $name, isEnabled: $isEnabled}
-  ) {
+export const SaveAutomationRuleDocument = gql`
+    mutation saveAutomationRule($input: SaveAutomationRuleInput!) {
+  saveAutomationRule(input: $input) {
     automationRuleDto {
+      actions {
+        ruleId
+        moduleId
+        moduleKey
+        moduleType
+        actionKey
+        value
+        order
+        id
+      }
       bedId
       expressionJson
       id
-      name
       isEnabled
+      name
     }
   }
 }
     `;
-export type AddAutomationRuleToBedMutationFn = Apollo.MutationFunction<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>;
+export type SaveAutomationRuleMutationFn = Apollo.MutationFunction<SaveAutomationRuleMutation, SaveAutomationRuleMutationVariables>;
 
 /**
- * __useAddAutomationRuleToBedMutation__
+ * __useSaveAutomationRuleMutation__
  *
- * To run a mutation, you first call `useAddAutomationRuleToBedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddAutomationRuleToBedMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useSaveAutomationRuleMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveAutomationRuleMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [addAutomationRuleToBedMutation, { data, loading, error }] = useAddAutomationRuleToBedMutation({
+ * const [saveAutomationRuleMutation, { data, loading, error }] = useSaveAutomationRuleMutation({
  *   variables: {
- *      bedId: // value for 'bedId'
- *      expressionJson: // value for 'expressionJson'
- *      name: // value for 'name'
- *      isEnabled: // value for 'isEnabled'
+ *      input: // value for 'input'
  *   },
  * });
  */
-export function useAddAutomationRuleToBedMutation(baseOptions?: Apollo.MutationHookOptions<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>) {
+export function useSaveAutomationRuleMutation(baseOptions?: Apollo.MutationHookOptions<SaveAutomationRuleMutation, SaveAutomationRuleMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>(AddAutomationRuleToBedDocument, options);
+        return Apollo.useMutation<SaveAutomationRuleMutation, SaveAutomationRuleMutationVariables>(SaveAutomationRuleDocument, options);
       }
-export type AddAutomationRuleToBedMutationHookResult = ReturnType<typeof useAddAutomationRuleToBedMutation>;
-export type AddAutomationRuleToBedMutationResult = Apollo.MutationResult<AddAutomationRuleToBedMutation>;
-export type AddAutomationRuleToBedMutationOptions = Apollo.BaseMutationOptions<AddAutomationRuleToBedMutation, AddAutomationRuleToBedMutationVariables>;
-export const UpdateAutomationRuleFromBedDocument = gql`
-    mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!, $isEnabled: Boolean!) {
-  updateAutomationRuleFromBed(
-    input: {automationRuleDto: {bedId: $bedId, expressionJson: $expressionJson, id: $id, name: $name, isEnabled: $isEnabled}}
-  ) {
-    automationRuleDto {
-      bedId
-      expressionJson
-      id
-      name
-      isEnabled
-    }
-  }
-}
-    `;
-export type UpdateAutomationRuleFromBedMutationFn = Apollo.MutationFunction<UpdateAutomationRuleFromBedMutation, UpdateAutomationRuleFromBedMutationVariables>;
-
-/**
- * __useUpdateAutomationRuleFromBedMutation__
- *
- * To run a mutation, you first call `useUpdateAutomationRuleFromBedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateAutomationRuleFromBedMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateAutomationRuleFromBedMutation, { data, loading, error }] = useUpdateAutomationRuleFromBedMutation({
- *   variables: {
- *      bedId: // value for 'bedId'
- *      expressionJson: // value for 'expressionJson'
- *      id: // value for 'id'
- *      name: // value for 'name'
- *      isEnabled: // value for 'isEnabled'
- *   },
- * });
- */
-export function useUpdateAutomationRuleFromBedMutation(baseOptions?: Apollo.MutationHookOptions<UpdateAutomationRuleFromBedMutation, UpdateAutomationRuleFromBedMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateAutomationRuleFromBedMutation, UpdateAutomationRuleFromBedMutationVariables>(UpdateAutomationRuleFromBedDocument, options);
-      }
-export type UpdateAutomationRuleFromBedMutationHookResult = ReturnType<typeof useUpdateAutomationRuleFromBedMutation>;
-export type UpdateAutomationRuleFromBedMutationResult = Apollo.MutationResult<UpdateAutomationRuleFromBedMutation>;
-export type UpdateAutomationRuleFromBedMutationOptions = Apollo.BaseMutationOptions<UpdateAutomationRuleFromBedMutation, UpdateAutomationRuleFromBedMutationVariables>;
+export type SaveAutomationRuleMutationHookResult = ReturnType<typeof useSaveAutomationRuleMutation>;
+export type SaveAutomationRuleMutationResult = Apollo.MutationResult<SaveAutomationRuleMutation>;
+export type SaveAutomationRuleMutationOptions = Apollo.BaseMutationOptions<SaveAutomationRuleMutation, SaveAutomationRuleMutationVariables>;
 export const RemoveAutomationRuleDocument = gql`
     mutation removeAutomationRule($automationRuleId: UUID!) {
   removeAutomationRule(input: {automationRuleId: $automationRuleId}) {
@@ -1933,39 +1776,6 @@ export function useRemoveAutomationRuleMutation(baseOptions?: Apollo.MutationHoo
 export type RemoveAutomationRuleMutationHookResult = ReturnType<typeof useRemoveAutomationRuleMutation>;
 export type RemoveAutomationRuleMutationResult = Apollo.MutationResult<RemoveAutomationRuleMutation>;
 export type RemoveAutomationRuleMutationOptions = Apollo.BaseMutationOptions<RemoveAutomationRuleMutation, RemoveAutomationRuleMutationVariables>;
-export const RemoveAutomationRuleActionDocument = gql`
-    mutation removeAutomationRuleAction($actionId: UUID!) {
-  removeAutomationRuleAction(input: {actionId: $actionId}) {
-    boolean
-  }
-}
-    `;
-export type RemoveAutomationRuleActionMutationFn = Apollo.MutationFunction<RemoveAutomationRuleActionMutation, RemoveAutomationRuleActionMutationVariables>;
-
-/**
- * __useRemoveAutomationRuleActionMutation__
- *
- * To run a mutation, you first call `useRemoveAutomationRuleActionMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRemoveAutomationRuleActionMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [removeAutomationRuleActionMutation, { data, loading, error }] = useRemoveAutomationRuleActionMutation({
- *   variables: {
- *      actionId: // value for 'actionId'
- *   },
- * });
- */
-export function useRemoveAutomationRuleActionMutation(baseOptions?: Apollo.MutationHookOptions<RemoveAutomationRuleActionMutation, RemoveAutomationRuleActionMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RemoveAutomationRuleActionMutation, RemoveAutomationRuleActionMutationVariables>(RemoveAutomationRuleActionDocument, options);
-      }
-export type RemoveAutomationRuleActionMutationHookResult = ReturnType<typeof useRemoveAutomationRuleActionMutation>;
-export type RemoveAutomationRuleActionMutationResult = Apollo.MutationResult<RemoveAutomationRuleActionMutation>;
-export type RemoveAutomationRuleActionMutationOptions = Apollo.BaseMutationOptions<RemoveAutomationRuleActionMutation, RemoveAutomationRuleActionMutationVariables>;
 export const GetBedByIdDocument = gql`
     query getBedById($id: UUID!) {
   bed(id: $id) {

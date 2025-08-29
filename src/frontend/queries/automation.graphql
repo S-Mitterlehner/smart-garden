@@ -40,7 +40,6 @@ query getRulesFromBed($bedId: UUID!) {
   }
 }
 
-
 query getRuleById($ruleId: UUID!) {
   rule(ruleId: $ruleId) {
     bedId
@@ -61,92 +60,30 @@ query getRuleById($ruleId: UUID!) {
   }
 }
 
-
-mutation addAutomationRuleActionToModule($actionKey: String!, $automationRuleId: UUID!, $moduleId: UUID!, $value: Float) {
-  addAutomationRuleActionToModule(
-    input: { actionKey: $actionKey, automationRuleId: $automationRuleId, moduleId: $moduleId, value: $value }
-  ) {
-    automationRuleActionDto {
-      actionKey
-      id
-      moduleId
-      moduleKey
-      moduleType
-      order
-      ruleId
-      value
-    }
-  }
-}
-
-
-mutation updateAutomationRuleActionFromModule($id: UUID!, $actionKey: String, $moduleId: UUID!, $ruleId: UUID!, $value: Float) {
-  updateAutomationRuleActionFromModule(
-    input: {
-      automationRuleActionDto: { actionKey: $actionKey, moduleId: $moduleId, id: $id, ruleId: $ruleId, value: $value }
-    }
-  ) {
-    automationRuleActionDto {
-      actionKey
-      id
-      moduleId
-      moduleKey
-      moduleType
-      order
-      ruleId
-      value
-    }
-  }
-}
-
-
-mutation addAutomationRuleToBed($bedId: UUID!, $expressionJson: String!, $name: String!, $isEnabled: Boolean!) {
-  addAutomationRuleToBed(
-    input: { bedId: $bedId, automationExpressionJson: $expressionJson, automationName: $name, isEnabled: $isEnabled }
-  ) {
+mutation saveAutomationRule($input: SaveAutomationRuleInput!) {
+  saveAutomationRule(input: $input) {
     automationRuleDto {
-      bedId
-      expressionJson
-      id
-      name
-      isEnabled
-    }
-  }
-}
-
-
-mutation updateAutomationRuleFromBed($bedId: UUID!, $expressionJson: String!, $id: UUID!, $name: String!, $isEnabled: Boolean!) {
-  updateAutomationRuleFromBed(
-    input: {
-      automationRuleDto: {
-        bedId: $bedId,
-        expressionJson: $expressionJson,
-        id: $id,
-        name: $name,
-        isEnabled: $isEnabled 
+      actions {
+        ruleId
+        moduleId
+        moduleKey
+        moduleType
+        actionKey
+        value
+        order
+        id
       }
-    }
-  ) {
-    automationRuleDto {
       bedId
       expressionJson
       id
-      name
       isEnabled
+      name
     }
   }
 }
-
 
 mutation removeAutomationRule($automationRuleId: UUID!) {
   removeAutomationRule(input: { automationRuleId: $automationRuleId }) {
-    boolean
-  }
-}
-
-
-mutation removeAutomationRuleAction($actionId: UUID!) {
-  removeAutomationRuleAction(input: { actionId: $actionId }) {
     boolean
   }
 }

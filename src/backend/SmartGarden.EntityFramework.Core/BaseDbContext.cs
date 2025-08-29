@@ -9,7 +9,7 @@ public abstract class BaseDbContext(DbContextOptions options) : DbContext(option
 {
     public TEntity New<TEntity>() where TEntity : BaseEntity, new()
     {
-        return this.New<TEntity>(Guid.NewGuid());
+        return New<TEntity>(Guid.NewGuid());
     }
     
     public TEntity New<TEntity>(Guid guid) where TEntity : BaseEntity, new()

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type AuthValue = {
   isLoggedIn: boolean;
@@ -6,6 +6,7 @@ export type AuthValue = {
   token: string | null;
   login: (username: string, password: string) => Promise<string | null>;
   register: (username: string, password: string) => Promise<string | null>;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthValue>({
@@ -13,7 +14,8 @@ const AuthContext = createContext<AuthValue>({
   isLoading: false,
   token: null,
   login: async () => null,
-  register: async () => null
+  register: async () => null,
+  logout: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -34,6 +36,14 @@ export function useAuth(): AuthValue {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Check for token in localStorage or cookies
+    const storedToken = localStorage.getItem("authToken") || null;
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  });
+
   const login = async (username: string, password: string): Promise<string | null> => {
     setIsLoading(true);
     try {
@@ -53,6 +63,7 @@ export function useAuth(): AuthValue {
 
       // Maybe persist the token?
       setToken(data.token);
+      localStorage.setItem("authToken", data.token);
       return null;
     } catch (error) {
       console.error("Auth error:", error);
@@ -80,10 +91,15 @@ export function useAuth(): AuthValue {
       return null;
     } catch (error) {
       console.error("Auth error:", error);
-      return "Network error. Please try again.";
+      return `error: ${error instanceof Error ? error.message : "Unknown error"}`;
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const logout = () => {
+    setToken(null);
+    localStorage.removeItem("authToken");
   };
 
   return {
@@ -91,6 +107,7 @@ export function useAuth(): AuthValue {
     isLoggedIn: token !== null,
     token,
     login,
-    register
+    register,
+    logout,
   };
 }

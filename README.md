@@ -2,12 +2,12 @@
 
 This repo is a IoT project for an extensible gardening system.
 
-## Project Documentations
+## FH - Project Documentations
 
-- [SVE Ex 2 - Web-Services](./docs/SVE-2/README.md)
-- [SVE Ex 3 - Message-oriented Middleware](./docs/SVE-3/README.md)
-- [SVE Ex 4 - Microservices](./docs/SVE-4/README.md)
-- [MUS](./docs//MUS/README.md)
+- [SVE Ex 2 - Web-Services](./docs/fh-docs/SVE-2/README.md)
+- [SVE Ex 3 - Message-oriented Middleware](./docs/fh-docs/SVE-3/README.md)
+- [SVE Ex 4 - Microservices](./docs/fh-docs/SVE-4/README.md)
+- [MUS](./docs/fh-docs/MUS/README.md)
 
 ---
 

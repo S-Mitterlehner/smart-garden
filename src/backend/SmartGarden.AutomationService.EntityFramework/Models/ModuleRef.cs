@@ -1,4 +1,5 @@
 ﻿using SmartGarden.EntityFramework.Core.Models;
+using SmartGarden.EntityFramework.Models;
 using SmartGarden.Modules.Enums;
 using SmartGarden.Modules.Models;
 

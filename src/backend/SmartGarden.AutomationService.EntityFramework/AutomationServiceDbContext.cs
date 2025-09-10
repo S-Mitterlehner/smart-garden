@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartGarden.AutomationService.EntityFramework.Models;
+using SmartGarden.EntityFramework;
 using SmartGarden.EntityFramework.Core;
 
 namespace SmartGarden.AutomationService.EntityFramework;

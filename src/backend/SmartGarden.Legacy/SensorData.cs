@@ -1,6 +1,6 @@
 ﻿using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.Modules.Sensors.Models;
+namespace SmartGarden.Legacy;
 
 [Obsolete("Please change implementation accordingly")]
 public class SensorData

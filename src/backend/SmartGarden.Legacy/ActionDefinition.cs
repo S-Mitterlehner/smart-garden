@@ -1,6 +1,6 @@
 ﻿using SmartGarden.Modules.Enums;
 
-namespace SmartGarden.Modules.Actuators.Models;
+namespace SmartGarden.Legacy;
 
 [Obsolete("Please change implementation accordingly")]
 public class ActionDefinition
@@ -8,7 +8,7 @@ public class ActionDefinition
     public string Key { get; init; }
     public string Name { get; init; }
     public string Description { get; init; }
-    public ActionType ActionType { get; init; }
+    public Modules.Enums.ActionType ActionType { get; init; }
     public bool IsAllowed { get; set; }
 
     public ActionIcons Icon { get; init; } = ActionIcons.Play;

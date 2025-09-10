@@ -68,9 +68,9 @@ const oidcConfig = {
   onSignIn: () => {
     // Redirect?
   },
-  authority: "https://oidc.io/oauthhttps://localhost:7006/connect/token",
+  authority: "https://oidc.io/oauthhttps://localhost:5002/connect/token",
   clientId: "react-client",
-  redirectUri: "http://localhost:5173/",
+  redirectUri: "http://localhost:5001/",
 };
 
 createRoot(document.getElementById("root")!).render(

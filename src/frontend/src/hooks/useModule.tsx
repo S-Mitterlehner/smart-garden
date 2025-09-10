@@ -42,7 +42,7 @@ export function useModuleContext(): ModuleValue {
   return context;
 }
 
-const client = createCustomApolloClient("localhost:5206"); //TODO: seek better solution for that
+const client = createCustomApolloClient("localhost:5001"); //TODO: seek better solution for that
 
 export function useModule(moduleId: string): ModuleValue {
   const { socketType } = useAppSettingsContext();
@@ -91,7 +91,7 @@ export function useModule(moduleId: string): ModuleValue {
     }
 
     connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/beds/sockets/module`)
+      .withUrl(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}/sockets/module`)
       .configureLogging(signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();

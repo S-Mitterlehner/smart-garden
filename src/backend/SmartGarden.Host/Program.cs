@@ -7,8 +7,7 @@ var dbUsername = builder.AddParameter("username", secret: true, value: "postgres
 var dbPassword = builder.AddParameter("password", secret: true, value: "postgres");
 
 var postgres = builder.AddPostgres("db", dbUsername, dbPassword);
-var dbBedApi = postgres.AddDatabase("bed-db");
-var dbPlantApi = postgres.AddDatabase("plant-db");
+var dbApi = postgres.AddDatabase("api-db");
 var dbConnectionService = postgres.AddDatabase("connection-service-db");
 var dbAutomationService = postgres.AddDatabase("automation-service-db");
 
@@ -34,28 +33,15 @@ var frontend = builder.AddNpmApp(
     .WithExternalHttpEndpoints();
 
 // apis
-var authApi = builder.AddProject<SmartGarden_AuthService>("auth-api")
-    .WithExternalHttpEndpoints();
-
-var bedApi = builder.AddProject<SmartGarden_Api_Beds>("bed-api")
-    .WithReference(dbBedApi)
+var api = builder.AddProject<SmartGarden_Api>("api")
+    .WithReference(dbApi)
     .WithReference(rabbitmq)
     .WithReference(redis)
-    .WithReference(authApi)
-    .WaitFor(dbBedApi)
+    .WaitFor(dbApi)
     .WaitFor(rabbitmq)
     .WaitFor(redis)
-    //.WithHttpEndpoint(5001, 8080, name: "httpapi")
-    //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
-    .WithExternalHttpEndpoints();
-    //.WithReplicas(2);
-
-var plantApi = builder.AddProject<SmartGarden_Api_Plants>("plant-api")
-    .WithReference(dbPlantApi)
-    .WaitFor(dbPlantApi)
-    .WithReference(authApi)
-    //.WithHttpEndpoint(5001, 8080, name: "httpapi")
-    //.WithHttpsEndpoint(5002, 8081, name: "httpsapi")
+    .WithHttpEndpoint(5001, 8080, name: "httpapi")
+    .WithHttpsEndpoint(5002, 8081, name: "httpsapi")
     .WithExternalHttpEndpoints();
 
 // services
@@ -86,26 +72,26 @@ builder.AddProject<SmartGarden_AutomationService>("automation-service")
 //    .WithExternalHttpEndpoints()
 //    .WithHttpEndpoint(name: "nginx-http", port: 8080, targetPort: 8080)
 //    .WithHttpsEndpoint(name: "nginx-https", port: 8081, targetPort: 8081);
-
-var graphQL = builder.AddNodeApp("graphql-gateway", "index.js", "../graphql-gateway")
-       .WithReference(plantApi)
-       .WithReference(bedApi)
-       .WithReference(authApi)
-       .WaitFor(plantApi)
-       .WaitFor(authApi)
-       .WaitFor(bedApi)
-       .WithHttpEndpoint(5100, 5100, "httpgraphqlgateway", isProxied: false)
-       .WithExternalHttpEndpoints();
-
-builder.AddProject<SmartGarden_Gateway>("gateway")
-       .WithReference(plantApi)
-       .WithReference(bedApi)
-       .WithReference(authApi)
-       .WithReference(frontend)
-       .WithReference(graphQL)
-       .WaitFor(bedApi)
-       .WaitFor(plantApi)
-       //.WithHttpEndpoint(5000, 5000, name: "httpgateway")
-       .WithExternalHttpEndpoints();
+//
+// var graphQL = builder.AddNodeApp("graphql-gateway", "index.js", "../graphql-gateway")
+//        .WithReference(plantApi)
+//        .WithReference(api)
+//        .WithReference(authApi)
+//        .WaitFor(plantApi)
+//        .WaitFor(authApi)
+//        .WaitFor(api)
+//        .WithHttpEndpoint(5100, 5100, "httpgraphqlgateway", isProxied: false)
+//        .WithExternalHttpEndpoints();
+//
+// builder.AddProject<SmartGarden_Gateway>("gateway")
+//        .WithReference(plantApi)
+//        .WithReference(api)
+//        .WithReference(authApi)
+//        .WithReference(frontend)
+//        .WithReference(graphQL)
+//        .WaitFor(api)
+//        .WaitFor(plantApi)
+//        //.WithHttpEndpoint(5000, 5000, name: "httpgateway")
+//        .WithExternalHttpEndpoints();
 
 builder.Build().Run();

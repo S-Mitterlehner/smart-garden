@@ -1,6 +1,4 @@
-﻿using SmartGarden.Modules.Actuators.Models;
-
-namespace SmartGarden.Modules.Actuators;
+﻿namespace SmartGarden.Legacy;
 
 [Obsolete("Please change implementation accordingly")]
 public interface IActuatorListener

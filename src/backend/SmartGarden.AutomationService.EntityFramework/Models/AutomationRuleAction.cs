@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using SmartGarden.EntityFramework.Core.Models;
+using SmartGarden.EntityFramework.Models;
 
 namespace SmartGarden.AutomationService.EntityFramework.Models;
 

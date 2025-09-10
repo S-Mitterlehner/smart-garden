@@ -1,6 +1,4 @@
-﻿using SmartGarden.Modules.Sensors.Models;
-
-namespace SmartGarden.Modules.Sensors;
+﻿namespace SmartGarden.Legacy;
 
 [Obsolete("Please change implementation accordingly")]
 public interface ISensorListener

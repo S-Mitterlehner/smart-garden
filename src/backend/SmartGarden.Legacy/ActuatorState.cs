@@ -1,8 +1,7 @@
-﻿using SmartGarden.Modules.Actuators.Enums;
-using SmartGarden.Modules.Enums;
+﻿using SmartGarden.Modules.Enums;
 using ConnectionState = SmartGarden.Modules.Enums.ConnectionState;
 
-namespace SmartGarden.Modules.Actuators.Models;
+namespace SmartGarden.Legacy;
 
 [Obsolete("Please change implementation accordingly")]
 public class ActuatorState

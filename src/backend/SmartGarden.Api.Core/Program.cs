@@ -1,1 +1,0 @@
-Console.WriteLine("Just a base project -> do not use it directly");

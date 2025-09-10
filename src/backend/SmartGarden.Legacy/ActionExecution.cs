@@ -1,6 +1,4 @@
-﻿using SmartGarden.Modules.Actuators.Enums;
-
-namespace SmartGarden.Modules.Actuators.Models;
+﻿namespace SmartGarden.Legacy;
 
 [Obsolete("Please change implementation accordingly")]
 public class ActionExecution

@@ -35,7 +35,7 @@
 
     
     <ItemGroup>
-      <ProjectReference Include="..\SmartGarden.EntityFramework.Core\SmartGarden.EntityFramework.Core.csproj" />
+      <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
       <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
     </ItemGroup>
 

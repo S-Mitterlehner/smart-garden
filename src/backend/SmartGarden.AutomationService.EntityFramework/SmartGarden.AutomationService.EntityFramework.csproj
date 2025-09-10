@@ -26,7 +26,7 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\SmartGarden.EntityFramework.Core\SmartGarden.EntityFramework.Core.csproj" />
+	  <ProjectReference Include="..\SmartGarden.EntityFramework\SmartGarden.EntityFramework.csproj" />
 	  <ProjectReference Include="..\SmartGarden.Modules\SmartGarden.Modules.csproj" />
 	</ItemGroup>
 </Project>

@@ -49,7 +49,7 @@ export function useAuth(): AuthValue {
     try {
       const body = JSON.stringify({ username, password });
       // todo: make these urls more dynamic
-      const res = await fetch("https://localhost:7006/login", {
+      const res = await fetch("https://localhost:5002/login", {
         method: "POST",
         body: body,
         headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ export function useAuth(): AuthValue {
     try {
       const body = JSON.stringify({ username, password });
       // todo: make these urls more dynamic
-      const res = await fetch("https://localhost:7006/register", {
+      const res = await fetch("https://localhost:5002/register", {
         method: "POST",
         body: body,
         headers: { "Content-Type": "application/json" },

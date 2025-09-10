@@ -16,7 +16,9 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
+  FieldSet: { input: any; output: any; }
   UUID: { input: any; output: any; }
+  _Any: { input: any; output: any; }
 };
 
 export enum ActionIcons {
@@ -154,30 +156,6 @@ export type AddActuatorToBedInput = {
 export type AddActuatorToBedPayload = {
   __typename?: 'AddActuatorToBedPayload';
   actuatorRefDto?: Maybe<ActuatorRefDto>;
-};
-
-export type AddAutomationRuleActionToModuleInput = {
-  actionKey: Scalars['String']['input'];
-  automationRuleId: Scalars['UUID']['input'];
-  moduleId: Scalars['UUID']['input'];
-  value?: InputMaybe<Scalars['Float']['input']>;
-};
-
-export type AddAutomationRuleActionToModulePayload = {
-  __typename?: 'AddAutomationRuleActionToModulePayload';
-  automationRuleActionDto?: Maybe<AutomationRuleActionDto>;
-};
-
-export type AddAutomationRuleToBedInput = {
-  automationExpressionJson: Scalars['String']['input'];
-  automationName: Scalars['String']['input'];
-  bedId: Scalars['UUID']['input'];
-  isEnabled: Scalars['Boolean']['input'];
-};
-
-export type AddAutomationRuleToBedPayload = {
-  __typename?: 'AddAutomationRuleToBedPayload';
-  automationRuleDto?: Maybe<AutomationRuleDto>;
 };
 
 export type AddModuleToBedInput = {
@@ -569,10 +547,6 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** @deprecated Use Module instead */
   addActuatorToBed: AddActuatorToBedPayload;
-  /** @deprecated Will be changed to SaveAutomationRule in the future */
-  addAutomationRuleActionToModule: AddAutomationRuleActionToModulePayload;
-  /** @deprecated Will be changed to SaveAutomationRule in the future */
-  addAutomationRuleToBed: AddAutomationRuleToBedPayload;
   addModuleToBed: AddModuleToBedPayload;
   /** @deprecated Use Module instead */
   addSensorToBed: AddSensorToBedPayload;
@@ -582,8 +556,6 @@ export type Mutation = {
   /** @deprecated Use Module instead */
   removeActuatorFromBed: RemoveActuatorFromBedPayload;
   removeAutomationRule: RemoveAutomationRulePayload;
-  /** @deprecated Will be changed to SaveAutomationRule in the future */
-  removeAutomationRuleAction: RemoveAutomationRuleActionPayload;
   removeModuleFromBed: RemoveModuleFromBedPayload;
   /** @deprecated Use Module instead */
   removeSensorFromBed: RemoveSensorFromBedPayload;
@@ -591,10 +563,6 @@ export type Mutation = {
   setPlantToBed: SetPlantToBedPayload;
   /** @deprecated Use Module instead */
   updateActuatorRef: UpdateActuatorRefPayload;
-  /** @deprecated Will be changed to SaveAutomationRule in the future */
-  updateAutomationRuleActionFromModule: UpdateAutomationRuleActionFromModulePayload;
-  /** @deprecated Will be changed to SaveAutomationRule in the future */
-  updateAutomationRuleFromBed: UpdateAutomationRuleFromBedPayload;
   updateModuleRef: UpdateModuleRefPayload;
   /** @deprecated Use Module instead */
   updateSensorRef: UpdateSensorRefPayload;
@@ -603,16 +571,6 @@ export type Mutation = {
 
 export type MutationAddActuatorToBedArgs = {
   input: AddActuatorToBedInput;
-};
-
-
-export type MutationAddAutomationRuleActionToModuleArgs = {
-  input: AddAutomationRuleActionToModuleInput;
-};
-
-
-export type MutationAddAutomationRuleToBedArgs = {
-  input: AddAutomationRuleToBedInput;
 };
 
 
@@ -646,11 +604,6 @@ export type MutationRemoveAutomationRuleArgs = {
 };
 
 
-export type MutationRemoveAutomationRuleActionArgs = {
-  input: RemoveAutomationRuleActionInput;
-};
-
-
 export type MutationRemoveModuleFromBedArgs = {
   input: RemoveModuleFromBedInput;
 };
@@ -673,16 +626,6 @@ export type MutationSetPlantToBedArgs = {
 
 export type MutationUpdateActuatorRefArgs = {
   input: UpdateActuatorRefInput;
-};
-
-
-export type MutationUpdateAutomationRuleActionFromModuleArgs = {
-  input: UpdateAutomationRuleActionFromModuleInput;
-};
-
-
-export type MutationUpdateAutomationRuleFromBedArgs = {
-  input: UpdateAutomationRuleFromBedInput;
 };
 
 
@@ -757,6 +700,7 @@ export type PlantModuleConfigDtoFilterInput = {
 
 export type Query = {
   __typename?: 'Query';
+  _service: _Service;
   /** @deprecated Use GetModule instead */
   actuator?: Maybe<ActuatorDto>;
   /** @deprecated Use GetModules instead */
@@ -860,15 +804,6 @@ export type RemoveActuatorFromBedInput = {
 
 export type RemoveActuatorFromBedPayload = {
   __typename?: 'RemoveActuatorFromBedPayload';
-  boolean?: Maybe<Scalars['Boolean']['output']>;
-};
-
-export type RemoveAutomationRuleActionInput = {
-  actionId: Scalars['UUID']['input'];
-};
-
-export type RemoveAutomationRuleActionPayload = {
-  __typename?: 'RemoveAutomationRuleActionPayload';
   boolean?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -1043,24 +978,6 @@ export type UpdateActuatorRefPayload = {
   actuatorRefDto?: Maybe<ActuatorRefDto>;
 };
 
-export type UpdateAutomationRuleActionFromModuleInput = {
-  automationRuleActionDto: AutomationRuleActionDtoInput;
-};
-
-export type UpdateAutomationRuleActionFromModulePayload = {
-  __typename?: 'UpdateAutomationRuleActionFromModulePayload';
-  automationRuleActionDto?: Maybe<AutomationRuleActionDto>;
-};
-
-export type UpdateAutomationRuleFromBedInput = {
-  automationRuleDto: AutomationRuleDtoInput;
-};
-
-export type UpdateAutomationRuleFromBedPayload = {
-  __typename?: 'UpdateAutomationRuleFromBedPayload';
-  automationRuleDto?: Maybe<AutomationRuleDto>;
-};
-
 export type UpdateModuleRefInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -1096,6 +1013,12 @@ export type UuidOperationFilterInput = {
   nin?: InputMaybe<Array<InputMaybe<Scalars['UUID']['input']>>>;
   nlt?: InputMaybe<Scalars['UUID']['input']>;
   nlte?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** This type provides a field named sdl: String! which exposes the SDL of the service's schema. This SDL (schema definition language) is a printed version of the service's schema including the annotations of federation directives. This SDL does not include the additions of the federation spec. */
+export type _Service = {
+  __typename?: '_Service';
+  sdl: Scalars['String']['output'];
 };
 
 export type GetActuatorsQueryVariables = Exact<{ [key: string]: never; }>;
